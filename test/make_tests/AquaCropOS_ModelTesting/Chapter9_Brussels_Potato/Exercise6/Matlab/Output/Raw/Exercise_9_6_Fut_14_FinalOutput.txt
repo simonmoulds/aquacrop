@@ -1,0 +1,2 @@
+GrowingSeason	PlantingDate	PlantingSimDate	HarvestDate	HarvestSimDate	Yield	TotalIrrigation	NetIrrigation	
+   1	25/04/2054	      56	13/08/2054	     166	10.58	  0.00	  0.00	

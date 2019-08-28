@@ -1,0 +1,2 @@
+GSeason	Crop	PlantD	PlantSD	HarvestCD	HarvestSD	Yield	TotIrr	
+   1	Wheat	01/08/2010	       1	05/11/2010	      97	 6.74	  0.00	

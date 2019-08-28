@@ -1,0 +1,5 @@
+Date of Simulation: 18/05/2016 10:59
+Simulation Location: Tunis, Tunisia
+Simulation Start Date: 15/08/1982
+Simulation End Date: 31/07/1983
+Model Coupled: N

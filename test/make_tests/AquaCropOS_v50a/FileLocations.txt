@@ -1,0 +1,4 @@
+%% Enter Location of Input files %%
+/home/simon/dev/hm/hm/test/test_aquacrop/make_tests/aquacrop_matlab_test_data/Ch7_Ex1b_Tunis_Wheat/2001/Input
+%% Enter Location of Output files %%
+/home/simon/dev/hm/hm/test/test_aquacrop/make_tests/aquacrop_matlab_test_data/Ch7_Ex1b_Tunis_Wheat/2001/Output

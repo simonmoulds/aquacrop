@@ -1,0 +1,2 @@
+GSeason	Crop	PlantD	PlantSD	HarvestCD	HarvestSD	Yield	TotIrr	
+   1	Wheat	15/10/1993	       1	15/05/1994	     213	 6.31	  0.00	

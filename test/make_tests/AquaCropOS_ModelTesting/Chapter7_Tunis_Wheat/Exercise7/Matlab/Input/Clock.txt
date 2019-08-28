@@ -1,0 +1,9 @@
+%% ---------- Clock parameter inputs for AquaCrop ---------- %%
+%% Simulation start time (yyyy-mm-dd-hh-mm-ss) %%
+SimulationStartTime : 2001-08-15-00-00-00
+%% Simulation end time (yyyy-mm-dd-hh-mm-ss) %%
+SimulationEndTime : 2002-07-31-00-00-00
+%% Time-step (days) %%
+TimeStep : 1
+%% Number of time-steps evaporation calculation is split into per day %%
+EvapTimeSteps : 20

@@ -1,0 +1,15 @@
+%% ---------- Soil profile discretisation for AquaCrop ---------- %%
+%% Compartment no.      Thickness (m)      Layer no. %%
+%% Note: no. compartments, layers, and total thickness must match values in SoilParameters.txt %%
+1   0.10    1
+2   0.10    1
+3   0.10    1
+4   0.10    1
+5   0.10    1
+6   0.10    1   
+7   0.10    1
+8   0.10    1
+9   0.10    1
+10  0.10    1
+11  0.10    1
+12  0.10    1

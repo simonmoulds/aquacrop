@@ -1,0 +1,29 @@
+%% ---------- Irrigation management parameters for AquaCrop ---------- %%
+%% Irrigation method (0: Rainfed; 1: Soil moisture based; 2: Fixed interval; 3: Specified time series; 4: Net calculation) %%
+IrrMethod : 0
+%% Method for determining maximum irrigation depth (1: Specified depth; 2: Calculated based on well yield and irrigated area) %%
+MaxIrrMethod : 1
+%% Irrigation interval in days (only used if IrrMethod = 2) %%
+IrrInterval : 3
+%% Soil moisture target in FAO56 growth stage one (% of total PAW below which irrigation is triggered) %%
+SMT1 : 100
+%% Soil moisture target in FAO56 growth stage two (% of total PAW below which irrigation is triggered) %%
+SMT2 : 100
+%% Soil moisture target in FAO56 growth stage three (% of total PAW below which irrigation is triggered) %%
+SMT3 : 100
+%% Soil moisture target in FAO56 growth stage four (% of total PAW below which irrigation is triggered) %%
+SMT4 : 0
+%% Well yield (m3/day) %%
+WellYield : 5260
+%% Irrigated area (ha) %%
+IrrArea : 52.5
+%% Maximum irrigation depth (mm) %%
+MaxIrr : 15
+%% Irrigation application efficiency (%) %%
+AppEff : 100
+%% Net irrigation threshold moisture level (% of total PAW that will be maintained) %%
+NetIrrSMT : 50
+%% Percentage of soil surface wetted by irrigation %%
+WetSurf : 100
+%% Soil bund height (m) %%
+zBund : 0

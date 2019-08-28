@@ -1,0 +1,2 @@
+GrowingSeason	PlantingDate	PlantingSimDate	HarvestDate	HarvestSimDate	Yield	TotalIrrigation	NetIrrigation	
+   1	08/04/2005	      39	08/08/2005	     161	 8.83	  0.00	  0.00	

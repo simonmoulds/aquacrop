@@ -1,0 +1,7 @@
+%% ---------- Clock parameter inputs for AquaCrop ---------- %%
+%% Simulation start time (yyyy-mm-dd) %%
+SimulationStartTime : 1993-12-01
+%% Simulation end time (yyyy-mm-dd) %%
+SimulationEndTime : 1994-07-31
+%% Simulate off-season ('N' or 'Y') %%
+OffSeason : Y

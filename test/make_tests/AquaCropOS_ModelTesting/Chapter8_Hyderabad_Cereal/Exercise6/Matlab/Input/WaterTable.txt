@@ -1,0 +1,7 @@
+%% File defining presence of groundwater table %%
+%% Water table present ('Y' or 'N')
+WaterTable : N
+%% Water table method ('Constant' depth; 'Variable' depth) %%
+Method : Constant
+%% Data points (Date (dd/mm/yyyy)   Depth (m)) %%
+01/09/2000	2

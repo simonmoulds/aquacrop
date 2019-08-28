@@ -1,0 +1,5 @@
+%% ---------- Soil hydraulic properties for AquaCrop ---------- %%
+%% LayerNo    thS(m3/m3)    thFC(m3/m3)  thWP(m3/m3)   Ksat(mm/day) %%
+%% NOTE: layers are assinged to compartments in 'SoilProfile.txt' %%
+%% NOTE: specify to use/ignore soil hydraulic properties in 'SoilParameters.txt' %%
+1   0.46    0.31    0.15    500.00

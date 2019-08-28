@@ -1,0 +1,13 @@
+id,name,description,section,subsection,type,units
+1,EvapZsurf,Thickness of the evaporating soil surface layer in direct contact with the atmosphere,,,soil,m
+2,EvapZmin,Minimum thickness of full soil surface evaporation layer,,,soil,m
+3,EvapZmax,Maximum thickness of full soil surface evaporation layer,,,soil,m
+4,Kex,Maximum soil evaporation coefficient,,,soil,1
+5,fevap,Shape factor describing reduction in evaporation with decreasing water content in the soil surface layer,,,soil,1
+6,fWrelExp,Relative water content of the soil surface layer at which the evaporation layer depth expands,,,soil,1
+7,fwcc,Coefficient expressing the reduction in soil evaporation due to the sheltering effect of withered canopy cover,,,soil,1
+8,CN,Curve number,,,soil,1
+9,zCN,Thickness of the soil surface layer used to calculate moisture content to adjust the curve number,,,soil,m
+10,zGerm,Thickness of the soil surface layer used to calculate moisture content to determine if germination can occur,,,soil,m
+11,zRes,Depth of any restrictive soil layer that inhibits root deepening,,,soil,m
+12,fshape_cr,Shape factor describing the strength of the effect of any shallow groundwater table on soil water content,,,soil,1

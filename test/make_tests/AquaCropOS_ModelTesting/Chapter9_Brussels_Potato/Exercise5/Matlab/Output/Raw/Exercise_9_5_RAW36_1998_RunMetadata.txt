@@ -1,0 +1,5 @@
+Date of Simulation: 20/05/2016 11:41
+Simulation Location: Brussels, Belgium
+Simulation Start Date: 01/03/1998
+Simulation End Date: 31/12/1998
+Model Coupled: N

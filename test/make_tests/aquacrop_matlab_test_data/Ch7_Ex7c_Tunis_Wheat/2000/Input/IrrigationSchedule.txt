@@ -1,0 +1,5 @@
+%% -------- Irrigation schedule time-series for AquaCropOS -------- %%
+%% Day	Month	Year	Irrigation(mm) %%
+1	12	2000	30
+15	12	2000	40
+15	2	2001	40

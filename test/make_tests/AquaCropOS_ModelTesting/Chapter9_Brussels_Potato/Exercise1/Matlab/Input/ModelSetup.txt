@@ -1,0 +1,9 @@
+%% ---------- Model setup parameters for AquaCrop ---------- %%
+%% Simulation location %%
+Location : Brussels, Belgium
+%% Model coupled ('Y' or 'N') %%
+Coupled : N
+%% Reset water content at start of growing season ('Y' or 'N') %%
+SimulateOffSeason : N
+%% Refence CO2 concentration (ppm) %%
+CO2ref : 369.41

@@ -1,0 +1,9 @@
+============================= test session starts ==============================
+platform linux -- Python 3.6.8, pytest-4.6.3, py-1.8.0, pluggy-0.12.0
+rootdir: /home/simon/dev/hm
+collected 1 item
+
+test_Ch7_Ex1a_Tunis_Wheat.py .                                           [100%]
+
+========================== 1 passed in 21.44 seconds ===========================
+

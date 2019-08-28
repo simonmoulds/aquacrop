@@ -1,0 +1,37 @@
+%% ---------- Soil parameter inputs for AquaCrop ---------- %%
+%% Calculate soil hydraulic properties (0:No, 1:Yes) %%
+CalcSHP : 0
+%% Total thickness of soil profile (m) %%
+Zsoil : 1.55
+%% Total number of compartments %%
+ncomp : 12
+%% Total number of layers %%
+nlayer : 2
+%% Thickness of soil surface skin evaporation layer (m) %%
+EvapZsurf : 0.04
+%% Minimum thickness of full soil surface evaporation layer (m) %%
+EvapZmin : 0.15
+%% Maximum thickness of full soil surface evaporation layer (m) %%
+EvapZmax : 0.3
+%% Maximum soil evaporation coefficient %%
+Kex : 1.1
+%% Shape factor describing reduction in soil evaporation %%
+fevap : 4
+%% Proportional value of Wrel at which soil evaporation layer expands %%
+fWrelExp : 0.4
+%% Maximum coefficient for soil evaporation reduction due to sheltering effect of withered canopy %%
+fwcc : 50
+%% Soil evaporation adjustment factor due to effect of mulches %%
+fmulch : 0.5
+%% Percentage of soil surface covered by mulches %%
+mulchpct : 0
+%% Curve number %%
+CN : 72
+%% Adjust curve number for antecedent moisture content (0:No, 1:Yes) %%
+AdjCN : 1
+%% Thickness of soil surface (m) used to calculate water content to adjust curve number %%
+Zcn : 0.3
+%% Thickness of soil surface (m) used to calculate water content for germination %%
+Zgerm : 0.3
+%% Depth of restrictive soil layer (set to negative value if not present) %%
+zRes : -999

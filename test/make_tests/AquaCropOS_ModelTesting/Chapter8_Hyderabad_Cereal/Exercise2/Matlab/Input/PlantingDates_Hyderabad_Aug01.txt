@@ -1,0 +1,25 @@
+%% ---------- Planting and harvest dates for AquaCrop ---------- %%
+%% Planting date method (Date: Specified date; Rain: Rainfall trigger; Temp: Temperature trigger) %%
+Method : Date
+%% Specified planting date (only used if Method = 'Date') %%
+PlantDate : 01/08
+%% Specified latest harvest date (only used if crop fails to reach maturity) %%
+HarvestDate : 31/12
+%% Start date for search (dd/mm) (unused if Method = 1) %%
+SearchStaDate : 01/10
+%% End date for search (dd/mm) (unused if Method = 1) %%
+SearchEndDate : 31/12
+%% Method for rainfall triggered planting date ('SumR': Sum of rain in last X days, 'CumR': Cumulative rainfall since start date) %%
+RainMethod : SumR
+%% Period (days) for rainfall calculation (only used if RainMethod = 'SumR') %%
+RainWindow : 5
+%% Threshold rainfall trigger (mm) %%
+RainThreshold : 35
+%% Method for temperature triggered planting date ('MinT': Min temp in last X days, 'MeanT': Average temp in last X days; 'SumGDD': Sum of GDD in last X days; 'CumGDD': Cumulative GDD since start) %%
+TempMethod : MinT
+%% Period (days) for temperature calculation (not used if TempMethod = 'CumGDD') %%
+TempWindow : 3
+%% Temperature trigger (degC or GDD) %%
+TempThreshold : 30
+%% Occurrence number %%
+Occurrence : 2

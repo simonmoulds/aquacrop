@@ -1,0 +1,73 @@
+id,name,description,section,subsection,type,units
+1,CropType,determines the category of crop,none,none,conservative,
+2,Tbase,base temperature,crop phenology,threshold air temperatures,conservative,degC
+3,Tupp,upper temperature,crop phenology,threshold air temperatures,conservative,degC
+4,SeedSize,soil surface covered by an individual seedling at 90% emergence,crop phenology,development of green canopy cover,conservative,cm2 plant-1
+5,PlantPop,number of plants per hectare,crop phenology,development of green canopy cover,management,plants ha-1
+6,Emergence,time from sowing/transplanting to emergence,crop phenology,development of green canopy cover,management,gdd
+7,CGC,canopy growth coefficient (fraction per growing degree day),crop phenology,development of green canopy cover,conservative,day-1 gdd-1
+8,CCx,maximum canopy cover,crop phenology,development of green canopy cover,management,%
+9,Senescence,time from sowing to start senescence,crop phenology,development of green canopy cover,cultivar,gdd
+10,CDC,canopy decline coefficient (fraction per growing degree day),crop phenology,development of green canopy cover,conservative,day-1 gdd-1
+11,Maturity,"time from sowing to maturity, i.e. length of crop cycle (growing degree day)",crop phenology,development of green canopy cover,cultivar,gdd
+12,MaxRooting,time from sowing/transplanting to maximum root development,crop phenology,development of green canopy cover,cultivar,gdd
+13,aaa,time from sowing to flowering,crop phenology,flowering,cultivar,gdd
+14,Flowering,length of the flowering stage,crop phenology,flowering,cultivar,gdd
+15,Determinant,crop determinacy linked with flowering,crop phenology,flowering,conservative,gdd
+16,MaxFlowPct,percentage of total flowering period at which peak flowering occurs,crop phenology,flowering,,%
+17,HIstart,time from sowing to start yield formation,crop phenology,yield formation,cultivar,gdd
+18,YldForm,duration of yield formation,crop phenology,yield formation,cultivar,gdd
+19,CCmin,minimum fractional canopy cover size below which yield formation does not occur,crop phenology,yield formation,,
+20,Zmin,minimum effective rooting depth,crop phenology,development of root zone,management,m
+21,Zmax,maximum effective rooting depth,crop phenology,development of root zone,management,m
+22,PctZmin,percentage of minimum effective rooting depth at sowing/transplanting,crop phenology,development of green canopy cover,,%
+23,fshape_r,shape factor describing root zone expansion,crop phenology,development of root zone,conservative,
+24,Kcb,crop coefficient when canopy is complete but prior to senescence,crop transpiration,,conservative,
+25,fage,"decline of crop coefficient as a result of ageing, nitrogen deficiency, etc.",crop transpiration,,conservative,% day-1
+26,fwcc,effect of canopy cover on reducing soil evaporation in late season stage,crop transpiration,,conservative,
+27,SxTopQ,maximum water extraction at the top of the root zone,crop transpiration,,,m3 m-3 day-1
+28,SxBotQ,maximum water extraction at the bottom of the root zone,crop transpiration,,,m3 m-3 day-1
+29,a_Tr,exponent parameter describing the effect of canopy decline on transpiration/photosynthetic capacity,crop transpiration,,,
+30,WP,water productivity normalised for Eto and CO2,biomass production and yield formation,crop water productivity,conservative,gram m-2
+31,WPy,water productivity normalised for Eto and CO2 during yield formation,biomass production and yield formation,crop water productivity,conservative,%
+32,fsink,crop sink strength coefficient,biomass production and yield formation,crop water productivity,,
+33,bsted,water productivity adjustment parameter for carbon dioxide effects given by Steduto et al. (2007),biomass production and yield formation,crop water productivity,,
+34,bface,water productivity adjustment parameter for carbon dioxide effects given by FACE experiments,biomass production and yield formation,crop water productivity,,
+35,HI0,reference harvest index,biomass production and yield formation,harvest index,cultivar,%
+36,HIini,Initial harvest index,biomass production and yield formation,harvest index,,
+37,dHI_pre,possible increase of HI due to water stress before flowering,biomass production and yield formation,harvest index,conservative,%
+38,exc,excess of potential fruits,biomass production and yield formation,harvest index,conservative,%
+39,a_HI,coefficient describing positive impact of restricted vegetative growth during yield formation on HI,biomass production and yield formation,harvest index,conservative,
+40,b_HI,coefficient describing negative impact of stomatal closure during yield formation on HI,biomass production and yield formation,harvest index,conservative,
+41,dHI0,allowable maximum increase of specified HI,biomass production and yield formation,harvest index,conservative,%
+42,p_up1,soil water depletion threshold for canopy expansion – upper threshold,stresses,soil water stresses,conservative,
+43,p_lo1,soil water depletion threshold for canopy expansion – lower threshold,stresses,soil water stresses,conservative,
+44,fshape_w1,shape factor for water stress coefficient for canopy expansion,stresses,soil water stresses,conservative,
+45,p_up2,soil water depletion threshold for stomatal control – upper threshold,stresses,soil water stresses,conservative,
+46,p_lo2,soil water depletion threshold for stomatal control – lower threshold,stresses,soil water stresses,,
+47,fshape_w2,shape factor for water stress coefficient for stomatal control,stresses,soil water stresses,conservative,
+48,p_up3,soil water depletion threshold for canopy senescence – upper threshold,stresses,soil water stresses,conservative,
+49,p_lo3,soil water depletion threshold for canopy senescence – lower threshold,stresses,soil water stresses,,
+50,beta,reduction to p_lo3 parameter when early canopy senescence is triggered due to water stress,stresses,soil water stresses,,
+51,fshape_w3,shape factor for water stress coefficient for canopy senescence,stresses,soil water stresses,conservative,
+52,bbb,sum (Eto) during stress period to be exceeded before senescence is triggered,stresses,soil water stresses,conservative,
+53,p_up4,soil water depletion threshold for failure of pollination – upper threshold,stresses,soil water stresses,conservative,
+54,p_lo4,soil water depletion threshold for failure of pollination – lower threshold,stresses,soil water stresses,,
+55,fshape_w4,shape factor describing water stress effects on crop pollination,stresses,soil water stresses,,
+56,Aer,Vol% at anaerobiotic point (with reference to saturation),stresses,soil water stresses,cultivar/environment,%
+57,LagAer,lag before aeration stress affects crop growth,stresses,soil water stresses,,days
+58,fshape_ex,shape factor describing the effects of water stress on root expansion,stresses,soil water stresses,,
+59,ETadj,determines if water stress thresholds are adjusted for variations in daily reference evapotranspiration,stresses,soil water stresses,,
+60,GermThr,proportion of total available water needed in the root zone for the crop to germinate,stresses,soil water stresses,,
+61,PolHeatStress,Determines if pollination is affected by heat stress,stresses,air temperature stress,,
+62,PolColdStress,Determines if pollination is affected by cold stress,,,,
+63,Tmin_up,minimum air temperature below which pollination starts to fail (cold stress),stresses,air temperature stress,conservative,degC
+64,Tmin_lo,minimum air temperature below which pollination fails completely,stresses,air temperature stress,,
+65,Tmax_up,maximum air temperature above which pollination starts to fail (heat stress),stresses,air temperature stress,conservative,degC
+66,Tmax_lo,maximum air temperature above which pollination fails completely,stresses,air temperature stress,,
+67,BioTempStress,determines if biomass production is affected by temperature stress,stresses,air temperature stress,,
+68,GDD_up,minimum growing degrees required for full biomass production,stresses,air temperature stress,conservative,gdd
+69,GDD_lo,minimum growing degrees required for any biomass production to occur,stresses,air temperature stress,,gdd
+70,fshape_b,shape factor describing the reduction in biomass production due to insufficient growing degrees,stresses,air temperature stress,,
+71,Ece_n,electrical conductivity of the saturated soil-paste extract: lower threshold (at which soil salinity stress starts to occur),stresses,salinity stress,conservative,dS m-1
+72,Ece_x,electrical conductivity of the saturated soil-paste extract: upper threshold (at which soil salinity stress has reached its maximum effect),stresses,salinity stress,conservative,dS m-1

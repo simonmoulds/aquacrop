@@ -1,0 +1,7 @@
+%% Time series of irrigation events dates and application depths (mm) %%
+Date	Irrigation
+29/07/1991	15.000000
+05/08/1991	15.000000
+10/08/1991	15.000000
+16/08/1991	15.000000
+27/08/1991	15.000000
