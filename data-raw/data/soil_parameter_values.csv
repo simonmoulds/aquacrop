@@ -5,7 +5,7 @@ id,name,value,min,max,parameter_id
 4,Kex,1.1,,,4
 5,fevap,4,,,5
 6,fWrelExp,0.4,,,6
-7,fwcc,0.5,,,7
+7,fwcc,50,,,7
 8,CN,61,,,8
 9,zCN,0.3,,,9
 10,zGerm,0.3,,,10

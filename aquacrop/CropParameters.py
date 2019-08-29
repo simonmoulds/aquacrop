@@ -481,14 +481,19 @@ class CropParameters(object):
         """Function to calculate harvest index growth coefficient"""
         # Total yield formation days
         tHI = np.copy(self.var.YldFormCD)
-
+        # print('tHI:',np.min(self.var.YldFormCD),np.max(self.var.YldFormCD))
+        cond0 = tHI > 0
         # Iteratively estimate HIGC
         self.var.HIGC = np.full((self.var.HIini.shape), 0.001)
         HIest = np.zeros_like(self.var.HIini)
-        while np.any(HIest < (0.98 * self.var.HI0)):
-            cond1 = (HIest < (0.98 * self.var.HI0))
-            self.var.HIGC += 0.001
+        while np.any((HIest <= (0.98 * self.var.HI0))[cond0]):
+            cond1 = cond0 & (HIest <= (0.98 * self.var.HI0))
+            self.var.HIGC[cond1] += 0.001
             HIest = ((self.var.HIini * self.var.HI0) / (self.var.HIini + (self.var.HI0 - self.var.HIini) * np.exp(-self.var.HIGC * tHI)))
+        # while np.any(HIest <= (0.98 * self.var.HI0)):
+        #     cond1 = (HIest <= (0.98 * self.var.HI0))
+        #     self.var.HIGC[cond1] += 0.001
+        #     HIest = ((self.var.HIini * self.var.HI0) / (self.var.HIini + (self.var.HI0 - self.var.HIini) * np.exp(-self.var.HIGC * tHI)))
 
         self.var.HIGC[HIest >= self.var.HI0] -= 0.001
 
@@ -553,7 +558,7 @@ class CropParameters(object):
             self.var.FloweringCD = np.copy(self.var.Flowering)
 
         # Pre-compute cumulative GDD during growing season
-        if (self.var.CalendarType == 1 & self.var.SwitchGDD) | (self.var.CalendarType == 2):
+        if ((self.var.CalendarType == 1) & (self.var.SwitchGDD)) | (self.var.CalendarType == 2):
 
             pd = np.broadcast_to(
                 self.var.PlantingDate,
@@ -651,9 +656,8 @@ class CropParameters(object):
             GDDcum = np.cumsum(GDD, axis=0)
 
             # "Check if converting crop calendar to GDD mode"
-            # if Mode == 1 & self.var.SwitchGDD:
-            if self.var.CalendarType == 1 & self.var.SwitchGDD:
-
+            if (self.var.CalendarType == 1) & (self.var.SwitchGDD):
+                
                 # Find GDD equivalent for each crop calendar variable
                 m,n,p = pd.shape  # farm,crop,space
                 I,J,K = np.ogrid[:m,:n,:p]
@@ -699,7 +703,6 @@ class CropParameters(object):
                 # "Set calendar type to GDD mode"
                 self.var._configuration.CROP_PARAMETERS['CalendarType'] = "2"
             
-            # elif Mode == 2:
             elif self.var.CalendarType == 2:
                 
                 maxcanopy = np.broadcast_to(self.var.MaxCanopy[None,...], day_idx.shape)
@@ -734,7 +737,22 @@ class CropParameters(object):
                 hiend_idx[np.logical_not(GDDcum > hiend)] = 999
                 hiend_idx = np.nanmin(hiend_idx, axis=0)
                 self.var.HIendCD = hiend_idx - pd + 1
-
+                
+                # idx = (self.var.HIstartCD == self.var.HIendCD)
+                # print(np.argwhere(idx))
+                # print(self.var.HIstartCD[idx][0])
+                # print(self.var.HIendCD[idx][0])
+                # print(self.var.HIstartCD.shape)                
+                # print(self.var.HIendCD.shape)
+                # print(pd.shape)
+                # print(hiend_idx.shape)
+                # print(histart_idx.shape)
+                # print(pd[idx][0])
+                # print(hiend_idx[idx][0])
+                # print(histart_idx[idx][0])
+                # print(GDDcum[...,50])
+                # print(hiend[...,50])
+                
                 # "Duration of yield formation in calendar days"
                 self.var.YldFormCD = self.var.HIendCD - self.var.HIstartCD
 

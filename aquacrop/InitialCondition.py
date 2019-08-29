@@ -89,12 +89,7 @@ class InitialCondition(object):
         ).copy()
         
     def set_initial_condition_from_percent(self):
-        # comp_index = np.unique(self.var.layerIndex, return_index=True)[1]        
-        self.var.th = (
-            self.var.th_wilt_comp
-            + ((self.var.initialConditionPercent / 100.)
-               * (self.var.th_fc_comp - self.var.th_wilt_comp))
-        )
+        self.var.th = (self.var.th_wilt_comp + ((self.var.initialConditionPercent / 100.) * (self.var.th_fc_comp - self.var.th_wilt_comp)))
 
     def set_initial_condition_from_property(self):
         # comp_index = np.unique(self.var.layerIndex, return_index=True)[1]                

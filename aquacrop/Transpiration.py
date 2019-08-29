@@ -274,7 +274,7 @@ class Transpiration(object):
                 # Don't reduce compartment sink for stomatal water stress if in
                 # net irrigation mode. Stress only occurs due to deficient
                 # aeration conditions
-                cond147 = (cond14 & self.var.IrrMethod == 4)
+                cond147 = (cond14 & (self.var.IrrMethod == 4))
                 Sink[cond147] = (AerComp * SxComp[:,:,comp,:] * RootFact[:,:,comp,:])[cond147]
 
                 # Otherwise, reduce compartment sink for greatest of stomatal
