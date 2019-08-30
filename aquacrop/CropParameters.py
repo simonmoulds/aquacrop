@@ -14,6 +14,8 @@ from hm import file_handling
 from hm.Messages import ModelError
 from . import data
 
+import aquacrop_fc
+
 class CropArea(object):
     
     def __init__(self, CropArea_variable):
@@ -32,7 +34,21 @@ class CropArea(object):
         
     def initial(self):
         self.var.CurrentCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
-
+        # test f2py integration:
+        # arr=np.random.rand(100,100,100,100)
+        # tot=aquacrop_fc.f2py_run(arr.T)
+        # print(tot)
+        # nx=100
+        # ny=100
+        # A=np.random.randint(0,10,(nx,ny))
+        # B=np.random.randint(0,10,(nx,ny))
+        # # C=np.zeros_like(A, dtype='float64')
+        # C,D=aquacrop_fc.evap_layer_water_content(A.T,B.T,nx,ny)
+        # print(A[0,0])
+        # print(B[0,0])
+        # print(C[0,0])              
+        # print(D[0,0])              
+        
     def read_cropland_area(self):
         if self.var.AnnualChangeInCropArea:
             if self.var._modelTime.timeStepPCR == 1 or self.var._modelTime.doy == 1:

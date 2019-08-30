@@ -5,6 +5,8 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
+import aquacrop_fc
+
 class SoilEvaporation(object):
     """Class to represent daily soil evaporation"""
     def __init__(self, SoilEvaporation_variable):
@@ -31,19 +33,20 @@ class SoilEvaporation(object):
         if np.any(self.var.GrowingSeasonDayOne):
             self.reset_initial_conditions()
         
-        # Find compartments covered by evaporation layer
-        evapz_comp = self.var.EvapZ[:,:,None,:] * np.ones((self.var.nComp))[None,None,:,None]
-        comp_sto = (np.round((self.var.dz_sum_xy - self.var.dz_xy) * 1000) < np.round(evapz_comp * 1000))
-        factor = 1 - ((self.var.dz_sum_xy - evapz_comp) / self.var.dz_xy)
-        factor = np.clip(factor, 0, 1) * comp_sto
+        # # Find compartments covered by evaporation layer
+        # evapz_comp = self.var.EvapZ[:,:,None,:] * np.ones((self.var.nComp))[None,None,:,None]
+        # comp_sto = (np.round((self.var.dz_sum_xy - self.var.dz_xy) * 1000) < np.round(evapz_comp * 1000))
+        # factor = 1 - ((self.var.dz_sum_xy - evapz_comp) / self.var.dz_xy)
+        # factor = np.clip(factor, 0, 1) * comp_sto
 
-        # Water storages in evaporation layer (mm)
-        Wevap_Act = np.sum((factor * 1000 * self.var.th * self.var.dz_xy), axis=2)  # sum along comp dim
-        self.var.Wevap_Act = np.clip(Wevap_Act, 0, None)
-        self.var.Wevap_Sat = np.sum((factor * 1000 * self.var.th_sat_comp * self.var.dz_xy), axis=2)
-        self.var.Wevap_Fc = np.sum((factor * 1000 * self.var.th_fc_comp * self.var.dz_xy), axis=2)
-        self.var.Wevap_Wp = np.sum((factor * 1000 * self.var.th_wilt_comp * self.var.dz_xy), axis=2)
-        self.var.Wevap_Dry = np.sum((factor * 1000 * self.var.th_dry_comp * self.var.dz_xy), axis=2)
+        # # Water storages in evaporation layer (mm)
+        # Wevap_Act = np.sum((factor * 1000 * self.var.th * self.var.dz_xy), axis=2)  # sum along comp dim
+        # self.var.Wevap_Act = np.clip(Wevap_Act, 0, None)
+        # self.var.Wevap_Sat = np.sum((factor * 1000 * self.var.th_sat_comp * self.var.dz_xy), axis=2)
+        # self.var.Wevap_Fc = np.sum((factor * 1000 * self.var.th_fc_comp * self.var.dz_xy), axis=2)
+        # self.var.Wevap_Wp = np.sum((factor * 1000 * self.var.th_wilt_comp * self.var.dz_xy), axis=2)
+        # self.var.Wevap_Dry = np.sum((factor * 1000 * self.var.th_dry_comp * self.var.dz_xy), axis=2)
+        self.var.Wevap_Act, self.var.Wevap_Sat, self.var.Wevap_Fc, self.var.Wevap_Wp, self.var.Wevap_Dry = aquacrop_fc.soil_evaporation.evap_layer_water_content(np.asfortranarray(self.var.th), np.asfortranarray(self.var.th_sat_comp), np.asfortranarray(self.var.th_fc_comp), np.asfortranarray(self.var.th_wilt_comp), np.asfortranarray(self.var.th_dry_comp), np.asfortranarray(self.var.EvapZ), np.asfortranarray(self.var.dz), np.asfortranarray(self.var.dz_sum), self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nCell)
 
     def prepare_stage_two_evaporation(self):
         self.evap_layer_water_content()
