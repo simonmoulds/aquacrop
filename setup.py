@@ -5,8 +5,7 @@ import setuptools
 import numpy.distutils.core
 
 f90_fnames = [
-    'runfortran.f90',
-    'evap_layer_water_content.f90'
+    'soil_evaporation.f90'
     ]
 
 f90_paths = []
