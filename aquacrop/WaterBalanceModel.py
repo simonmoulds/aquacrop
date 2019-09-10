@@ -24,6 +24,13 @@ class WaterBalanceModel(Model):
         self.groundwater_module = Groundwater(self)
         # self.canal_module = CanalSupply(self)
         self.lc_module = LandSurface(self)
+
+    def get_model_dimensions(self):
+        """Function to set model dimensions"""
+        super(WaterBalanceModel, self).get_model_dimensions()
+        self.nLayer = len(self._configuration.SOIL_HYDRAULIC_PARAMETERS['dzSoilLayer'])
+        self.nComp = len(self._configuration.SOIL_HYDRAULIC_PARAMETERS['dzSoilCompartment'])        
+        self.dimensions['depth'] = np.arange(self.nComp)
         
     def initial(self):
         self.weather_module.initial()

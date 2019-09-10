@@ -137,6 +137,8 @@ contains
     
   end function pot_soil_evap
 
+
+  
   ! Compute water contents in soil evaporation layer.
   !
   ! Input:
@@ -183,6 +185,8 @@ contains
     
   end subroutine get_evap_lyr_wc
 
+
+  
   ! Compute potential soil evaporation rate, adjusted for mulches
   !
   ! Input

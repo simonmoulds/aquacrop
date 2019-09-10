@@ -11,11 +11,19 @@ import numpy.distutils.core
 # https://docs.scipy.org/doc/numpy/f2py/distutils.html
 # https://stackoverflow.com/questions/22404060/fortran-cython-workflow
 
+os.system("rm -rf ./*.so")
+os.system("rm -rf ./build")
+os.system("rm -rf ./*.egg-info")
+
 # =================================== #
 # 1. Compile the pure Fortran modules #
 # =================================== #
-os.system("gfortran aquacrop/native/types.f90 -c -o aquacrop/native/types.o -O3 -fPIC -fbounds-check -mtune=native")
-os.system("gfortran aquacrop/native/soil_evaporation.f90 -c -o aquacrop/native/soil_evaporation.o -O3 -fPIC -fbounds-check -mtune=native")
+os.chdir("aquacrop/native")
+os.system("gfortran types.f90 -c -o types.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran soil_evaporation.f90 -c -o soil_evaporation.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran temperature_stress.f90 -c -o temperature_stress.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran biomass_accumulation.f90 -c -o biomass_accumulation.o -O3 -fPIC -fbounds-check -mtune=native")
+os.chdir("../..")
 
 # =================================== #
 # 2. Compile the f2py wrappers        #
@@ -24,7 +32,9 @@ os.system("gfortran aquacrop/native/soil_evaporation.f90 -c -o aquacrop/native/s
 # TODO: check rabascus package to see how to link with OpenMP
 
 f90_fnames = [
-    'soil_evaporation_w.f90'
+    'types.f90',
+    'soil_evaporation_w.f90',
+    'biomass_accumulation_w.f90'
     ]
 
 f90_paths = []
@@ -38,8 +48,7 @@ ext1 = numpy.distutils.core.Extension(
     name = 'aquacrop_fc',
     sources = f90_paths,
     extra_f90_compile_args = f90_flags,
-    # extra_link_args = omp_lib,
-    extra_link_args=['aquacrop/native/types.o','aquacrop/native/soil_evaporation.o']
+    extra_link_args=['aquacrop/native/soil_evaporation.o','aquacrop/native/temperature_stress.o','aquacrop/native/biomass_accumulation.o']
     )
 
 # =================================== #
@@ -65,8 +74,11 @@ numpy.distutils.core.setup(
 
 os.system("rm -rf aquacrop/native/types.o")
 os.system("rm -rf aquacrop/native/soil_evaporation.o")
-# os.system("rm -rf aquacrop/native/types.mod")
-# os.system("rm -rf aquacrop/native/soil_evaporation.mod")
+os.system("rm -rf aquacrop/native/temperature_stress.o")
+os.system("rm -rf aquacrop/native/biomass_accumulation.o")
+os.system("rm -rf aquacrop/native/types.mod")
+os.system("rm -rf aquacrop/native/soil_evaporation.mod")
+os.system("rm -rf aquacrop/native/biomass_accumulation.mod")
 
 # not used:
 

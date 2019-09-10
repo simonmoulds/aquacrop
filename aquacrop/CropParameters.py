@@ -14,8 +14,6 @@ from hm import file_handling
 from hm.Messages import ModelError
 from . import data
 
-import aquacrop_fc
-
 class CropArea(object):
     
     def __init__(self, CropArea_variable):
