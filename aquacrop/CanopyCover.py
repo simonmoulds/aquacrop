@@ -209,7 +209,8 @@ class CanopyCover(object):
         
         # Late-season stage - canopy decline
         late_stage = self.is_late_stage(tCC)
-        CC_NS_decline = self.green_canopy_cover_decline(self.var.CCx, self.var.CDC, tCC - self.var.Emergence)
+        CC_NS_decline = self.green_canopy_cover_decline(self.var.CCx, self.var.CDC, tCC - self.var.Senescence)
+        # CC_NS_decline = self.green_canopy_cover_decline(self.var.CCx, self.var.CDC, tCC - self.var.Emergence)
         self.var.CC_NS[late_stage] = CC_NS_decline[late_stage]
 
         # Set CCx for calculation of withered canopy effects
