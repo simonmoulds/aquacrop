@@ -1,11 +1,11 @@
 module biomass_accumulation
   use types
-  use temperature_stress! , only: temp_stress
+  use temperature_stress, only: update_temp_stress
   implicit none
 
 contains
 
-  subroutine bio_accum( &
+  subroutine update_biomass_accum( &
        et_ref, &                ! reference evapotranspiration
        tr, &                    ! transpiration
        tr_pot, &                ! potential transpiration
@@ -50,7 +50,7 @@ contains
     real(real64), intent(in) :: f_shp_b
     real(real64), intent(in) :: hi_ref
     integer(int32), intent(in) :: hi_t
-    integer(int32), intent(in) :: pct_lag_phase
+    real(real64), intent(in) :: pct_lag_phase
     integer(int32), intent(in) :: yld_form_cd
     real(real64), intent(in) :: wp
     real(real64), intent(in) :: wpy
@@ -67,7 +67,7 @@ contains
 
     if ( growing_season == 1) then
 
-       call temp_stress( &
+       call update_temp_stress( &
             bio_temp_stress, &
             kst_bio, &
             gdd, &
@@ -126,6 +126,6 @@ contains
        
     endif
     
-  end subroutine bio_accum
+  end subroutine update_biomass_accum
   
 end module biomass_accumulation

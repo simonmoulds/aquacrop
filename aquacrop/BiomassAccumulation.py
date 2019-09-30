@@ -80,9 +80,8 @@ class BiomassAccumulation(object):
         
     def dynamic(self):
         """Function to calculate biomass accumulation"""
-        if np.any(self.var.GrowingSeasonDayOne):
-            self.reset_initial_conditions()
-
+        # if np.any(self.var.GrowingSeasonDayOne):
+        #     self.reset_initial_conditions()
         # WPadj = self.var.WP.copy()
         # self.adjust_wp_for_types_of_product_synthesized(WPadj)
         # self.adjust_wp_for_co2_effects(WPadj)
@@ -93,7 +92,7 @@ class BiomassAccumulation(object):
         # self.var.B_NS += dB_NS        
         # self.var.B[np.logical_not(self.var.GrowingSeasonIndex)] = 0
         # self.var.B_NS[np.logical_not(self.var.GrowingSeasonIndex)] = 0
-        aquacrop_fc.biomass_accumulation_w.bio_accum_w(
+        aquacrop_fc.biomass_accumulation_w.update_biomass_accum_w(
             np.asfortranarray(self.var.weather.referencePotET),
             np.asfortranarray(self.var.TrAct),
             np.asfortranarray(self.var.TrPot_NS),

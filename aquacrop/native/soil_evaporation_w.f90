@@ -1,11 +1,11 @@
 module soil_evaporation_w
   use types
-  use soil_evaporation, only: soil_evap
+  use soil_evaporation, only: update_soil_evap
   implicit none
 
 contains
 
-  subroutine soil_evap_w( &
+  subroutine update_soil_evap_w( &
        prec, &
        et_ref, es_act, e_pot, &
        irr, irr_method, &
@@ -41,10 +41,13 @@ contains
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_mulch, mulch_pct_gs, mulch_pct_os
     
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: irr_method
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: dap, delayed_cds, delayed_gdds
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: dap
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: delayed_cds
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: delayed_gdds
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: mulches
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: growing_season
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: senescence, premat_senes
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: senescence
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: premat_senes
     
     real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(inout) :: th
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: es_act, e_pot
@@ -55,7 +58,7 @@ contains
     do i = 1, n_farm
        do j = 1, n_crop
           do k = 1, n_cell
-             call soil_evap( &
+             call update_soil_evap( &
                   prec(i,j,k), &
                   et_ref(i,j,k), es_act(i,j,k), e_pot(i,j,k), &
                   irr(i,j,k), irr_method(i,j,k), &
@@ -75,7 +78,7 @@ contains
        end do
     end do
     
-  end subroutine soil_evap_w
+  end subroutine update_soil_evap_w
   
 end module soil_evaporation_w
 

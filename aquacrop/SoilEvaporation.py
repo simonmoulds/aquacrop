@@ -32,7 +32,7 @@ class SoilEvaporation(object):
         
         self.var.EsAct = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
         EvapTimeSteps = 20
-        aquacrop_fc.soil_evaporation_w.soil_evap_w(
+        aquacrop_fc.soil_evaporation_w.update_soil_evap_w(
             np.asfortranarray(np.float64(self.var.weather.precipitation)),
             np.asfortranarray(np.float64(self.var.weather.referencePotET)),
             np.asfortranarray(self.var.EsAct),

@@ -1,11 +1,11 @@
 module biomass_accumulation_w
   use types
-  use biomass_accumulation, only: bio_accum
+  use biomass_accumulation, only: update_biomass_accum
   implicit none
 
 contains
 
-  subroutine bio_accum_w( &
+  subroutine update_biomass_accum_w( &
        et_ref, &
        tr, &
        tr_pot, &
@@ -52,7 +52,7 @@ contains
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shp_b
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: hi_ref
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: hi_t
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: pct_lag_phase
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: pct_lag_phase
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: yld_form_cd
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: wp
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: wpy
@@ -65,7 +65,7 @@ contains
     do i = 1, n_farm
        do j = 1, n_crop
           do k = 1, n_cell
-             call bio_accum( &
+             call update_biomass_accum( &
                   et_ref(i,j,k), &
                   tr(i,j,k), &
                   tr_pot(i,j,k), &
@@ -99,7 +99,7 @@ contains
        end do
     end do
     
-  end subroutine bio_accum_w
+  end subroutine update_biomass_accum_w
   
 end module biomass_accumulation_w
 

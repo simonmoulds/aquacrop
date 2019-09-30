@@ -7,6 +7,8 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
+import aquacrop_fc
+
 class CapillaryRise(object):
     def __init__(self, CapillaryRise_variable):
         self.var = CapillaryRise_variable
@@ -95,85 +97,104 @@ class CapillaryRise(object):
         """Function to calculate capillary rise from a shallow 
         groundwater table
         """
-        zGW = np.broadcast_to(self.var.groundwater.zGW[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nCell))
-        zBot = np.sum(self.var.dz)
-        zBotMid = zBot - (self.var.dz[-1] / 2)  # depth to midpoint of bottom layer
+        aquacrop_fc.capillary_rise_w.update_cap_rise_w(
+            np.asfortranarray(self.var.CrTot),
+            np.asfortranarray(self.var.th),
+            np.asfortranarray(self.var.th_wilt),
+            np.asfortranarray(self.var.th_fc),
+            np.asfortranarray(self.var.th_fc_adj),
+            np.asfortranarray(self.var.k_sat),
+            np.asfortranarray(self.var.aCR),
+            np.asfortranarray(self.var.bCR),
+            np.asfortranarray(self.var.fshape_cr),
+            np.asfortranarray(self.var.FluxOut),
+            self.var.groundwater.WaterTable,
+            np.asfortranarray(self.var.groundwater.zGW),
+            np.asfortranarray(self.var.dz),
+            np.asfortranarray(self.var.dz_layer),
+            np.asfortranarray(self.var.layerIndex),
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            )
         
-        if self.var.groundwater.WaterTable:
+        # zGW = np.broadcast_to(self.var.groundwater.zGW[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nCell))
+        # zBot = np.sum(self.var.dz)
+        # zBotMid = zBot - (self.var.dz[-1] / 2)  # depth to midpoint of bottom layer
+        
+        # if self.var.groundwater.WaterTable:
 
-            zGW = np.broadcast_to(self.var.groundwater.zGW[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nCell))
-            zBot = np.sum(self.var.dz)
-            zBotMid = zBot - (self.var.dz[-1] / 2)  # depth to midpoint of bottom layer
-            thnew = np.copy(self.var.th)
+        #     zGW = np.broadcast_to(self.var.groundwater.zGW[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nCell))
+        #     zBot = np.sum(self.var.dz)
+        #     zBotMid = zBot - (self.var.dz[-1] / 2)  # depth to midpoint of bottom layer
+        #     thnew = np.copy(self.var.th)
 
-            # Get maximum capillary rise for bottom compartment
-            MaxCR = self.maximum_capillary_rise(
-                self.var.k_sat[:,:,-1,:],
-                self.var.aCR[:,:,-1,:],
-                self.var.bCR[:,:,-1,:],
-                zGW,
-                zBotMid)
+        #     # Get maximum capillary rise for bottom compartment
+        #     MaxCR = self.maximum_capillary_rise(
+        #         self.var.k_sat[:,:,-1,:],
+        #         self.var.aCR[:,:,-1,:],
+        #         self.var.bCR[:,:,-1,:],
+        #         zGW,
+        #         zBotMid)
 
-            # Check for restrictions on upward flow caused by properties of
-            # compartments that are not modelled in the soil water balance
+        #     # Check for restrictions on upward flow caused by properties of
+        #     # compartments that are not modelled in the soil water balance
 
-            # Find top of next soil layer that is not within modelled soil
-            # profile: find index of layers that are included in the soil
-            # water balance (from self.var.layerIndex), then sum the
-            # thicknesses of these layers; the resulting value will be the
-            # top of the first layer not included in the soil water balance.
+        #     # Find top of next soil layer that is not within modelled soil
+        #     # profile: find index of layers that are included in the soil
+        #     # water balance (from self.var.layerIndex), then sum the
+        #     # thicknesses of these layers; the resulting value will be the
+        #     # top of the first layer not included in the soil water balance.
             
-            idx = np.arange(0, (self.var.layerIndex[-1] + 1))
-            zTopLayer = np.sum(self.var.dz_layer[idx])
-            layeri = self.var.layerIndex[-1]  # layer number of bottom compartment
-            LimCR = np.zeros((self.var.nCrop, self.var.nCell))
+        #     idx = np.arange(0, (self.var.layerIndex[-1] + 1))
+        #     zTopLayer = np.sum(self.var.dz_layer[idx])
+        #     layeri = self.var.layerIndex[-1]  # layer number of bottom compartment
+        #     LimCR = np.zeros((self.var.nCrop, self.var.nCell))
 
-            while np.any(zTopLayer < zGW) & (layeri < (self.var.nLayer - 1)):
-                layeri += 1
-                LimCR = self.maximum_capillary_rise(
-                    self.var.k_sat[:,:,layeri,:],
-                    self.var.aCR[:,:,layeri,:],
-                    self.var.bCR[:,:,layeri,:],
-                    zGW,
-                    zTopLayer)
-                MaxCR = np.clip(MaxCR, None, LimCR)
-                zTopLayer += self.var.dz_layer[layeri]  # top of the next layer not included in the soil water balance
+        #     while np.any(zTopLayer < zGW) & (layeri < (self.var.nLayer - 1)):
+        #         layeri += 1
+        #         LimCR = self.maximum_capillary_rise(
+        #             self.var.k_sat[:,:,layeri,:],
+        #             self.var.aCR[:,:,layeri,:],
+        #             self.var.bCR[:,:,layeri,:],
+        #             zGW,
+        #             zTopLayer)
+        #         MaxCR = np.clip(MaxCR, None, LimCR)
+        #         zTopLayer += self.var.dz_layer[layeri]  # top of the next layer not included in the soil water balance
 
-            compi = self.var.nComp - 1
-            CrTot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
-            while ((np.any(np.round(MaxCR * 1000) > 0)) & (np.any(np.round(self.var.FluxOut[:,:,compi,:] * 1000) == 0)) & (compi >= 0)):
+        #     compi = self.var.nComp - 1
+        #     CrTot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        #     while ((np.any(np.round(MaxCR * 1000) > 0)) & (np.any(np.round(self.var.FluxOut[:,:,compi,:] * 1000) == 0)) & (compi >= 0)):
 
-                cond1 = ((np.round(MaxCR * 1000) > 0) & (np.round(self.var.FluxOut[:,:,compi,:] * 1000) == 0))
-                thnew_comp, CRcomp, MaxCR = self.store_water_from_capillary_rise(
-                    self.var.th[:,:,compi,:],
-                    self.var.th_fc_comp[:,:,compi,:],
-                    self.var.th_fc_adj[:,:,compi,:],
-                    self.var.th_wilt_comp[:,:,compi,:],
-                    self.var.fshape_cr,
-                    MaxCR,
-                    self.var.FluxOut[:,:,compi,:],
-                    zGW,
-                    zBot,
-                    self.var.dz[compi])
+        #         cond1 = ((np.round(MaxCR * 1000) > 0) & (np.round(self.var.FluxOut[:,:,compi,:] * 1000) == 0))
+        #         thnew_comp, CRcomp, MaxCR = self.store_water_from_capillary_rise(
+        #             self.var.th[:,:,compi,:],
+        #             self.var.th_fc_comp[:,:,compi,:],
+        #             self.var.th_fc_adj[:,:,compi,:],
+        #             self.var.th_wilt_comp[:,:,compi,:],
+        #             self.var.fshape_cr,
+        #             MaxCR,
+        #             self.var.FluxOut[:,:,compi,:],
+        #             zGW,
+        #             zBot,
+        #             self.var.dz[compi])
 
-                thnew[:,:,compi,:][cond1] = thnew_comp[cond1]
-                CrTot[cond1] += CRcomp[cond1]
+        #         thnew[:,:,compi,:][cond1] = thnew_comp[cond1]
+        #         CrTot[cond1] += CRcomp[cond1]
 
-                # Update bottom elevation of compartment and compartment counter
-                zBot -= self.var.dz[compi]
-                compi -= 1
+        #         # Update bottom elevation of compartment and compartment counter
+        #         zBot -= self.var.dz[compi]
+        #         compi -= 1
 
-                # Update restriction on maximum capillary rise
-                if compi >= 0:
-                    zBotMid = zBot - (self.var.dz[compi] / 2)
-                    LimCR = self.maximum_capillary_rise(
-                        self.var.k_sat_comp[:,:,compi,:],
-                        self.var.aCR_comp[:,:,compi,:],
-                        self.var.bCR_comp[:,:,compi,:],
-                        zGW,
-                        zBotMid)
-                    cond11 = (cond1 & (MaxCR > LimCR))
-                    MaxCR[cond11] = LimCR[cond11]
+        #         # Update restriction on maximum capillary rise
+        #         if compi >= 0:
+        #             zBotMid = zBot - (self.var.dz[compi] / 2)
+        #             LimCR = self.maximum_capillary_rise(
+        #                 self.var.k_sat_comp[:,:,compi,:],
+        #                 self.var.aCR_comp[:,:,compi,:],
+        #                 self.var.bCR_comp[:,:,compi,:],
+        #                 zGW,
+        #                 zBotMid)
+        #             cond11 = (cond1 & (MaxCR > LimCR))
+        #             MaxCR[cond11] = LimCR[cond11]
 
-            self.var.th = np.copy(thnew)
-            self.var.CrTot = CrTot
+        #     self.var.th = np.copy(thnew)
+        #     self.var.CrTot = CrTot

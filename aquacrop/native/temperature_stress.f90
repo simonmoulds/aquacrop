@@ -140,7 +140,7 @@ contains
   ! TODO
   !
   ! -------------------------------------------------------------------
-  subroutine temp_stress(&
+  subroutine update_temp_stress(&
        bio_temp_stress, &
        kst_bio, &
        gdd, &
@@ -172,6 +172,6 @@ contains
     kst_polh = get_pol_heat_stress(pol_heat_stress, t_max, t_max_up, t_max_lo, f_shp_b)
     kst_polc = get_pol_cold_stress(pol_cold_stress, t_min, t_min_up, t_min_lo, f_shp_b)
     
-  end subroutine temp_stress
+  end subroutine update_temp_stress
   
 end module temperature_stress

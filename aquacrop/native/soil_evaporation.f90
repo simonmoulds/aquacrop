@@ -95,7 +95,9 @@ contains
        kex, ccxw, fwcc) result (es_pot)
 
     real(real64),   intent(in) :: et_ref, cc, cc_adj, ccx_act, kex, ccxw, fwcc
-    integer(int32), intent(in) :: t_adj, growing_season, senescence, premat_senes
+    real(real64),   intent(in) :: t_adj
+    real(real64),   intent(in) :: senescence
+    integer(int32), intent(in) :: growing_season, premat_senes
     real(real64) :: es_pot, es_pot_min, es_pot_max, mult, ccx_act_adj
 
     if ( growing_season == one ) then
@@ -367,7 +369,7 @@ contains
   !    TODO
   !
   ! -------------------------------------------------------------------
-  subroutine soil_evap( &
+  subroutine update_soil_evap( &
        prec, &
        et_ref, es_act, e_pot, &
        irr, irr_method, &
@@ -401,10 +403,13 @@ contains
     real(real64), intent(in) :: f_mulch, mulch_pct_gs, mulch_pct_os
     
     integer(int32), intent(in) :: irr_method
-    integer(int32), intent(in) :: dap, delayed_cds, delayed_gdds
+    integer(int32), intent(in) :: dap
+    integer(int32), intent(in) :: delayed_cds
+    real(real64), intent(in) :: delayed_gdds
     integer(int32), intent(in) :: mulches
     integer(int32), intent(in) :: growing_season
-    integer(int32), intent(in) :: senescence, premat_senes
+    real(real64), intent(in) :: senescence
+    integer(int32), intent(in) :: premat_senes
     
     real(real64), dimension(:), intent(inout) :: th
     real(real64), intent(inout) :: es_act, e_pot
@@ -416,8 +421,7 @@ contains
     real(real64) :: to_extract, to_extract_stage_one, to_extract_stage_two
     real(real64) :: edt
     real(real64) :: kr
-
-    integer(int32) :: t_adj
+    real(real64) :: t_adj
     integer(int32) :: i
     
     ! prepare soil evaporation stage two
@@ -545,7 +549,7 @@ contains
        end do
     end if
     
-  end subroutine soil_evap
+  end subroutine update_soil_evap
   
 end module soil_evaporation
 

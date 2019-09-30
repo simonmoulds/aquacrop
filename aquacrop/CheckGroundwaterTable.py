@@ -5,6 +5,8 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
+import aquacrop_fc
+
 class CheckGroundwaterTable(object):
     """Class to check for presence of a groundwater table and, if 
     present, to adjust compartment water contents and field 
@@ -15,7 +17,7 @@ class CheckGroundwaterTable(object):
 
     def initial(self):
         self.var.th_fc_adj = np.copy(self.var.th_fc_comp)
-        self.var.WTinSoil = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell),dtype=bool)
+        self.var.WTinSoil = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell), dtype=np.int32)
 
     def reset_initial_conditions(self):
         self.var.WTinSoil[self.var.GrowingSeasonDayOne] = False
@@ -94,10 +96,25 @@ class CheckGroundwaterTable(object):
         self.var.th_fc_adj[cond7] = self.var.th_fc_comp[cond7] + dFC[cond7]
         
     def dynamic(self):
-        if np.any(self.var.GrowingSeasonDayOne):
-            self.reset_initial_conditions()
-        if self.var.groundwater.WaterTable:
-            self.compute_th_fc_adj()
-        else:
-            self.var.WTinSoil = np.full((self.var.nFarm, self.var.nCrop, self.var.nCell), False)
-            self.var.th_fc_adj = np.copy(self.var.th_fc_comp)
+        # if np.any(self.var.GrowingSeasonDayOne):
+        #     self.reset_initial_conditions()
+        # if self.var.groundwater.WaterTable:
+        #     self.compute_th_fc_adj()
+        # else:
+        #     self.var.WTinSoil = np.full((self.var.nFarm, self.var.nCrop, self.var.nCell), False)
+        #     self.var.th_fc_adj = np.copy(self.var.th_fc_comp)
+
+        aquacrop_fc.check_gw_table_w.update_check_gw_table_w(
+            np.asfortranarray(self.var.th),
+            np.asfortranarray(self.var.th_fc_adj),
+            np.asfortranarray(self.var.WTinSoil),
+            np.asfortranarray(self.var.th_sat),
+            np.asfortranarray(self.var.th_fc),
+            self.var.groundwater.WaterTable,
+            self.var.groundwater.WaterTable,
+            np.asfortranarray(self.var.groundwater.zGW),
+            np.asfortranarray(self.var.dz),
+            np.asfortranarray(self.var.layerIndex),
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+        )
+            

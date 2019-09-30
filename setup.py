@@ -23,6 +23,12 @@ os.system("gfortran types.f90 -c -o types.o -O3 -fPIC -fbounds-check -mtune=nati
 os.system("gfortran soil_evaporation.f90 -c -o soil_evaporation.o -O3 -fPIC -fbounds-check -mtune=native")
 os.system("gfortran temperature_stress.f90 -c -o temperature_stress.o -O3 -fPIC -fbounds-check -mtune=native")
 os.system("gfortran biomass_accumulation.f90 -c -o biomass_accumulation.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran water_stress.f90 -c -o water_stress.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran canopy_cover.f90 -c -o canopy_cover.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran capillary_rise.f90 -c -o capillary_rise.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran check_gw_table.f90 -c -o check_gw_table.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran drainage.f90 -c -o drainage.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran germination.f90 -c -o germination.o -O3 -fPIC -fbounds-check -mtune=native")
 os.chdir("../..")
 
 # =================================== #
@@ -34,7 +40,13 @@ os.chdir("../..")
 f90_fnames = [
     'types.f90',
     'soil_evaporation_w.f90',
-    'biomass_accumulation_w.f90'
+    'biomass_accumulation_w.f90',
+    'water_stress_w.f90',
+    'canopy_cover_w.f90',
+    'capillary_rise_w.f90',
+    'check_gw_table_w.f90',
+    'drainage_w.f90',
+    'germination_w.f90'
     ]
 
 f90_paths = []
@@ -48,7 +60,7 @@ ext1 = numpy.distutils.core.Extension(
     name = 'aquacrop_fc',
     sources = f90_paths,
     extra_f90_compile_args = f90_flags,
-    extra_link_args=['aquacrop/native/soil_evaporation.o','aquacrop/native/temperature_stress.o','aquacrop/native/biomass_accumulation.o']
+    extra_link_args=['aquacrop/native/soil_evaporation.o','aquacrop/native/temperature_stress.o','aquacrop/native/biomass_accumulation.o','aquacrop/native/water_stress.o','aquacrop/native/canopy_cover.o','aquacrop/native/capillary_rise.o','aquacrop/native/check_gw_table.o','aquacrop/native/drainage.o','aquacrop/native/germination.o']
     )
 
 # =================================== #
@@ -72,13 +84,8 @@ numpy.distutils.core.setup(
 # 4. Clean up                         #
 # =================================== #
 
-os.system("rm -rf aquacrop/native/types.o")
-os.system("rm -rf aquacrop/native/soil_evaporation.o")
-os.system("rm -rf aquacrop/native/temperature_stress.o")
-os.system("rm -rf aquacrop/native/biomass_accumulation.o")
-os.system("rm -rf aquacrop/native/types.mod")
-os.system("rm -rf aquacrop/native/soil_evaporation.mod")
-os.system("rm -rf aquacrop/native/biomass_accumulation.mod")
+os.system("rm -rf aquacrop/native/*.o")
+os.system("rm -rf aquacrop/native/*.mod")
 
 # not used:
 
