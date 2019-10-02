@@ -12,8 +12,8 @@ from hm.Reporting import Reporting
 
 from hm import file_handling
 from .WaterBalanceModel import WaterBalanceModel
-from .AquaCropConfiguration import AquaCropConfiguration
-from . import variable_list
+from .io.AquaCropConfiguration import AquaCropConfiguration
+from .io import variable_list
 
 import logging
 logger = logging.getLogger(__name__)

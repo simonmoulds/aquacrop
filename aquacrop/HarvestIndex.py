@@ -3,6 +3,8 @@
 
 import numpy as np
 
+import aquacrop_fc
+
 class HarvestIndex(object):
     """Class to represent harvest index on current day."""
     
@@ -114,24 +116,51 @@ class HarvestIndex(object):
         self.var.HI[apply_lower_limit] = 0.
         
     def dynamic(self):        
-        if np.any(self.var.GrowingSeasonDayOne):
-            self.reset_initial_conditions()            
-        self.is_yield_formation_period()
+        # if np.any(self.var.GrowingSeasonDayOne):
+        #     self.reset_initial_conditions()            
+        # self.is_yield_formation_period()
         self.compute_harvest_index_time()
         
-        self.compute_harvest_index = (
-            self.var.GrowingSeasonIndex
-            & (self.var.HIt > 0)
-            & (self.var.CCprev > (self.var.CCmin * self.var.CCx)))
+        # self.compute_harvest_index = (
+        #     self.var.GrowingSeasonIndex
+        #     & (self.var.HIt > 0)
+        #     & (self.var.CCprev > (self.var.CCmin * self.var.CCx)))
         
-        if np.any(self.compute_harvest_index):
-            self.compute_harvest_index_crop_type_1_or_2()
-            self.compute_harvest_index_crop_type_3()
-            self.limit_harvest_index()
+        # if np.any(self.compute_harvest_index):
+        #     self.compute_harvest_index_crop_type_1_or_2()
+        #     self.compute_harvest_index_crop_type_3()
+        #     self.limit_harvest_index()
         
-        self.var.HI[np.logical_not(self.compute_harvest_index)] = 0
-        self.var.PctLagPhase[np.logical_not(self.compute_harvest_index)] = 0
+        # self.var.HI[np.logical_not(self.compute_harvest_index)] = 0
+        # self.var.PctLagPhase[np.logical_not(self.compute_harvest_index)] = 0
 
+        yieldform = np.asfortranarray(np.int32(self.var.YieldForm.copy()))
+        aquacrop_fc.harvest_index_w.update_harvest_index_w(
+            np.asfortranarray(self.var.HI), 
+            np.asfortranarray(self.var.PctLagPhase), 
+            yieldform,
+            # np.asfortranarray(np.int32(self.var.YieldForm)), 
+            np.asfortranarray(self.var.CCprev), 
+            np.asfortranarray(self.var.CCmin), 
+            np.asfortranarray(self.var.CCx), 
+            np.asfortranarray(self.var.HIini), 
+            np.asfortranarray(self.var.HI0), 
+            np.asfortranarray(self.var.HIGC), 
+            np.asfortranarray(self.var.HIstart), 
+            np.asfortranarray(self.var.HIstartCD), 
+            np.asfortranarray(self.var.tLinSwitch), 
+            np.asfortranarray(self.var.dHILinear), 
+            np.asfortranarray(self.var.GDDcum), 
+            np.asfortranarray(self.var.DAP), 
+            np.asfortranarray(self.var.DelayedCDs), 
+            np.asfortranarray(self.var.DelayedGDDs), 
+            np.asfortranarray(self.var.CropType), 
+            self.var.CalendarType, 
+            np.asfortranarray(self.var.GrowingSeasonIndex),
+            self.var.nFarm, self.var.nCrop, self.var.nCell
+            )            
+        self.var.YieldForm = np.ascontiguousarray(yieldform.copy()).astype(bool)
+        
 class HarvestIndexAdjusted(object):
     """Class to represent adjusted harvest index.
 
@@ -210,10 +239,27 @@ class HarvestIndexAdjusted(object):
         cond2 = (cond0 & (self.var.CC >= self.var.CCmin))
         Ks = np.minimum(self.var.Ksw_Pol, self.var.Kst_PolC, self.var.Kst_PolH)
         dFpol[cond2] = (Ks * FracFlow * (1 + (self.var.exc / 100)))[cond2]
-
         # Calculate pollination adjustment to dateppp
         self.var.Fpol += dFpol
         self.var.Fpol = np.clip(self.var.Fpol, None, 1)
+
+        # fpol = self.var.Fpol.copy()
+        # aquacrop_fc.harvest_index_w.hi_adj_pol_w(
+        #     fpol,
+        #     # np.asfortranarray(self.var.Fpol), 
+        #     np.asfortranarray(self.var.HIt), 
+        #     np.asfortranarray(self.var.FloweringCD), 
+        #     np.asfortranarray(self.var.CC), 
+        #     np.asfortranarray(self.var.CCmin),
+        #     np.asfortranarray(self.var.Ksw_Pol), 
+        #     np.asfortranarray(self.var.Kst_PolC), 
+        #     np.asfortranarray(self.var.Kst_PolH), 
+        #     np.asfortranarray(self.var.exc), 
+        #     self.var.nFarm,
+        #     self.var.nCrop,
+        #     self.var.nCell
+        #     )
+        # self.var.Fpol[self.var.GrowingSeasonIndex] = fpol[self.var.GrowingSeasonIndex]
 
     def compute_HI_adjustment_factor_for_pre_anthesis_water_stress(self):
         """Function to calculate adjustment to harvest index for 
@@ -295,58 +341,98 @@ class HarvestIndexAdjusted(object):
         self.var.Fpost[cond42] = (self.var.fpost_dwn * np.divide(((tmax1 * self.var.fpost_upp) + (tmax2 - tmax1)), tmax2, out=np.copy(arr_zeros), where=tmax2!=0))[cond42]
         cond43 = (cond4 & np.logical_not(cond41 | cond42))
         self.var.Fpost[cond43] = (self.var.fpost_upp * np.divide(((tmax2 * self.var.fpost_dwn) + (tmax1 - tmax2)), tmax2, out=np.copy(arr_zeros), where=tmax2!=0))[cond43]
-    
+        
     def dynamic(self):        
-        """Function to simulate build up of harvest index"""
+        # """Function to simulate build up of harvest index"""
 
-        if np.any(self.var.GrowingSeasonDayOne):
-            self.reset_initial_conditions()
-            
-        adjust_harvest_index = (
-            self.var.GrowingSeasonIndex
-            & self.var.YieldForm
-            & (self.var.HIt >= 0)
-        )
+        # if np.any(self.var.GrowingSeasonDayOne):
+        #     self.reset_initial_conditions()
 
-        adjust_harvest_index_crop_type_1 = (
-            adjust_harvest_index
-            & (self.var.CropType == 1)
-        )
+        # adjust_harvest_index = (
+        #     self.var.GrowingSeasonIndex
+        #     & self.var.YieldForm
+        #     & (self.var.HIt >= 0)
+        # )
+
+        # adjust_harvest_index_crop_type_1 = (
+        #     adjust_harvest_index
+        #     & (self.var.CropType == 1)
+        # )
                
-        adjust_harvest_index_crop_type_2_or_3 = (
-            adjust_harvest_index
-            & ((self.var.CropType == 2)
-               | (self.var.CropType == 3))
-        )
+        # adjust_harvest_index_crop_type_2_or_3 = (
+        #     adjust_harvest_index
+        #     & ((self.var.CropType == 2)
+        #        | (self.var.CropType == 3))
+        # )
 
-        adjust_harvest_index_crop_type_2 = (
-            adjust_harvest_index_crop_type_2_or_3
-            & (self.var.CropType == 2)
-        )
+        # adjust_harvest_index_crop_type_2 = (
+        #     adjust_harvest_index_crop_type_2_or_3
+        #     & (self.var.CropType == 2)
+        # )
         
-        adjust_harvest_index_crop_type_3 = (
-            adjust_harvest_index_crop_type_2_or_3
-            & (self.var.CropType == 3)
-        )
+        # adjust_harvest_index_crop_type_3 = (
+        #     adjust_harvest_index_crop_type_2_or_3
+        #     & (self.var.CropType == 3)
+        # )
         
-        # Determine adjustment for water stress before anthesis
-        self.compute_HI_adjustment_factor_for_pre_anthesis_water_stress()
-        self.compute_HI_adjustment_factor_for_failure_of_pollination()
-        self.compute_HI_adjustment_factor_for_post_anthesis_water_stress()
+        # # Determine adjustment for water stress before anthesis
+        # self.compute_HI_adjustment_factor_for_pre_anthesis_water_stress()
+        # self.compute_HI_adjustment_factor_for_failure_of_pollination()
+        # self.compute_HI_adjustment_factor_for_post_anthesis_water_stress()
         
-        HImax = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
-        HImax[adjust_harvest_index_crop_type_3] = (self.var.Fpol * self.var.HI0)[adjust_harvest_index_crop_type_3]
-        HImax[adjust_harvest_index_crop_type_2] = self.var.HI0[adjust_harvest_index_crop_type_2]
+        # HImax = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        # HImax[adjust_harvest_index_crop_type_3] = (self.var.Fpol * self.var.HI0)[adjust_harvest_index_crop_type_3]
+        # HImax[adjust_harvest_index_crop_type_2] = self.var.HI0[adjust_harvest_index_crop_type_2]
                                
-        # Limit HI to maximum allowable increase due to pre- and post-anthesis
-        # water stress combinations
-        HImult = (self.var.Fpre * self.var.Fpost)
-        HImult = np.clip(HImult, 1., (1 + (self.var.dHI0 / 100)))
+        # # Limit HI to maximum allowable increase due to pre- and post-anthesis
+        # # water stress combinations
+        # HImult = (self.var.Fpre * self.var.Fpost)
+        # HImult = np.clip(HImult, 1., (1 + (self.var.dHI0 / 100)))
         
-        HI = np.minimum(HImax, self.var.HI)
-        self.var.HIadj[adjust_harvest_index_crop_type_2_or_3] = (HImult * HI)[adjust_harvest_index_crop_type_2_or_3]
+        # HI = np.minimum(HImax, self.var.HI)
+        # self.var.HIadj[adjust_harvest_index_crop_type_2_or_3] = (HImult * HI)[adjust_harvest_index_crop_type_2_or_3]
         
-        # Leafy vegetable crops - no adjustment, harvest index equal to
-        # reference value for current day
-        self.var.HIadj[adjust_harvest_index_crop_type_1] = self.var.HI[adjust_harvest_index_crop_type_1]
-        self.var.HIadj[np.logical_not(self.var.GrowingSeasonIndex)] = 0
+        # # Leafy vegetable crops - no adjustment, harvest index equal to
+        # # reference value for current day
+        # self.var.HIadj[adjust_harvest_index_crop_type_1] = self.var.HI[adjust_harvest_index_crop_type_1]
+        # self.var.HIadj[np.logical_not(self.var.GrowingSeasonIndex)] = 0
+
+        preadj = np.asfortranarray(np.int32(self.var.PreAdj.copy()))
+        aquacrop_fc.harvest_index_w.adjust_harvest_index_w(
+            np.asfortranarray(self.var.HIadj), 
+            preadj,
+            np.asfortranarray(self.var.Fpre), 
+            np.asfortranarray(self.var.Fpol), 
+            np.asfortranarray(self.var.Fpost), 
+            np.asfortranarray(self.var.fpost_dwn), 
+            np.asfortranarray(self.var.fpost_upp), 
+            np.asfortranarray(self.var.sCor1), 
+            np.asfortranarray(self.var.sCor2), 
+            np.asfortranarray(self.var.YieldForm), 
+            np.asfortranarray(self.var.HI), 
+            np.asfortranarray(self.var.HI0), 
+            np.asfortranarray(self.var.dHI0), 
+            np.asfortranarray(self.var.B), 
+            np.asfortranarray(self.var.B_NS), 
+            np.asfortranarray(self.var.dHI_pre), 
+            np.asfortranarray(self.var.CC), 
+            np.asfortranarray(self.var.CCmin), 
+            np.asfortranarray(self.var.Ksw_Exp), 
+            np.asfortranarray(self.var.Ksw_Sto), 
+            np.asfortranarray(self.var.Ksw_Pol), 
+            np.asfortranarray(self.var.Kst_PolC), 
+            np.asfortranarray(self.var.Kst_PolH), 
+            np.asfortranarray(self.var.CanopyDevEndCD), 
+            np.asfortranarray(self.var.HIstartCD), 
+            np.asfortranarray(self.var.HIendCD), 
+            np.asfortranarray(self.var.YldFormCD), 
+            np.asfortranarray(self.var.FloweringCD), 
+            np.asfortranarray(self.var.a_HI), 
+            np.asfortranarray(self.var.b_HI), 
+            np.asfortranarray(self.var.exc), 
+            np.asfortranarray(self.var.DAP), 
+            np.asfortranarray(self.var.DelayedCDs), 
+            np.asfortranarray(self.var.CropType), 
+            np.asfortranarray(self.var.GrowingSeasonIndex), 
+            self.var.nFarm, self.var.nCrop, self.var.nCell)
+        self.var.PreAdj = np.ascontiguousarray(preadj.copy()).astype(bool)

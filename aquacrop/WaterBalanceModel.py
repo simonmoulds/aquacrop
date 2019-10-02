@@ -6,8 +6,8 @@ import numpy as np
 
 from hm import file_handling
 from hm.Model import Model
-from .Weather import Weather
-from .Groundwater import Groundwater
+from .io.Weather import Weather
+from .io.Groundwater import Groundwater
 from .LandSurface import LandSurface
 
 import logging

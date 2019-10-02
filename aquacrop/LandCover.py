@@ -10,9 +10,9 @@ import calendar as calendar
 from hm import file_handling
 from hm.Reporting import Reporting
 
-from .LandCoverParameters import LandCoverParameters, AquaCropParameters
-from .CarbonDioxide import CarbonDioxide
-from .InitialCondition import InitialCondition
+from .io.LandCoverParameters import LandCoverParameters, AquaCropParameters
+from .io.CarbonDioxide import CarbonDioxide
+from .io.InitialCondition import InitialCondition
 from .GrowingDegreeDay import GrowingDegreeDay
 from .CheckGroundwaterTable import CheckGroundwaterTable
 from .PreIrrigation import PreIrrigation
@@ -31,13 +31,12 @@ from .SoilEvaporation import SoilEvaporation
 from .Transpiration import Transpiration
 from .Evapotranspiration import Evapotranspiration
 from .Inflow import Inflow
-# from .HIrefCurrentDay import HIrefCurrentDay
 from .BiomassAccumulation import BiomassAccumulation
 from .TemperatureStress import TemperatureStress
 from .HarvestIndex import HarvestIndex, HarvestIndexAdjusted
 from .CropYield import CropYield
 
-from . import variable_list_crop
+from .io import variable_list_crop
 
 class LandCover(object):
     def __init__(self, var, config_section_name):

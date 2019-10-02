@@ -5,6 +5,8 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
+import aquacrop_fc
+
 class GrowthStage(object):
     def __init__(self, GrowthStage_variable):
         self.var = GrowthStage_variable
@@ -39,4 +41,16 @@ class GrowthStage(object):
         self.var.GrowthStage[cond3] = 3
         self.var.GrowthStage[cond4] = 4
         self.var.GrowthStage[np.logical_not(self.var.GrowingSeasonIndex)] = 0
-
+        # aquacrop_fc.growth_stage_w.update_growth_stage_w(
+        #     np.asfortranarray(self.var.GrowthStage),
+        #     np.asfortranarray(self.var.Canopy10pct),
+        #     np.asfortranarray(self.var.MaxCanopy),
+        #     np.asfortranarray(self.var.Senescence),
+        #     np.asfortranarray(self.var.GDDcum),
+        #     np.asfortranarray(self.var.DAP),
+        #     np.asfortranarray(self.var.DelayedCDs),
+        #     np.asfortranarray(self.var.DelayedGDDs),
+        #     self.var.CalendarType,
+        #     np.asfortranarray(self.var.GrowingSeasonIndex),
+        #     self.var.nFarm, self.var.nCrop, self.var.nCell
+        # )

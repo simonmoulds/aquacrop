@@ -25,12 +25,14 @@ contains
        t_min_up, &
        t_min_lo, &       
        hi_ref, &
-       hi_t, &
        pct_lag_phase, &
        yld_form_cd, &
        wp, &
        wpy, &
        f_co2, &
+       hi_start_cd, &
+       delayed_cds, &
+       dap, &
        crop_type, &
        determinant, &
        growing_season &
@@ -49,16 +51,19 @@ contains
     real(real64), intent(in) :: t_min, t_min_up, t_min_lo
     real(real64), intent(in) :: f_shp_b
     real(real64), intent(in) :: hi_ref
-    integer(int32), intent(in) :: hi_t
     real(real64), intent(in) :: pct_lag_phase
     integer(int32), intent(in) :: yld_form_cd
     real(real64), intent(in) :: wp
     real(real64), intent(in) :: wpy
     real(real64), intent(in) :: f_co2
+    integer(int32), intent(in) :: hi_start_cd
+    integer(int32), intent(in) :: delayed_cds
+    integer(int32), intent(in) :: dap
     integer(int32), intent(in) :: crop_type
     integer(int32), intent(in) :: determinant        
     integer(int32), intent(in) :: growing_season
 
+    integer(int32) :: hi_t
     real(real64) :: kst_bio, kst_polh, kst_polc
     real(real64) :: fswitch
     real(real64) :: wp_adj
@@ -86,7 +91,7 @@ contains
             t_min_lo &
             )
        
-       ! hi_t = dap - delayed_cds - hi_start_cd - 1
+       hi_t = dap - delayed_cds - hi_start_cd - 1
 
        if ( ( crop_type == 2 .or. crop_type == 3 ) .and. hi_ref > 0 ) then
 

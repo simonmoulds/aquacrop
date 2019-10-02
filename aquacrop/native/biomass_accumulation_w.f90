@@ -25,12 +25,14 @@ contains
        t_min_up, &
        t_min_lo, &       
        hi_ref, &
-       hi_t, &
        pct_lag_phase, &
        yld_form_cd, &
        wp, &
        wpy, &
        f_co2, &
+       hi_start_cd, &
+       delayed_cds, &
+       dap, &
        crop_type, &
        determinant, &
        growing_season, &
@@ -51,12 +53,14 @@ contains
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: t_min, t_min_up, t_min_lo
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shp_b
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: hi_ref
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: hi_t
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: pct_lag_phase
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: yld_form_cd
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: wp
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: wpy
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_co2
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: hi_start_cd
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: delayed_cds
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: dap
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: crop_type
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: determinant        
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: growing_season
@@ -85,12 +89,14 @@ contains
                   t_min_up(i,j,k), &
                   t_min_lo(i,j,k), &       
                   hi_ref(i,j,k), &
-                  hi_t(i,j,j), &
                   pct_lag_phase(i,j,k), &
                   yld_form_cd(i,j,k), &
                   wp(i,j,k), &
                   wpy(i,j,k), &
                   f_co2(i,j,k), &
+                  hi_start_cd(i,j,k), &
+                  delayed_cds(i,j,k), &
+                  dap(i,j,k), &
                   crop_type(i,j,k), &
                   determinant(i,j,k), &
                   growing_season(i,j,k) &
