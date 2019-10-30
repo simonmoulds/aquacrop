@@ -27,12 +27,7 @@ class CropYield(object):
             self.reset_initial_conditions()
 
         cond1 = self.var.GrowingSeasonIndex
-        self.var.Y[cond1] = ((self.var.B / 100) * self.var.HIadj)[cond1]
-
-        # print('Y    :',self.var.Y[...,500])
-        # print('B    :',self.var.B[...,500])
-        # print('HIadj:',self.var.HIadj[...,500])
-        
+        self.var.Y[cond1] = ((self.var.B / 100) * self.var.HIadj)[cond1]        
         cond11 = (cond1 & (((self.var.CalendarType == 1) & ((self.var.DAP - self.var.DelayedCDs) >= self.var.Maturity)) | ((self.var.CalendarType == 2) & ((self.var.GDDcum - self.var.DelayedGDDs) >= self.var.Maturity))))
         self.var.CropMature[cond11] = True
         self.var.Y[np.logical_not(self.var.GrowingSeasonIndex)] = 0

@@ -301,7 +301,7 @@ class HarvestIndexAdjusted(object):
 
         if np.any(self.var.GrowingSeasonDayOne):
             self.reset_initial_conditions()
-            
+
         adjust_harvest_index = (
             self.var.GrowingSeasonIndex
             & self.var.YieldForm
@@ -345,7 +345,7 @@ class HarvestIndexAdjusted(object):
         
         HI = np.minimum(HImax, self.var.HI)
         self.var.HIadj[adjust_harvest_index_crop_type_2_or_3] = (HImult * HI)[adjust_harvest_index_crop_type_2_or_3]
-        
+
         # Leafy vegetable crops - no adjustment, harvest index equal to
         # reference value for current day
         self.var.HIadj[adjust_harvest_index_crop_type_1] = self.var.HI[adjust_harvest_index_crop_type_1]
