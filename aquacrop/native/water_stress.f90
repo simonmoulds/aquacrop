@@ -4,6 +4,28 @@ module water_stress
   
 contains
 
+  function relative_depletion( &
+       dr, &
+       p_lo, &
+       p_up, &
+       taw &
+       ) result(d_rel)
+
+    real(real64), intent(in) :: dr
+    real(real64), intent(in) :: p_lo
+    real(real64), intent(in) :: p_up
+    real(real64), intent(in) :: taw
+    real(real64) :: d_rel    
+    if ( dr <= (p_up * taw) ) then
+       d_rel = 0.
+    else if ( dr > (p_up * taw) .and. dr < (p_lo * taw) ) then
+       d_rel = 1. - ((p_lo - (dr / taw)) / (p_lo - p_up))
+    else if ( dr >= (p_lo * taw) ) then
+       d_rel = 1.
+    end if
+    
+  end function relative_depletion
+         
   subroutine update_water_stress( &
        ksw_exp, &
        ksw_sto, &
@@ -86,16 +108,7 @@ contains
 
     ! calculate relative depletion
     do i = 1, 4
-       if ( dr <= (p_up(i) * taw) ) then
-          d_rel(i) = 0
-          
-       else if ( dr > (p_up(i) * taw) .and. dr < (p_lo(i) * taw) ) then
-          d_rel(i) = 1 - ((p_lo(i) - (dr / taw)) / (p_lo(i) - p_up(i)))
-          
-       else if ( dr >= (p_lo(i) * taw) ) then
-          d_rel(i) = 1
-          
-       end if       
+       d_rel(i) = relative_depletion(dr, p_lo(i), p_up(i), taw)
     end do
 
     ! calculate root zone water stress coefficients

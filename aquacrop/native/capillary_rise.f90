@@ -149,7 +149,7 @@ contains
           ! check if there is space available to store water from
           ! capillary rise
           dth = th_fc_adj(compi) - th(compi)
-          dth = nint((dth * 1000)) / 1000
+          dth = nint((dth * 1000)) / 1000.
 
           ! store water if space available
           if ( dth > 0 .and. (zbot - dz(compi) / 2) < zgw ) then

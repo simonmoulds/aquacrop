@@ -32,7 +32,13 @@ os.system("gfortran germination.f90 -c -o germination.o -O3 -fPIC -fbounds-check
 os.system("gfortran gdd.f90 -c -o gdd.o -O3 -fPIC -fbounds-check -mtune=native")
 os.system("gfortran growth_stage.f90 -c -o growth_stage.o -O3 -fPIC -fbounds-check -mtune=native")
 os.system("gfortran harvest_index.f90 -c -o harvest_index.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran infiltration.f90 -c -o infiltration.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran inflow.f90 -c -o inflow.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran pre_irr.f90 -c -o pre_irr.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran rainfall_partition.f90 -c -o rainfall_partition.o -O3 -fPIC -fbounds-check -mtune=native")
 os.system("gfortran root_dev.f90 -c -o root_dev.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran root_zone_water.f90 -c -o root_zone_water.o -O3 -fPIC -fbounds-check -mtune=native")
+os.system("gfortran transpiration.f90 -c -o transpiration.o -O3 -fPIC -fbounds-check -mtune=native")
 os.chdir("../..")
 
 # =================================== #
@@ -54,7 +60,13 @@ f90_fnames = [
     'gdd_w.f90',
     'growth_stage_w.f90',
     'harvest_index_w.f90',
-    'root_dev_w.f90'
+    'infiltration_w.f90',
+    'inflow_w.f90',
+    'pre_irr_w.f90',
+    'rainfall_partition_w.f90',
+    'root_dev_w.f90',
+    'root_zone_water_w.f90',
+    'transpiration_w.f90'
     ]
 
 f90_paths = []
@@ -68,7 +80,7 @@ ext1 = numpy.distutils.core.Extension(
     name = 'aquacrop_fc',
     sources = f90_paths,
     extra_f90_compile_args = f90_flags,
-    extra_link_args=['aquacrop/native/soil_evaporation.o','aquacrop/native/temperature_stress.o','aquacrop/native/biomass_accumulation.o','aquacrop/native/water_stress.o','aquacrop/native/canopy_cover.o','aquacrop/native/capillary_rise.o','aquacrop/native/check_gw_table.o','aquacrop/native/drainage.o','aquacrop/native/germination.o','aquacrop/native/gdd.o','aquacrop/native/growth_stage.o','aquacrop/native/harvest_index.o','aquacrop/native/root_dev.o']
+    extra_link_args=['aquacrop/native/soil_evaporation.o','aquacrop/native/temperature_stress.o','aquacrop/native/biomass_accumulation.o','aquacrop/native/water_stress.o','aquacrop/native/canopy_cover.o','aquacrop/native/capillary_rise.o','aquacrop/native/check_gw_table.o','aquacrop/native/drainage.o','aquacrop/native/germination.o','aquacrop/native/gdd.o','aquacrop/native/growth_stage.o','aquacrop/native/harvest_index.o','aquacrop/native/infiltration.o','aquacrop/native/inflow.o','aquacrop/native/pre_irr.o','aquacrop/native/rainfall_partition.o','aquacrop/native/root_dev.o','aquacrop/native/root_zone_water.o','aquacrop/native/transpiration.o']
     )
 
 # =================================== #

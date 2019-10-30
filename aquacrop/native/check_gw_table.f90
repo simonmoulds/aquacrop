@@ -118,6 +118,11 @@ contains
           end if
        end do
     end if
+
+    ! clean up
+    deallocate(zbot)
+    deallocate(ztop)
+    deallocate(zmid) 
     
   end subroutine update_check_gw_table
 

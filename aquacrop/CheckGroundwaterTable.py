@@ -54,7 +54,6 @@ class CheckGroundwaterTable(object):
 
         zMid = self.compute_mid_point_of_compartments()
         WTinSoilComp = (zMid >= zGW_comp)
-        print(self.var.th[0,0,:,0])
         self.var.th[WTinSoilComp] = self.var.th_sat_comp[WTinSoilComp]
 
         # Flatten WTinSoilComp to provide an array with dimensions

@@ -5,6 +5,8 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
+import aquacrop_fc
+
 class RainfallPartition(object):
     """Class to infiltrate incoming water"""
     
@@ -42,19 +44,42 @@ class RainfallPartition(object):
         return ((25400. / CN) - 254.)
         
     def dynamic(self):
-        if self.var.adjustCurveNumber:
-            CN = self.adjust_curve_number()
-        S = self.compute_potential_maximum_soil_water_retention(CN)
-        initial_abstraction = ((5. / 100) * S)
-        bunds = ((self.var.Bunds == 1) & (self.var.zBund >= 0.001))
-        runoff = (
-            np.logical_not(bunds)
-            & (self.var.weather.precipitation > initial_abstraction)
-        )
-        self.var.Runoff[np.logical_not(runoff)] = 0
-        self.var.Infl[np.logical_not(runoff)] = self.var.weather.precipitation[np.logical_not(runoff)]
-        self.var.Runoff[runoff] = (
-            ((self.var.weather.precipitation - initial_abstraction) ** 2)
-            / (self.var.weather.precipitation + (1 - (5. / 100)) * S)
-        )[runoff]
-        self.var.Infl[runoff] = (self.var.weather.precipitation - self.var.Runoff)[runoff]
+        # if self.var.adjustCurveNumber:
+        #     CN = self.adjust_curve_number()
+        # S = self.compute_potential_maximum_soil_water_retention(CN)
+        # initial_abstraction = ((5. / 100) * S)
+        # bunds = ((self.var.Bunds == 1) & (self.var.zBund >= 0.001))
+        # runoff = (
+        #     np.logical_not(bunds)
+        #     & (self.var.weather.precipitation > initial_abstraction)
+        # )
+        # self.var.Runoff[np.logical_not(runoff)] = 0
+        # self.var.Infl[np.logical_not(runoff)] = self.var.weather.precipitation[np.logical_not(runoff)]
+        # self.var.Runoff[runoff] = (
+        #     ((self.var.weather.precipitation - initial_abstraction) ** 2)
+        #     / (self.var.weather.precipitation + (1 - (5. / 100)) * S)
+        # )[runoff]
+        # self.var.Infl[runoff] = (self.var.weather.precipitation - self.var.Runoff)[runoff]
+        layer_ix = self.var.layerIndex + 1
+        aquacrop_fc.rainfall_partition_w.update_rain_part_w(
+            np.asfortranarray(self.var.Runoff),
+            np.asfortranarray(self.var.Infl),
+            np.asfortranarray(self.var.weather.precipitation),
+            np.asfortranarray(self.var.th),
+            np.asfortranarray(np.int32(self.var.DaySubmerged)),
+            np.asfortranarray(np.int32(self.var.Bunds)),
+            np.asfortranarray(self.var.zBund),
+            np.asfortranarray(self.var.th_fc),
+            np.asfortranarray(self.var.th_wilt),
+            np.asfortranarray(np.int32(self.var.CN)),
+            np.int32(self.var.adjustCurveNumber),
+            np.asfortranarray(self.var.zCN),
+            np.asfortranarray(self.var.CNbot),
+            np.asfortranarray(self.var.CNtop),
+            np.asfortranarray(self.var.dz),
+            np.asfortranarray(self.var.dz_sum),
+            np.asfortranarray(layer_ix),
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            )
+        
+            

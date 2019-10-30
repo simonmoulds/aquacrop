@@ -639,7 +639,7 @@ class CropParameters(object):
                 self.var._modelTime.startTime + datetime.timedelta(int(max_harvest_date - sd)),
                 cloneMapFileName = self.var.cloneMapFileName,
                 LatitudeLongitude = True)
-            
+
             # broadcast to crop dimension
             tmin = tmin[...,self.var.landmask]
             tmax = tmax[...,self.var.landmask]

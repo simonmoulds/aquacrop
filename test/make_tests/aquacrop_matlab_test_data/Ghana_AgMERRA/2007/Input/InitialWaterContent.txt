@@ -1,0 +1,12 @@
+%% ---------- Initial soil water content for AquaCrop ---------- %%
+%% Type of value ('Prop' (i.e. WP/FC/SAT), 'Num' (i.e. XXX m3/m3), 'Pct' (i.e. % TAW)) %%
+Num
+%% Interpolate data points ('Depth' or 'Layer') %%
+Layer
+%% Number of input points (NOTE: Must be at least one point per soil layer) %%
+4
+%% Input data points (Depth (m)   Value) %%
+1	0.13
+2	0.14
+3	0.18
+4	0.19

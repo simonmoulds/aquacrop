@@ -7,8 +7,6 @@ module canopy_cover
   
 contains
 
-
-
   ! Compute canopy development during exponential growth phase
   !
   ! For details see FAO AquaCrop manual, 3.4.2
@@ -33,7 +31,7 @@ contains
 
     ! exponential growth phase
     cc = cc0 * exp(cgc * dt)
-    if ( cc > (ccx / 2) ) then
+    if ( cc > (ccx / 2.) ) then
        ! exponential decline phase
        cc = ccx - 0.25 * (ccx / cc0) * ccx * exp(-cgc * dt)
     end if
@@ -69,11 +67,8 @@ contains
     end if
     
   end function cc_decl
-
-
   
-  function cc_reqd_time_cgc(cc_prev, cc0, ccx, cgc, dt, tsum) result(treq)
-    
+  function cc_reqd_time_cgc(cc_prev, cc0, ccx, cgc, dt, tsum) result(treq)    
     real(real64), intent(in) :: cc_prev
     real(real64), intent(in) :: cc0
     real(real64), intent(in) :: ccx
@@ -83,7 +78,7 @@ contains
     real(real64) :: cgcx
     real(real64) :: treq
     
-    if ( cc_prev <= (ccx / 2) ) then
+    if ( cc_prev <= (ccx / 2.) ) then
        cgcx = log(cc_prev / cc0) / (tsum - dt)
     else
        cgcx = log((0.25 * ccx * ccx / cc0) / (ccx - cc_prev)) / (tsum - dt)
@@ -91,24 +86,18 @@ contains
     treq = (tsum - dt) * (cgcx / cgc)
     
   end function cc_reqd_time_cgc
-
-
   
-  function cc_reqd_time_cdc(cc_prev, ccx, cdc) result(treq)
-    
+  function cc_reqd_time_cdc(cc_prev, ccx, cdc) result(treq)    
     real(real64), intent(in) :: cc_prev
     real(real64), intent(in) :: ccx
     real(real64), intent(in) :: cdc
     real(real64) :: treq
     
-    treq = log(1 + (1 - cc_prev / ccx) / 0.05) / (cdc / ccx)
+    treq = log(1. + (1. - cc_prev / ccx) / 0.05) / (cdc / ccx)
     
   end function cc_reqd_time_cdc
-
-
   
-  function adj_ccx(cc_prev, cc0, ccx, cgc, canopy_dev_end, dt, tsum) result(ccx_adj)
-    
+  function adj_ccx(cc_prev, cc0, ccx, cgc, canopy_dev_end, dt, tsum) result(ccx_adj)    
     real(real64), intent(in) :: cc_prev
     real(real64), intent(in) :: cc0
     real(real64), intent(in) :: ccx
@@ -124,15 +113,14 @@ contains
        tmp_tcc = tmp_tcc + (canopy_dev_end - tsum) + dt
        ccx_adj = cc_grow(cc0, ccx, cgc, tmp_tcc)
     else
-       ccx_adj = 0
+       ccx_adj = 0.
     end if
     
   end function adj_ccx
 
 
   
-  subroutine update_ccx_cdc(cdc_adj, ccx_adj, cc_prev, cdc, ccx, dt)
-    
+  subroutine update_ccx_cdc(cdc_adj, ccx_adj, cc_prev, cdc, ccx, dt)    
     real(real64), intent(inout) :: cdc_adj
     real(real64), intent(inout) :: ccx_adj
     real(real64), intent(in) :: cc_prev
@@ -140,7 +128,7 @@ contains
     real(real64), intent(in) :: ccx
     real(real64), intent(in) :: dt
     
-    ccx_adj = cc_prev / (1 - 0.05 * (exp(dt * (cdc / ccx)) - 1))
+    ccx_adj = cc_prev / (1. - 0.05 * (exp(dt * (cdc / ccx)) - 1.))
     cdc_adj = cdc * (ccx_adj / ccx)
 
   end subroutine update_ccx_cdc

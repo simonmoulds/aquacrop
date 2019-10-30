@@ -14,40 +14,40 @@ contains
 
 
   
-  ! Get array showing which compartments lie in the soil evaporative zone.
-  !
-  ! Input:
-  !    evap_z     : depth of evaporative zone
-  !    dz         : compartment thicknesses
-  !    dz_sum     : accumulated compartment thicknesses
-  !
-  ! Output:
-  !    comp_idx   : array showing which compartments lie in the evaporative zone
-  !
-  ! -------------------------------------------------------------------
-  function get_comp_idx(evap_z, dz, dz_sum) result (comp_idx)
+  ! ! Get array showing which compartments lie in the soil evaporative zone.
+  ! !
+  ! ! Input:
+  ! !    evap_z     : depth of evaporative zone
+  ! !    dz         : compartment thicknesses
+  ! !    dz_sum     : accumulated compartment thicknesses
+  ! !
+  ! ! Output:
+  ! !    comp_idx   : array showing which compartments lie in the evaporative zone
+  ! !
+  ! ! -------------------------------------------------------------------
+  ! function get_comp_idx(evap_z, dz, dz_sum) result (comp_idx)
     
-    real(real64), dimension(:), intent(in) :: dz, dz_sum
-    real(real64), intent(in) :: evap_z
+  !   real(real64), dimension(:), intent(in) :: dz, dz_sum
+  !   real(real64), intent(in) :: evap_z
     
-    real(real64) :: z_top
-    integer(int32) :: i
-    integer(int32) :: n_comp
-    integer(int32), allocatable, dimension(:) :: comp_idx
+  !   real(real64) :: z_top
+  !   integer(int32) :: i
+  !   integer(int32) :: n_comp
+  !   integer(int32), allocatable, dimension(:) :: comp_idx
 
-    n_comp = size(dz, 1)
-    allocate(comp_idx(n_comp))
+  !   n_comp = size(dz, 1)
+  !   allocate(comp_idx(n_comp))
     
-    do i = 1, n_comp
-       z_top = dz_sum(i) - dz(i)
-       if (z_top < evap_z) then
-          comp_idx(i) = 1
-       else
-          comp_idx(i) = 0
-       end if       
-    end do
+  !   do i = 1, n_comp
+  !      z_top = dz_sum(i) - dz(i)
+  !      if (z_top < evap_z) then
+  !         comp_idx(i) = 1
+  !      else
+  !         comp_idx(i) = 0
+  !      end if       
+  !   end do
     
-  end function get_comp_idx
+  ! end function get_comp_idx
 
 
   
@@ -61,21 +61,24 @@ contains
   !    n_comp_max : index of deepest compartment
   ! 
   ! -------------------------------------------------------------------
-  function get_max_comp_idx(evap_z, dz, dz_sum) result (max_comp_idx)
+  function get_max_comp_idx( &
+       z, &
+       dz, &
+       dz_sum) result (max_comp_idx)
 
     real(real64), dimension(:), intent(in) :: dz, dz_sum
-    real(real64), intent(in) :: evap_z
+    real(real64), intent(in) :: z
     integer(int32) :: i
     integer(int32) :: n_comp
     integer(int32) :: max_comp_idx
-
     n_comp = size(dz, 1)
     max_comp_idx = 1
-    do i = 1, n_comp
-       if (dz_sum(i) < evap_z) then
+    do i = 1, n_comp            ! TODO: convert this to do while...
+       if (dz_sum(i) < z) then
           max_comp_idx = max_comp_idx + 1
        end if       
     end do
+    max_comp_idx = min(max_comp_idx, n_comp)
     
   end function get_max_comp_idx
 
@@ -371,20 +374,48 @@ contains
   ! -------------------------------------------------------------------
   subroutine update_soil_evap( &
        prec, &
-       et_ref, es_act, e_pot, &
-       irr, irr_method, &
+       et_ref, &
+       es_act, &
+       e_pot, &
+       irr, &
+       irr_method, &
        infl, &
-       th, th_sat, th_fc, th_wilt, th_dry, &
+       th, &
+       th_sat, &
+       th_fc, &
+       th_wilt, &
+       th_dry, &
        surface_storage, &
-       wet_surf, w_surf, w_stage_two, &
-       cc, cc_adj, ccx_act, &
-       evap_z, evap_z_min, evap_z_max, &
-       rew, kex, ccxw, fwcc, f_evap, f_wrel_exp, &
-       dz, dz_sum, &
-       mulches, f_mulch, mulch_pct_gs, mulch_pct_os, &
-       growing_season, senescence, premat_senes, &
-       calendar_type, dap, delayed_cds, delayed_gdds, &
-       time_step, evap_time_steps)
+       wet_surf, &
+       w_surf, &
+       w_stage_two, &
+       cc, &
+       cc_adj, &
+       ccx_act, &
+       evap_z, &
+       evap_z_min, &
+       evap_z_max, &
+       rew, &
+       kex, &
+       ccxw, &
+       fwcc, &
+       f_evap, &
+       f_wrel_exp, &
+       dz, &
+       dz_sum, &
+       mulches, &
+       f_mulch, &
+       mulch_pct_gs, &
+       mulch_pct_os, &
+       growing_season, &
+       senescence, &
+       premat_senes, &
+       calendar_type, &
+       dap, &
+       delayed_cds, &
+       delayed_gdds, &
+       time_step, &
+       evap_time_steps)
     
     integer(int32), intent(in) :: calendar_type
     integer(int32), intent(in) :: time_step
@@ -424,6 +455,7 @@ contains
     real(real64) :: t_adj
     integer(int32) :: i
     
+    print *, 'th', th(1)
     ! prepare soil evaporation stage two
     if ( time_step == one ) then
        w_surf = 0
@@ -548,6 +580,7 @@ contains
           
        end do
     end if
+    print *, 'th', th(1)
     
   end subroutine update_soil_evap
   

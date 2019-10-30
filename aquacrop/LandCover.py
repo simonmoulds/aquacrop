@@ -145,6 +145,7 @@ class Cropland(LandCover):
             'cropland')
         
     def dynamic(self):
+        print(self.th[...,0,1])
         self.carbon_dioxide_module.dynamic()
         self.lc_parameters_module.dynamic()
         self.gdd_module.dynamic()
@@ -179,8 +180,10 @@ class Cropland(LandCover):
         self.harvest_index_module.dynamic()
         self.crop_yield_module.dynamic()
         self.root_zone_water_module.dynamic()
+        print(self.th[...,0,1])
 #         self.grid_cell_mean_module.dynamic()
         self.reporting_module.report()
+        
     
 # class NaturalVegetation(LandCover):
 #     def __init__(self, var, config_section_name):

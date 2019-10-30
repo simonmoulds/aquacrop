@@ -30,6 +30,9 @@ class SoilEvaporation(object):
 
     def dynamic(self):
         
+        thh = np.asfortranarray(np.float64(self.var.th))
+        print("---")
+        print(thh[...,0,1])
         self.var.EsAct = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
         EvapTimeSteps = 20
         aquacrop_fc.soil_evaporation_w.update_soil_evap_w(
@@ -40,7 +43,8 @@ class SoilEvaporation(object):
             np.asfortranarray(self.var.Irr),
             np.asfortranarray(np.int32(self.var.IrrMethod)),
             np.asfortranarray(self.var.Infl),
-            np.asfortranarray(self.var.th),
+            # np.asfortranarray(self.var.th),
+            thh,
             np.asfortranarray(self.var.th_sat_comp),
             np.asfortranarray(self.var.th_fc_comp),
             np.asfortranarray(self.var.th_wilt_comp),
@@ -80,3 +84,6 @@ class SoilEvaporation(object):
             self.var.nCrop,
             self.var.nComp,
             self.var.nCell)
+        print(thh[...,0,1])
+        print("---")
+        self.var.th = np.ascontiguousarray(thh).copy()

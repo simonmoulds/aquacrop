@@ -48,7 +48,6 @@ class WaterStress(object):
             self.var.nFarm,
             self.var.nCrop,
             self.var.nCell)
-        
         # p_up = np.concatenate(
         #     (self.var.p_up1[None,...],
         #      self.var.p_up2[None,...],
