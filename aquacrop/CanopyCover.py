@@ -454,13 +454,10 @@ class CanopyCover(object):
         dtCC = self.time_step()
         tCC = self.time_since_planting()
         tCCadj = self.adjust_time_since_planting()
-        
         # Canopy development (potential)
         self.potential_canopy_development(tCC, dtCC)
-        
         # Canopy development (actual)
         self.actual_canopy_development(tCC, tCCadj, dtCC)
-
         crop_dead = self.is_crop_dead(tCCadj)
         self.var.CC[crop_dead] = 0
         self.var.CropDead[crop_dead] = True

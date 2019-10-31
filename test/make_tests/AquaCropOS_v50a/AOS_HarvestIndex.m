@@ -21,6 +21,11 @@ if GrowingSeason == true
     HIi = NewCond.HIref;
 
     % Get time for harvest index build-up
+    disp('HIstartCD/DelayedCDs/DAP');
+    disp(Crop.HIstartCD);
+disp(NewCond.DelayedCDs);
+disp(NewCond.DAP);
+    
     HIt = NewCond.DAP-NewCond.DelayedCDs-Crop.HIstartCD-1;
 
     % Calculate harvest index
@@ -60,6 +65,10 @@ if GrowingSeason == true
 
             % Determine harvest index on current day, adjusted for stress
             % effects
+	      disp("HImult/HIi/HImax");
+disp(HImult);
+disp(HIi);
+disp(HImax);
             if HImax >= HIi
                 HIadj = HImult*HIi;
             else
