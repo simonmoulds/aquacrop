@@ -23,29 +23,18 @@ class CropArea(object):
         self.var.CroplandAreaFileNC = str(self.var._configuration.CROP_PARAMETERS['croplandAreaNC'])
         self.var.CroplandAreaVarName = str(self.var._configuration.CROP_PARAMETERS['croplandAreaVarName'])
         self.var.AnnualChangeInCropArea = bool(int(self.var._configuration.CROP_PARAMETERS['AnnualChangeInCropArea']))
+        
         self.var.landmask_crop = np.broadcast_to(
             self.var.landmask[None,:,:],
-            (self.var.nCrop, self.var.nLat, self.var.nLon))
+            (self.var.nCrop, self.var.nLat, self.var.nLon)
+        )
         self.var.landmask_farm_crop = np.broadcast_to(
             self.var.landmask[None,None,:,:],
-            (self.var.nFarm, self.var.nCrop, self.var.nLat, self.var.nLon))
+            (self.var.nFarm, self.var.nCrop, self.var.nLat, self.var.nLon)
+        )                
         
     def initial(self):
         self.var.CurrentCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
-        # test f2py integration:
-        # arr=np.random.rand(100,100,100,100)
-        # tot=aquacrop_fc.f2py_run(arr.T)
-        # print(tot)
-        # nx=100
-        # ny=100
-        # A=np.random.randint(0,10,(nx,ny))
-        # B=np.random.randint(0,10,(nx,ny))
-        # # C=np.zeros_like(A, dtype='float64')
-        # C,D=aquacrop_fc.evap_layer_water_content(A.T,B.T,nx,ny)
-        # print(A[0,0])
-        # print(B[0,0])
-        # print(C[0,0])              
-        # print(D[0,0])              
         
     def read_cropland_area(self):
         if self.var.AnnualChangeInCropArea:
