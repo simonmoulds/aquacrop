@@ -27,13 +27,19 @@ function run_matlab_tests {
     done
 }
 
-# Chapter 7 tests
-# ###############
-
-declare -a arr=("Ch7_Ex1a_Tunis_Wheat"
-                "Ch7_Ex1b_Tunis_Wheat")
-years=($(seq 1979 1 2001))
+# Other tests
+# ###########
+declare -a arr=("AgMERRA_Ghana_Maize")
+years=($(seq 2000 1 2000))
 run_matlab_tests "$arr" "$years"
+
+# # Chapter 7 tests
+# # ###############
+
+# declare -a arr=("Ch7_Ex1a_Tunis_Wheat"
+#                 "Ch7_Ex1b_Tunis_Wheat")
+# years=($(seq 1979 1 2001))
+# run_matlab_tests "$arr" "$years"
 
 # declare -a arr=("Ch7_Ex1a_Tunis_Wheat"
 #                 "Ch7_Ex1b_Tunis_Wheat")

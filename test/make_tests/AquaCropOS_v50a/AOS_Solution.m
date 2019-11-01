@@ -56,8 +56,6 @@ else
     NewCond.GDDcum = 0;
 end
 
-disp('---')
-
 %% Run simulations %%
 % 1. Check for groundwater table
 NewCond = AOS_CheckGroundwaterTable(Soil,Groundwater,NewCond);
@@ -116,9 +114,6 @@ NewCond = AOS_BiomassAccumulation(Crop,NewCond,Tr,TrPot_NS,Et0,...
 NewCond = AOS_HarvestIndex(Soil,Crop,NewCond,Et0,Tmax,Tmin,GDD,GrowingSeason);
 
 % 18. Crop yield
-disp("HIadj/B")
-disp(NewCond.HIadj)
-disp(NewCond.B)
 if GrowingSeason == true
     % Calculate crop yield (tonne/ha)
     NewCond.Y = (NewCond.B/100)*NewCond.HIadj;
@@ -132,12 +127,9 @@ else
     % Crop yield is zero outside of growing season
     NewCond.Y = 0;
 end
-disp(NewCond.th(1))
 
 % 19. Root zone water
 [Wr,~,~,~] = AOS_RootZoneWater(Soil,Crop,NewCond);
-
-disp(NewCond.th(1))
 
 % 20. Update net irrigation to add any pre irrigation
 IrrNet = IrrNet+PreIrr;

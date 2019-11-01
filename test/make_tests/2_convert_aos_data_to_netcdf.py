@@ -29,6 +29,12 @@ os.mkdir(pythondir)
 #         'config_years' : range(1979,2002)}
 #     }
 
+# tests = {
+#     'AgMERRA_Ghana_Maize' : {
+#         'nc_prefix'    : 'aos_agmerra_ghana_maize',
+#         'config_years' : list(range(2000,2001))}
+#     }
+    
 tests = {
     'Ch7_Ex1a_Tunis_Wheat' : {
         'nc_prefix'    : 'aos_ch7_ex1a_tunis_wheat',
@@ -113,7 +119,10 @@ tests = {
         'config_years' : list(range(1976,2006))},
     'Ch9_Ex6b_Brussels_Potato' : {
         'nc_prefix'    : 'aos_ch9_ex6b_brussels_potato',
-        'config_years' : list(range(2041,2071))}
+        'config_years' : list(range(2041,2071))},
+    'AgMERRA_Ghana_Maize' : {
+        'nc_prefix'    : 'aos_agmerra_ghana_maize',
+        'config_years' : list(range(2000,2001))},
 }
 
 def run():
@@ -1007,7 +1016,8 @@ def run():
                 ('CalendarType', str(calendar_type)),
                 ('SwitchGDD', str(switch_gdd)),
                 ('GDDmethod', str(gdd_method)),
-                ('outDailyTotal', str('th,Y,Irr,B,IrrCum,IrrNetCum'))
+                ('outDailyTotal', str('th,Y,Irr,B,IrrCum,IrrNetCum')),
+                ('outYearMaxNC', str('Y'))
             ])
 
             config['IRRIGATION_MANAGEMENT'] = collections.OrderedDict([

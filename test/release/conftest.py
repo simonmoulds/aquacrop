@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import pytest
 import numpy as np
 import random
@@ -27,7 +26,8 @@ def context(tmpdir, request):
     if os.path.isdir(test_dir):
         dir_util.copy_tree(test_dir, str(tmpdir))
 
-    test_yr = str(1979)
+    # test_yr = str(1979)
+    test_yr = str(2000)
     yrs = os.walk(str(tmpdir)).__next__()[1]
     print(yrs)
     cwd = os.getcwd()
@@ -46,4 +46,4 @@ def context(tmpdir, request):
             #     raise
             os.chdir(cwd)
         else:
-            shutil.rmtree(os.path.join(str(tmpdir), str(yr)))   
+            shutil.rmtree(os.path.join(str(tmpdir), str(yr)))            
