@@ -1,4 +1,4 @@
 %% Enter Location of Input files %%
-/home/simon/dev/aquacrop/test/make_tests/aquacrop_matlab_test_data/Ghana_AgMERRA/2007/Input
+/home/simon/dev/aquacrop/test/make_tests/aquacrop_matlab_test_data/AgMERRA_Ghana_Maize/2000/Input
 %% Enter Location of Output files %%
-/home/simon/dev/aquacrop/test/make_tests/aquacrop_matlab_test_data/Ghana_AgMERRA/2007/Output
+/home/simon/dev/aquacrop/test/make_tests/aquacrop_matlab_test_data/AgMERRA_Ghana_Maize/2000/Output

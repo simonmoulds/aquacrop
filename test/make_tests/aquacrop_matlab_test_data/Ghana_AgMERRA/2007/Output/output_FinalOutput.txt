@@ -1,2 +1,0 @@
-GSeason	Crop	PlantD	PlantSD	HarvestCD	HarvestSD	Yield	TotIrr	
-   1	Maize	01/06/2007	       1	06/09/2007	      98	10.82	  0.00	

@@ -42,7 +42,6 @@ contains
     allocate(zbot(n_comp))
     allocate(ztop(n_comp))
     allocate(zmid(n_comp))
-    
     if ( wt == 1 .and. variable_wt == 1 ) then
        ! update groundwater conditions for current day
        zbot(1) = dz(1)

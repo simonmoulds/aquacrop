@@ -20,11 +20,11 @@ contains
        )
 
     integer(int32), intent(in) :: n_farm, n_crop, n_comp, n_layer, n_cell
-    real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(inout) :: th
-    real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(inout) :: th_fc_adj
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: wt_in_soil
-    real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: th_s
-    real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: th_fc    
+    real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(inout) :: th
+    real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(inout) :: th_fc_adj
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(inout) :: wt_in_soil
+    real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: th_s
+    real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: th_fc    
     integer(int32), intent(in) :: wt
     integer(int32), intent(in) :: variable_wt
     real(real64), dimension(n_cell), intent(in) :: zgw
@@ -36,11 +36,11 @@ contains
        do j = 1, n_crop
           do k = 1, n_cell
              call update_check_gw_table( &
-                  th(i,j,:,k), &
-                  th_fc_adj(i,j,:,k), &
-                  wt_in_soil(i,j,k), &       
-                  th_s(i,j,:,k), &
-                  th_fc(i,j,:,k), &
+                  th(k,:,j,i), &
+                  th_fc_adj(k,:,j,i), &
+                  wt_in_soil(k,j,i), &       
+                  th_s(k,:,j,i), &
+                  th_fc(k,:,j,i), &
                   wt, &
                   variable_wt, &
                   zgw(k), &
@@ -50,6 +50,7 @@ contains
           end do
        end do
     end do
+    
   end subroutine update_check_gw_table_w
   
 end module check_gw_table_w

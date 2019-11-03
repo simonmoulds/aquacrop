@@ -29,98 +29,101 @@ os.mkdir(pythondir)
 #         'config_years' : range(1979,2002)}
 #     }
 
-tests = {
-    'Ghana_AgMERRA' : {
-        'nc_prefix'    : 'aos_ghana_agmerra_maize',
-        'config_years' : range(2007,2008)}
-    }
-
 # tests = {
-#     'Ch7_Ex1a_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex1a_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},
-#     'Ch7_Ex1b_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex1b_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},
-#     'Ch7_Ex2a_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex2a_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},
-#     'Ch7_Ex2b_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex2b_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},
-#     'Ch7_Ex3a_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex3a_tunis_wheat',
-#         'config_years' : list(range(1988,1989))},
-#     'Ch7_Ex3b_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex3b_tunis_wheat',
-#         'config_years' : list(range(1988,1989))},
-#     'Ch7_Ex3c_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex3c_tunis_wheat',
-#         'config_years' : list(range(1988,1989))},
-#     'Ch7_Ex3d_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex3d_tunis_wheat',
-#         'config_years' : list(range(1988,1989))},
-#     'Ch7_Ex6_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex6_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},
-#     'Ch7_Ex7a_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex7a_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},
-#     'Ch7_Ex7b_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex7b_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},
-#     'Ch7_Ex7c_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex7c_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},
-#     'Ch7_Ex7d_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex7d_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},
-#     'Ch7_Ex7e_Tunis_Wheat' : {
-#         'nc_prefix'    : 'aos_ch7_ex7e_tunis_wheat',
-#         'config_years' : list(range(1979,2002))},    
-#     'Ch8_Ex2a_Hyderabad_Cereal' : {
-#         'nc_prefix'    : 'aos_ch8_ex2a_hyderabad_cereal',
-#         'config_years' : list(range(2000,2011))},
-#     'Ch8_Ex2b_Hyderabad_Cereal' : {
-#         'nc_prefix'    : 'aos_ch8_ex2b_hyderabad_cereal',
-#         'config_years' : list(range(2000,2011))},
-#     'Ch8_Ex3a_Hyderabad_Cereal' : {
-#         'nc_prefix'    : 'aos_ch8_ex3a_hyderabad_cereal',
-#         'config_years' : list(range(2002,2003))},
-#     'Ch8_Ex3b_Hyderabad_Cereal' : {
-#         'nc_prefix'    : 'aos_ch8_ex3b_hyderabad_cereal',
-#         'config_years' : list(range(2002,2003))},
-#     'Ch8_Ex3c_Hyderabad_Cereal' : {
-#         'nc_prefix'    : 'aos_ch8_ex3c_hyderabad_cereal',
-#         'config_years' : list(range(2002,2003))},
-#     'Ch8_Ex3d_Hyderabad_Cereal' : {
-#         'nc_prefix'    : 'aos_ch8_ex3d_hyderabad_cereal',
-#         'config_years' : list(range(2002,2003))},        
-#     'Ch8_Ex6_Hyderabad_Cereal' : {
-#         'nc_prefix'    : 'aos_ch8_ex6_hyderabad_cereal',
-#         'config_years' : list(range(2000,2010))},        
-#     'Ch9_Ex1_Brussels_Potato'  : {
-#         'nc_prefix'    : 'aos_ch9_ex1_brussels_potato',
-#         'config_years' : list(range(1985,2006))},
-#     'Ch9_Ex4_Brussels_Potato'  : {
-#         'nc_prefix'    : 'aos_ch9_ex4_brussels_potato',
-#         'config_years' : list(range(1985,2006))},
-#     'Ch9_Ex5a_Brussels_Potato' : {
-#         'nc_prefix'    : 'aos_ch9_ex5a_brussels_potato',
-#         'config_years' : list(range(1985,2006))},
-#     'Ch9_Ex5b_Brussels_Potato' : {
-#         'nc_prefix'    : 'aos_ch9_ex5b_brussels_potato',
-#         'config_years' : list(range(1985,2006))},
-#     'Ch9_Ex5c_Brussels_Potato' : {
-#         'nc_prefix'    : 'aos_ch9_ex5c_brussels_potato',
-#         'config_years' : list(range(1985,2006))},
-#     'Ch9_Ex6a_Brussels_Potato' : {
-#         'nc_prefix'    : 'aos_ch9_ex6a_brussels_potato',
-#         'config_years' : list(range(1976,2006))},
-#     'Ch9_Ex6b_Brussels_Potato' : {
-#         'nc_prefix'    : 'aos_ch9_ex6b_brussels_potato',
-#         'config_years' : list(range(2041,2071))}
-# }
+#     'AgMERRA_Ghana_Maize' : {
+#         'nc_prefix'    : 'aos_agmerra_ghana_maize',
+#         'config_years' : list(range(2000,2001))}
+#     }
+    
+tests = {
+    'Ch7_Ex1a_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex1a_tunis_wheat',
+        'config_years' : list(range(1979,2002))},
+    'Ch7_Ex1b_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex1b_tunis_wheat',
+        'config_years' : list(range(1979,2002))},
+    'Ch7_Ex2a_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex2a_tunis_wheat',
+        'config_years' : list(range(1979,2002))},
+    'Ch7_Ex2b_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex2b_tunis_wheat',
+        'config_years' : list(range(1979,2002))},
+    'Ch7_Ex3a_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex3a_tunis_wheat',
+        'config_years' : list(range(1988,1989))},
+    'Ch7_Ex3b_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex3b_tunis_wheat',
+        'config_years' : list(range(1988,1989))},
+    'Ch7_Ex3c_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex3c_tunis_wheat',
+        'config_years' : list(range(1988,1989))},
+    'Ch7_Ex3d_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex3d_tunis_wheat',
+        'config_years' : list(range(1988,1989))},
+    'Ch7_Ex6_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex6_tunis_wheat',
+        'config_years' : list(range(1979,2002))},
+    'Ch7_Ex7a_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex7a_tunis_wheat',
+        'config_years' : list(range(1979,2002))},
+    'Ch7_Ex7b_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex7b_tunis_wheat',
+        'config_years' : list(range(1979,2002))},
+    'Ch7_Ex7c_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex7c_tunis_wheat',
+        'config_years' : list(range(1979,2002))},
+    'Ch7_Ex7d_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex7d_tunis_wheat',
+        'config_years' : list(range(1979,2002))},
+    'Ch7_Ex7e_Tunis_Wheat' : {
+        'nc_prefix'    : 'aos_ch7_ex7e_tunis_wheat',
+        'config_years' : list(range(1979,2002))},    
+    'Ch8_Ex2a_Hyderabad_Cereal' : {
+        'nc_prefix'    : 'aos_ch8_ex2a_hyderabad_cereal',
+        'config_years' : list(range(2000,2011))},
+    'Ch8_Ex2b_Hyderabad_Cereal' : {
+        'nc_prefix'    : 'aos_ch8_ex2b_hyderabad_cereal',
+        'config_years' : list(range(2000,2011))},
+    'Ch8_Ex3a_Hyderabad_Cereal' : {
+        'nc_prefix'    : 'aos_ch8_ex3a_hyderabad_cereal',
+        'config_years' : list(range(2002,2003))},
+    'Ch8_Ex3b_Hyderabad_Cereal' : {
+        'nc_prefix'    : 'aos_ch8_ex3b_hyderabad_cereal',
+        'config_years' : list(range(2002,2003))},
+    'Ch8_Ex3c_Hyderabad_Cereal' : {
+        'nc_prefix'    : 'aos_ch8_ex3c_hyderabad_cereal',
+        'config_years' : list(range(2002,2003))},
+    'Ch8_Ex3d_Hyderabad_Cereal' : {
+        'nc_prefix'    : 'aos_ch8_ex3d_hyderabad_cereal',
+        'config_years' : list(range(2002,2003))},        
+    'Ch8_Ex6_Hyderabad_Cereal' : {
+        'nc_prefix'    : 'aos_ch8_ex6_hyderabad_cereal',
+        'config_years' : list(range(2000,2010))},        
+    'Ch9_Ex1_Brussels_Potato'  : {
+        'nc_prefix'    : 'aos_ch9_ex1_brussels_potato',
+        'config_years' : list(range(1985,2006))},
+    'Ch9_Ex4_Brussels_Potato'  : {
+        'nc_prefix'    : 'aos_ch9_ex4_brussels_potato',
+        'config_years' : list(range(1985,2006))},
+    'Ch9_Ex5a_Brussels_Potato' : {
+        'nc_prefix'    : 'aos_ch9_ex5a_brussels_potato',
+        'config_years' : list(range(1985,2006))},
+    'Ch9_Ex5b_Brussels_Potato' : {
+        'nc_prefix'    : 'aos_ch9_ex5b_brussels_potato',
+        'config_years' : list(range(1985,2006))},
+    'Ch9_Ex5c_Brussels_Potato' : {
+        'nc_prefix'    : 'aos_ch9_ex5c_brussels_potato',
+        'config_years' : list(range(1985,2006))},
+    'Ch9_Ex6a_Brussels_Potato' : {
+        'nc_prefix'    : 'aos_ch9_ex6a_brussels_potato',
+        'config_years' : list(range(1976,2006))},
+    'Ch9_Ex6b_Brussels_Potato' : {
+        'nc_prefix'    : 'aos_ch9_ex6b_brussels_potato',
+        'config_years' : list(range(2041,2071))},
+    'AgMERRA_Ghana_Maize' : {
+        'nc_prefix'    : 'aos_agmerra_ghana_maize',
+        'config_years' : list(range(2000,2001))},
+}
 
 def run():
     for test in list(tests.keys()):
@@ -134,7 +137,6 @@ def run():
         os.mkdir(os.path.join(pythondir, testdir))
 
         for yr in config_years:
-            print(yr)
 
             os.mkdir(os.path.join(pythondir, testdir, str(yr)))
             inputdir = os.path.join(testdir, str(yr), 'Input')
@@ -1014,7 +1016,8 @@ def run():
                 ('CalendarType', str(calendar_type)),
                 ('SwitchGDD', str(switch_gdd)),
                 ('GDDmethod', str(gdd_method)),
-                ('outDailyTotal', str('th,Y,Irr,B,IrrCum,IrrNetCum'))
+                ('outDailyTotal', str('th,Y,Irr,B,IrrCum,IrrNetCum')),
+                ('outYearMaxNC', str('Y'))
             ])
 
             config['IRRIGATION_MANAGEMENT'] = collections.OrderedDict([

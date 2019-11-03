@@ -9,6 +9,7 @@ contains
        germ, &
        delayed_cds, &
        delayed_gdds, &
+       gdd, &
        th, &
        th_fc, &
        th_wilt, &
@@ -23,6 +24,7 @@ contains
     integer(int32), intent(inout) :: germ
     integer(int32), intent(inout) :: delayed_cds
     real(real64), intent(inout) :: delayed_gdds
+    real(real64), intent(in) :: gdd
     real(real64), dimension(:), intent(in) :: th
     real(real64), dimension(:), intent(in) :: th_fc
     real(real64), dimension(:), intent(in) :: th_wilt
@@ -72,17 +74,16 @@ contains
 
        ! calculate proportional water content
        wc_prop = 1. - ((wr_fc - wr) / (wr_fc - wr_wp))
-
        ! check if water content is above germination threshold
        if ( wc_prop >= germ_thr .and. germ == 0 ) then
           germ = 1
        end if
-
+       
        ! increment delayed growth time counters if
        ! germination is yet to occur
        if ( germ == 0 ) then
           delayed_cds = delayed_cds + 1
-          delayed_gdds = delayed_gdds + 1
+          delayed_gdds = delayed_gdds + gdd
        end if
 
     else
@@ -90,7 +91,6 @@ contains
        delayed_cds = 0
        delayed_gdds = 0
     end if
-    
   end subroutine update_germ
 
 end module germination

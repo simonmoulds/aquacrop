@@ -56,82 +56,62 @@ else
     NewCond.GDDcum = 0;
 end
 
-disp('---')
-disp(NewCond.th(1))
-
 %% Run simulations %%
 % 1. Check for groundwater table
 NewCond = AOS_CheckGroundwaterTable(Soil,Groundwater,NewCond);
-disp(NewCond.th(1))
 
 % 2. Pre-irrigation %
 [NewCond,PreIrr] = AOS_PreIrrigation(Soil,Crop,IrrMngt,NewCond);
-disp(NewCond.th(1))
 
 % 3. Drainage
 [NewCond,DeepPerc,FluxOut] = AOS_Drainage(Soil,NewCond);
-disp(NewCond.th(1))
 
 % 4. Surface runoff
 [Runoff,Infl,NewCond] = AOS_RainfallPartition(P,Soil,FieldMngt,NewCond);
-disp(NewCond.th(1))
 
 % 5. Irrigation
 [NewCond,Irr] = AOS_Irrigation(NewCond,IrrMngt,Crop,Soil,...
     AOS_ClockStruct,GrowingSeason,P,Runoff);
-disp(NewCond.th(1))
 
 % 6. Infiltration
 [NewCond,DeepPerc,Runoff,Infl,FluxOut] = AOS_Infiltration(Soil,NewCond,Infl,...
     Irr,IrrMngt,FieldMngt,FluxOut,DeepPerc,Runoff);
-disp(NewCond.th(1))
 
 % 7. Capillary rise
 [NewCond,CR] = AOS_CapillaryRise(Soil,Groundwater,NewCond,FluxOut);
-disp(NewCond.th(1))
 
 % 8. Check germination
 NewCond = AOS_Germination(NewCond,Soil,Crop,GDD,GrowingSeason);
-disp(NewCond.th(1))
 
 % 9. Update growth stage
 NewCond = AOS_GrowthStage(Crop,NewCond,GrowingSeason);
-disp(NewCond.th(1))
 
 % 10. Root development
 NewCond = AOS_RootDevelopment(Crop,Soil,Groundwater,NewCond,GDD,GrowingSeason);
-disp(NewCond.th(1))
 
 % 11. Canopy cover development
 NewCond = AOS_CanopyCover(Crop,Soil,NewCond,GDD,Et0,GrowingSeason);
-disp(NewCond.th(1))
 
 % 12. Soil evaporation
 [NewCond,Es,EsPot] = AOS_SoilEvaporation(Soil,Crop,IrrMngt,FieldMngt,NewCond,...
     Et0,Infl,P,Irr,GrowingSeason);
-disp(NewCond.th(1))
 
 % 13. Crop transpiration
 [Tr,TrPot_NS,TrPot,NewCond,IrrNet] = AOS_Transpiration(Soil,Crop,...
     IrrMngt,NewCond,Et0,CO2,GrowingSeason);
-disp(NewCond.th(1))
 
 % 14. Groundwater inflow
 [NewCond,GwIn] = AOS_GroundwaterInflow(Soil,NewCond);
-disp(NewCond.th(1))
 
 % 15. Reference harvest index
 NewCond = AOS_HIrefCurrentDay(NewCond,Crop,GrowingSeason);
-disp(NewCond.th(1))
 
 % 16. Biomass accumulation
 NewCond = AOS_BiomassAccumulation(Crop,NewCond,Tr,TrPot_NS,Et0,...
     Tmax,Tmin,GDD,GrowingSeason);
-disp(NewCond.th(1))
 
 % 17. Harvest index
 NewCond = AOS_HarvestIndex(Soil,Crop,NewCond,Et0,Tmax,Tmin,GDD,GrowingSeason);
-disp(NewCond.th(1))
 
 % 18. Crop yield
 if GrowingSeason == true
@@ -147,12 +127,9 @@ else
     % Crop yield is zero outside of growing season
     NewCond.Y = 0;
 end
-disp(NewCond.th(1))
 
 % 19. Root zone water
 [Wr,~,~,~] = AOS_RootZoneWater(Soil,Crop,NewCond);
-
-disp(NewCond.th(1))
 
 % 20. Update net irrigation to add any pre irrigation
 IrrNet = IrrNet+PreIrr;
