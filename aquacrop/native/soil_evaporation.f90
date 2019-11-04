@@ -455,7 +455,7 @@ contains
     real(real64) :: t_adj
     integer(int32) :: i
     
-    print *, 'th', th(1)
+    ! print *, 'th', th(1)
     ! prepare soil evaporation stage two
     if ( time_step == one ) then
        w_surf = 0
@@ -580,7 +580,7 @@ contains
           
        end do
     end if
-    print *, 'th', th(1)
+    ! print *, 'th', th(1)
     
   end subroutine update_soil_evap
   

@@ -23,7 +23,6 @@ class GrowthStage(object):
         self.var.time_since_germination_previous[self.var.GrowingSeasonDayOne] = 0
 
     def update_time_since_germination(self):
-        # Check if in yield formation period
         self.var.time_since_germination_previous = self.var.time_since_germination.copy()
         if self.var.CalendarType == 1:
             self.var.time_since_germination = self.var.DAP - self.var.DelayedCDs
@@ -41,7 +40,6 @@ class GrowthStage(object):
         self.var.GrowthStage[cond3] = 3
         self.var.GrowthStage[cond4] = 4
         self.var.GrowthStage[np.logical_not(self.var.GrowingSeasonIndex)] = 0
-
 
 # class GrowthStage(object):
 #     def __init__(self, GrowthStage_variable):

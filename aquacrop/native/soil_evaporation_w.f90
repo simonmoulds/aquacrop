@@ -28,30 +28,30 @@ contains
     integer(int32), intent(in) :: time_step
     integer(int32), intent(in) :: evap_time_steps
     
-    real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(in) :: th_sat, th_fc, th_wilt, th_dry
+    real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(in) :: th_sat, th_fc, th_wilt, th_dry
     real(real64), dimension(n_comp), intent(in) :: dz, dz_sum
     
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: prec, et_ref
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: infl
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: irr, wet_surf
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: rew
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: evap_z_min, evap_z_max    
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: cc, cc_adj, ccx_act
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: kex, ccxw, fwcc, f_evap, f_wrel_exp
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_mulch, mulch_pct_gs, mulch_pct_os
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: prec, et_ref
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: infl
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: irr, wet_surf
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: rew
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: evap_z_min, evap_z_max    
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: cc, cc_adj, ccx_act
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: kex, ccxw, fwcc, f_evap, f_wrel_exp
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: f_mulch, mulch_pct_gs, mulch_pct_os
     
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: irr_method
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: dap
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: delayed_cds
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: delayed_gdds
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: mulches
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: growing_season
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: senescence
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: premat_senes
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: irr_method
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: dap
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_cds
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_gdds
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: mulches
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: senescence
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: premat_senes
     
-    real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(inout) :: th
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: es_act, e_pot
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: surface_storage, w_surf, w_stage_two, evap_z
+    real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(inout) :: th
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: es_act, e_pot
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: surface_storage, w_surf, w_stage_two, evap_z
 
     integer(int32) :: i, j, k
     
@@ -59,20 +59,20 @@ contains
        do j = 1, n_crop
           do k = 1, n_cell
              call update_soil_evap( &
-                  prec(i,j,k), &
-                  et_ref(i,j,k), es_act(i,j,k), e_pot(i,j,k), &
-                  irr(i,j,k), irr_method(i,j,k), &
-                  infl(i,j,k), &
-                  th(i,j,:,k), th_sat(i,j,:,k), th_fc(i,j,:,k), th_wilt(i,j,:,k), th_dry(i,j,:,k), &
-                  surface_storage(i,j,k), &
-                  wet_surf(i,j,k), w_surf(i,j,k), w_stage_two(i,j,k), &
-                  cc(i,j,k), cc_adj(i,j,k), ccx_act(i,j,k), &
-                  evap_z(i,j,k), evap_z_min(i,j,k), evap_z_max(i,j,k), &
-                  rew(i,j,k), kex(i,j,k), ccxw(i,j,k), fwcc(i,j,k), f_evap(i,j,k), f_wrel_exp(i,j,k), &
+                  prec(k,j,i), &
+                  et_ref(k,j,i), es_act(k,j,i), e_pot(k,j,i), &
+                  irr(k,j,i), irr_method(k,j,i), &
+                  infl(k,j,i), &
+                  th(k,:,j,i), th_sat(k,:,j,i), th_fc(k,:,j,i), th_wilt(k,:,j,i), th_dry(k,:,j,i), &
+                  surface_storage(k,j,i), &
+                  wet_surf(k,j,i), w_surf(k,j,i), w_stage_two(k,j,i), &
+                  cc(k,j,i), cc_adj(k,j,i), ccx_act(k,j,i), &
+                  evap_z(k,j,i), evap_z_min(k,j,i), evap_z_max(k,j,i), &
+                  rew(k,j,i), kex(k,j,i), ccxw(k,j,i), fwcc(k,j,i), f_evap(k,j,i), f_wrel_exp(k,j,i), &
                   dz, dz_sum, &
-                  mulches(i,j,k), f_mulch(i,j,k), mulch_pct_gs(i,j,k), mulch_pct_os(i,j,k), &
-                  growing_season(i,j,k), senescence(i,j,k), premat_senes(i,j,k), &
-                  calendar_type, dap(i,j,k), delayed_cds(i,j,k), delayed_gdds(i,j,k), &
+                  mulches(k,j,i), f_mulch(k,j,i), mulch_pct_gs(k,j,i), mulch_pct_os(k,j,i), &
+                  growing_season(k,j,i), senescence(k,j,i), premat_senes(k,j,i), &
+                  calendar_type, dap(k,j,i), delayed_cds(k,j,i), delayed_gdds(k,j,i), &
                   time_step, evap_time_steps)
           end do
        end do

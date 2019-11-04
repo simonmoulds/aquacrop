@@ -122,12 +122,8 @@ class Germination(object):
             
     def dynamic(self):
         """Function to check if crop has germinated"""
-
         if np.any(self.var.GrowingSeasonDayOne):
             self.reset_initial_conditions()
-        # print(self.var.Germination)
-        # print(self.var.DelayedCDs)
-        # print(self.var.DelayedGDDs)
         
         layer_ix = self.var.layerIndex + 1
         self.var.Germination = np.int32(self.var.Germination)
@@ -152,11 +148,7 @@ class Germination(object):
             self.var.nLayer,
             self.var.nCell
         )
-        # print(self.var.Germination)
         self.var.Germination = self.var.Germination.astype(bool)
-        # print(self.var.Germination)
-        # print(self.var.DelayedCDs)
-        # print(self.var.DelayedGDDs)
         
         # TODO: include in transpiration method
         self.update_ageing_days_counter()

@@ -123,10 +123,12 @@ class CheckGroundwaterTable(object):
         
     def dynamic(self):
         layer_ix = self.var.layerIndex + 1
+        wt_in_soil = np.int32(self.var.WTinSoil.copy())
         aquacrop_fc.check_gw_table_w.update_check_gw_table_w(
             self.var.th.T,
             self.var.th_fc_adj.T,
-            np.int32(self.var.WTinSoil).T,
+            # np.int32(self.var.WTinSoil).T,
+            wt_in_soil.T,
             self.var.th_sat.T,
             self.var.th_fc.T,
             int(self.var.groundwater.WaterTable),
@@ -136,4 +138,5 @@ class CheckGroundwaterTable(object):
             layer_ix,
             self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
         )
-        self.var.WTinSoil = self.var.WTinSoil.astype(bool)
+        # self.var.WTinSoil = self.var.WTinSoil.astype(bool)
+        self.var.WTinSoil = wt_in_soil.copy().astype(bool)

@@ -32,61 +32,57 @@ contains
        n_farm, n_crop, n_cell &
        )
 
-
-    integer(int32), intent(in) :: n_farm, n_crop, n_cell
-    
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: ksw_exp
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: ksw_sto
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: ksw_sen
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: ksw_pol
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: ksw_stolin
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: dr
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: taw
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: et_ref
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: et_adj
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: t_early_sen
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_up1
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_up2
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_up3
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_up4
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_lo1
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_lo2
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_lo3
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_lo4
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shape_w1
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shape_w2
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shape_w3
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shape_w4
+    integer(int32), intent(in) :: n_farm, n_crop, n_cell    
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: ksw_exp
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: ksw_sto
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: ksw_sen
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: ksw_pol
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: ksw_stolin
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: dr
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: taw
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: et_ref
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: et_adj
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: t_early_sen
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: p_up1
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: p_up2
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: p_up3
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: p_up4
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: p_lo1
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: p_lo2
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: p_lo3
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: p_lo4
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: f_shape_w1
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: f_shape_w2
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: f_shape_w3
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: f_shape_w4
     integer(int32), intent(in) :: beta
-
     integer(int32) :: i, j, k
-
     do i = 1, n_farm
        do j = 1, n_crop
           do k = 1, n_cell
              call update_water_stress( &
-                  ksw_exp(i,j,k), &
-                  ksw_sto(i,j,k), &
-                  ksw_sen(i,j,k), &
-                  ksw_pol(i,j,k), &
-                  ksw_stolin(i,j,k), &
-                  dr(i,j,k), &
-                  taw(i,j,k), &
-                  et_ref(i,j,k), &
-                  et_adj(i,j,k), &
-                  t_early_sen(i,j,k), &
-                  p_up1(i,j,k), &
-                  p_up2(i,j,k), &
-                  p_up3(i,j,k), &
-                  p_up4(i,j,k), &
-                  p_lo1(i,j,k), &
-                  p_lo2(i,j,k), &
-                  p_lo3(i,j,k), &
-                  p_lo4(i,j,k), &
-                  f_shape_w1(i,j,k), &
-                  f_shape_w2(i,j,k), &
-                  f_shape_w3(i,j,k), &
-                  f_shape_w4(i,j,k), &
+                  ksw_exp(k,j,i), &
+                  ksw_sto(k,j,i), &
+                  ksw_sen(k,j,i), &
+                  ksw_pol(k,j,i), &
+                  ksw_stolin(k,j,i), &
+                  dr(k,j,i), &
+                  taw(k,j,i), &
+                  et_ref(k,j,i), &
+                  et_adj(k,j,i), &
+                  t_early_sen(k,j,i), &
+                  p_up1(k,j,i), &
+                  p_up2(k,j,i), &
+                  p_up3(k,j,i), &
+                  p_up4(k,j,i), &
+                  p_lo1(k,j,i), &
+                  p_lo2(k,j,i), &
+                  p_lo3(k,j,i), &
+                  p_lo4(k,j,i), &
+                  f_shape_w1(k,j,i), &
+                  f_shape_w2(k,j,i), &
+                  f_shape_w3(k,j,i), &
+                  f_shape_w4(k,j,i), &
                   beta &
                   )
           end do

@@ -27,21 +27,21 @@ contains
        )
 
     integer(int32), intent(in) :: n_farm, n_crop, n_comp, n_layer, n_cell
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: infl 
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: surf_stor
-    real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(inout) :: flux_out
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: deep_perc
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: runoff
-    real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(inout) :: th
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: irr
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: app_eff
-    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: bund
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: z_bund
-    real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: th_sat
-    real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: th_fc
-    real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(in) :: th_fc_adj
-    real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: k_sat
-    real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: tau
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: infl 
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: surf_stor
+    real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(inout) :: flux_out
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: deep_perc
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: runoff
+    real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(inout) :: th
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: irr
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: app_eff
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: bund
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: z_bund
+    real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: th_sat
+    real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: th_fc
+    real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(in) :: th_fc_adj
+    real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: k_sat
+    real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: tau
     real(real64), dimension(n_comp), intent(in) :: dz
     integer(int32), dimension(n_comp), intent(in) :: layer_ix
     integer(int32) :: i, j, k
@@ -49,21 +49,21 @@ contains
        do j = 1, n_crop
           do k = 1, n_cell
              call update_infl( &
-                  infl(i,j,k), &
-                  surf_stor(i,j,k), &
-                  flux_out(i,j,:,k), &
-                  deep_perc(i,j,k), &
-                  runoff(i,j,k), &
-                  th(i,j,:,k), &
-                  irr(i,j,k), &
-                  app_eff(i,j,k), &
-                  bund(i,j,k), &
-                  z_bund(i,j,k), &
-                  th_sat(i,j,:,k), &
-                  th_fc(i,j,:,k), &
-                  th_fc_adj(i,j,:,k), &       
-                  k_sat(i,j,:,k), &
-                  tau(i,j,:,k), &
+                  infl(k,j,i), &
+                  surf_stor(k,j,i), &
+                  flux_out(k,:,j,i), &
+                  deep_perc(k,j,i), &
+                  runoff(k,j,i), &
+                  th(k,:,j,i), &
+                  irr(k,j,i), &
+                  app_eff(k,j,i), &
+                  bund(k,j,i), &
+                  z_bund(k,j,i), &
+                  th_sat(k,:,j,i), &
+                  th_fc(k,:,j,i), &
+                  th_fc_adj(k,:,j,i), &       
+                  k_sat(k,:,j,i), &
+                  tau(k,:,j,i), &
                   dz, &
                   layer_ix &
                   )

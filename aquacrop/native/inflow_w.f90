@@ -17,11 +17,11 @@ contains
        )
 
     integer(int32) :: n_farm, n_crop, n_comp, n_layer, n_cell
-    real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: gw_in
-    real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(inout) :: th
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: gw_in
+    real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(inout) :: th
     integer(int32), intent(in) :: water_table
     real(real64), dimension(n_cell), intent(in) :: z_gw
-    real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: th_sat
+    real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: th_sat
     real(real64), dimension(n_comp), intent(in) :: dz
     real(real64), dimension(n_comp), intent(in) :: layer_ix
     integer(int32) :: i, j, k
@@ -29,11 +29,11 @@ contains
        do j = 1, n_crop
           do k = 1, n_cell
              call update_inflow( &
-                  gw_in(i,j,k), &
-                  th(i,j,:,k), &
+                  gw_in(k,j,i), &
+                  th(k,:,j,i), &
                   water_table, &
                   z_gw(k), &
-                  th_sat(i,j,:,k), &
+                  th_sat(k,:,j,i), &
                   dz, &
                   layer_ix &
                   )
