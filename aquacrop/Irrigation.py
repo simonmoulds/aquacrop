@@ -74,7 +74,8 @@ class Irrigation(object):
                 self.var.irrScheduleFileNC,
                 "irrigation_depth",
                 str(self.var._modelTime.fulldate), 
-                cloneMapFileName = self.var.cloneMapFileName)
+                cloneMapFileName = self.var.cloneMapFileName
+            )
             IrrReq = IrrReq[self.var.landmask_crop].reshape(self.var.nCrop,self.var.nCell)
             
         irrigate = self.var.GrowingSeasonIndex & self.irrigate_from_schedule

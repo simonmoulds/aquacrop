@@ -11,7 +11,7 @@ from hm import disclaimer
 from hm.Reporting import Reporting
 
 from hm import file_handling
-from .WaterBalanceModel import WaterBalanceModel
+from .AquaCrop import AquaCrop
 from .io.AquaCropConfiguration import AquaCropConfiguration
 from .io import variable_list
 
@@ -38,7 +38,7 @@ def main(argv):
     currTimeStep.update(1)    
     logger.info('Transient simulation run has started')
     deterministic_runner = DeterministicRunner(
-        WaterBalanceModel,
+        AquaCrop,
         configuration,
         currTimeStep,
         variable_list,

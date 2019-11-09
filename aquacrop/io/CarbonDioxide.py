@@ -31,5 +31,6 @@ class CarbonDioxide(object):
                 date,
                 useDoy = None,
                 cloneMapFileName = self.var.cloneMapFileName,
-                LatitudeLongitude = True)
+                LatitudeLongitude = True
+            )
             self.var.conc = conc[self.var.landmask]

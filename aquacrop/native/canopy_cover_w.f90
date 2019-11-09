@@ -48,6 +48,7 @@ contains
        f_shape_w3, &
        f_shape_w4, &
        growing_season, &
+       growing_season_day_one, &
        calendar_type, &
        dap, &
        delayed_cds, &
@@ -102,6 +103,7 @@ contains
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: f_shape_w3
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: f_shape_w4    
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season_day_one
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: dap
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_cds
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_gdds
@@ -153,6 +155,7 @@ contains
                   f_shape_w3(k,j,i), &
                   f_shape_w4(k,j,i), &
                   growing_season(k,j,i), &
+                  growing_season_day_one(k,j,i), &
                   calendar_type, &
                   dap(k,j,i), &
                   delayed_cds(k,j,i), &

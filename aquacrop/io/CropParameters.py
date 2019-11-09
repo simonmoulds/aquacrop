@@ -42,12 +42,12 @@ class CropArea(object):
                 date = '%04i-%02i-%02i' % (self.var._modelTime.year, 1, 1)
                 CroplandArea = file_handling.netcdf_to_array(
                     self.var.CroplandAreaFileNC,
-                    # 'cropland_area',
                     self.var.CroplandAreaVarName,
                     date,
                     useDoy = None,
                     cloneMapFileName = self.var.cloneMapFileName,
-                    LatitudeLongitude = True)
+                    LatitudeLongitude = True
+                )
                 self.var.CroplandArea = CroplandArea[self.var.landmask]
                 
         else:
@@ -55,20 +55,21 @@ class CropArea(object):
                 if not self.var.CropAreaFileNC == "None":
                     CroplandArea = file_handling.netcdf_to_arrayWithoutTime(
                         self.var.CroplandAreaFileNC,
-                        # 'cropland_area',
                         self.var.CroplandAreaVarName,
-                        cloneMapFileName = self.var.cloneMapFileName)
+                        cloneMapFileName = self.var.cloneMapFileName
+                    )
                     self.var.CroplandArea = CroplandArea[self.var.landmask]
                     
                 else:
                     self.var.CroplandArea = np.ones((self.var.nCell)) * self.var.nCrop
-    
+                    
         self.var.CroplandArea = np.broadcast_to(
-            self.var.CroplandArea, (
-                self.var.nFarm,
-                self.var.nCrop,
-                self.var.nCell))
-        self.var.CroplandArea = np.float64(self.var.CroplandArea)
+            self.var.CroplandArea,
+            (self.var.nFarm,
+             self.var.nCrop,
+             self.var.nCell)
+        )        
+        self.var.CroplandArea = self.var.CroplandArea.astype(np.float64)
         
     def read_crop_area(self, date = None):
         if date is None:
@@ -76,7 +77,9 @@ class CropArea(object):
                 self.var.CropAreaFileNC,
                 self.var.CropAreaVarName,
                 cloneMapFileName = self.var.cloneMapFileName,
-                LatitudeLongitude = True)
+                LatitudeLongitude = True
+            )
+            
         else:
             crop_area = file_handling.netcdf_to_array(
                 self.var.CropAreaFileNC,
@@ -84,43 +87,61 @@ class CropArea(object):
                 date,
                 useDoy = None,
                 cloneMapFileName = self.var.cloneMapFileName,
-                LatitudeLongitude = True)
+                LatitudeLongitude = True
+            )
             
         crop_area_has_farm_dimension = (
             file_handling.check_if_nc_variable_has_dimension(
                 self.var.CropAreaFileNC,
                 self.var.CropAreaVarName,
-                'farm'))
+                'farm'
+            )
+        )
 
         if crop_area_has_farm_dimension:
             crop_area = np.reshape(
                 crop_area[self.var.landmask_farm_crop],
-                (self.var.nFarm, self.var.nCrop, self.var.nCell))
+                (self.var.nFarm,
+                 self.var.nCrop,
+                 self.var.nCell)
+            )
         else:
             crop_area = np.reshape(
                 crop_area[self.var.landmask_crop],
-                (self.var.nCrop, self.var.nCell))
+                (self.var.nCrop,
+                 self.var.nCell)
+            )
             crop_area = np.broadcast_to(
                 crop_area[None,:,:],
-                (self.var.nFarm, self.var.nCrop, self.var.nCell))
+                (self.var.nFarm,
+                 self.var.nCrop,
+                 self.var.nCell)
+            )
             
-        crop_area = np.float64(crop_area)
+        crop_area = crop_area.astype(np.float64)
         return crop_area
 
     def scale_crop_area(self):
-        """Function to scale crop area to match cropland area
-        """
+        """Function to scale crop area to match cropland area."""
         pd = self.var.PlantingDate.copy()[0,...]
         hd = self.var.HarvestDate.copy()[0,...]
         hd[hd < pd] += 365
         max_harvest_date = int(np.max(hd))
-        day_idx = np.arange(1, max_harvest_date + 1)[:,None,None] * np.ones((self.var.nCrop, self.var.nCell))[None,:,:]
+        day_idx = (
+            np.arange(1, max_harvest_date + 1)[:,None,None]
+            * np.ones((self.var.nCrop, self.var.nCell))[None,:,:]
+        )
         growing_season_idx = ((day_idx >= pd) & (day_idx <= hd))
         crop_area = self.var.CropArea[0,...]  # remove farm dimension
         crop_area_daily = crop_area[None,...] * growing_season_idx  # get daily crop area
         total_crop_area_daily = np.sum(crop_area_daily, axis=1)     # sum of all crops grown on a given day
         max_crop_area = np.max(total_crop_area_daily, axis=0)       # get the max crop area considering all growing seasons
-        scale_factor = np.divide(self.var.CroplandArea, max_crop_area, out=np.zeros_like(self.var.CroplandArea), where=max_crop_area>0)  # compute scale factor by dividing cropland area by max crop area
+        scale_factor = np.divide(
+            self.var.CroplandArea,
+            max_crop_area,
+            out=np.zeros_like(self.var.CroplandArea),
+            where=max_crop_area>0
+        )  # compute scale factor by dividing cropland area by max crop area
         self.var.CropArea *= scale_factor
         
         # # TEST:
@@ -155,7 +176,8 @@ class CropArea(object):
                     self.var.CropArea = np.ones(
                         (self.var.nFarm,
                          self.var.nCrop,
-                         self.var.nCell))
+                         self.var.nCell)
+                    )
                 self.scale_crop_area()
 
     def compute_current_crop_area(self):
@@ -173,10 +195,12 @@ class CropArea(object):
         # by total fallow area
         crop_area_not_grown = (
             self.var.CropArea
-            * np.logical_not(self.var.GrowingSeasonIndex))
+            * np.logical_not(self.var.GrowingSeasonIndex)
+        )
         total_crop_area_not_grown = np.sum(
             crop_area_not_grown
-            * np.logical_not(self.var.GrowingSeasonIndex))
+            * np.logical_not(self.var.GrowingSeasonIndex)
+        )
         scale_factor = np.divide(
             crop_area_not_grown,
             total_crop_area_not_grown,
@@ -190,7 +214,8 @@ class CropArea(object):
         fallow_area = target_fallow_area * scale_factor        
         self.var.CurrentCropArea = self.var.CropArea.copy()        
         self.var.CurrentCropArea[np.logical_not(self.var.GrowingSeasonIndex)] = (
-            (fallow_area[np.logical_not(self.var.GrowingSeasonIndex)]))
+            (fallow_area[np.logical_not(self.var.GrowingSeasonIndex)])
+        )
 
         # CurrentCropArea represents the crop area in the entire grid
         # cell; it does not represent the area of the respective crops
@@ -201,7 +226,8 @@ class CropArea(object):
             self.var.FarmArea,
             self.var.CroplandArea,
             out=np.zeros_like(self.var.CroplandArea),
-            where=self.var.CroplandArea>0)
+            where=self.var.CroplandArea>0
+        )
 
         # The farm scale factor represents the fraction of total cropland
         # found within each farm. Thus, multiplying the scale factor by

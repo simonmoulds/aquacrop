@@ -129,3 +129,22 @@ description[aquacrop_variable_name]       = None
 comment[aquacrop_variable_name]           = None
 latex_symbol[aquacrop_variable_name]      = None
 
+aquacrop_variable_name = 'CC'
+netcdf_short_name[aquacrop_variable_name] = 'canopy_cover'
+netcdf_standard_name[aquacrop_variable_name] = 'canopy_cover'
+netcdf_dimensions[aquacrop_variable_name] = ('farm','crop','time','lat','lon')
+netcdf_unit[aquacrop_variable_name]       = '1'
+netcdf_long_name[aquacrop_variable_name]  = None
+description[aquacrop_variable_name]       = None
+comment[aquacrop_variable_name]           = None
+latex_symbol[aquacrop_variable_name]      = None
+
+aquacrop_variable_name = 'thRZ_Act'
+netcdf_short_name[aquacrop_variable_name] = 'th_rz'
+netcdf_standard_name[aquacrop_variable_name] = 'root_zone_water_content'
+netcdf_dimensions[aquacrop_variable_name] = ('farm','crop','time','lat','lon')
+netcdf_unit[aquacrop_variable_name]       = 'm3 m-3'
+netcdf_long_name[aquacrop_variable_name]  = None
+description[aquacrop_variable_name]       = None
+comment[aquacrop_variable_name]           = None
+latex_symbol[aquacrop_variable_name]      = None

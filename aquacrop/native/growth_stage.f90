@@ -3,6 +3,7 @@ module growth_stage
   implicit none
 
 contains
+  
   subroutine update_growth_stage( &
        growth_stage, &
        canopy_10pct, &
@@ -16,7 +17,7 @@ contains
        growing_season &
        )
 
-    real(real64), intent(inout) :: growth_stage
+    integer(int32), intent(inout) :: growth_stage
     real(real64), intent(in) :: canopy_10pct
     real(real64), intent(in) :: max_canopy
     real(real64), intent(in) :: senescence
@@ -46,8 +47,7 @@ contains
        end if
        
     else
-       growth_stage = 0
-       
+       growth_stage = 0       
     end if
     
   end subroutine update_growth_stage

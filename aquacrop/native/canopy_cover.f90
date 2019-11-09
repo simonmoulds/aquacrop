@@ -40,8 +40,6 @@ contains
 
   end function cc_grow
 
-
-
   ! Compute canopy decline
   !
   ! In:
@@ -54,18 +52,15 @@ contains
   !
   ! -------------------------------------------------------------------
   function cc_decl(ccx, cdc, dt) result(cc)
-
     real(real64), intent(in) :: ccx
     real(real64), intent(in) :: cdc
     real(real64), intent(in) :: dt
-    real(real64) :: cc
-    
+    real(real64) :: cc    
     if ( ccx < 0.001 ) then
        cc = 0
     else
        cc = ccx * (1 - 0.05 * (exp(dt * (cdc / ccx)) - 1))
-    end if
-    
+    end if    
   end function cc_decl
   
   function cc_reqd_time_cgc(cc_prev, cc0, ccx, cgc, dt, tsum) result(treq)    
@@ -76,25 +71,21 @@ contains
     real(real64), intent(in) :: dt
     real(real64), intent(in) :: tsum
     real(real64) :: cgcx
-    real(real64) :: treq
-    
+    real(real64) :: treq    
     if ( cc_prev <= (ccx / 2.) ) then
        cgcx = log(cc_prev / cc0) / (tsum - dt)
     else
        cgcx = log((0.25 * ccx * ccx / cc0) / (ccx - cc_prev)) / (tsum - dt)
     end if
-    treq = (tsum - dt) * (cgcx / cgc)
-    
+    treq = (tsum - dt) * (cgcx / cgc)    
   end function cc_reqd_time_cgc
   
   function cc_reqd_time_cdc(cc_prev, ccx, cdc) result(treq)    
     real(real64), intent(in) :: cc_prev
     real(real64), intent(in) :: ccx
     real(real64), intent(in) :: cdc
-    real(real64) :: treq
-    
-    treq = log(1. + (1. - cc_prev / ccx) / 0.05) / (cdc / ccx)
-    
+    real(real64) :: treq    
+    treq = log(1. + (1. - cc_prev / ccx) / 0.05) / (cdc / ccx)    
   end function cc_reqd_time_cdc
   
   function adj_ccx(cc_prev, cc0, ccx, cgc, canopy_dev_end, dt, tsum) result(ccx_adj)    
@@ -106,33 +97,34 @@ contains
     real(real64), intent(in) :: dt
     real(real64), intent(in) :: tsum
     real(real64) :: tmp_tcc
-    real(real64) :: ccx_adj
-    
+    real(real64) :: ccx_adj    
     tmp_tcc = cc_reqd_time_cgc(cc_prev, cc0, ccx, cgc, dt, tsum)
     if ( tmp_tcc > 0 ) then
        tmp_tcc = tmp_tcc + (canopy_dev_end - tsum) + dt
        ccx_adj = cc_grow(cc0, ccx, cgc, tmp_tcc)
     else
        ccx_adj = 0.
-    end if
-    
+    end if    
   end function adj_ccx
-
-
   
-  subroutine update_ccx_cdc(cdc_adj, ccx_adj, cc_prev, cdc, ccx, dt)    
+  subroutine update_ccx_cdc( &
+       cdc_adj, &
+       ccx_adj, &
+       cc_prev, &
+       cdc, &
+       ccx, &
+       dt &
+       )
+    
     real(real64), intent(inout) :: cdc_adj
     real(real64), intent(inout) :: ccx_adj
     real(real64), intent(in) :: cc_prev
     real(real64), intent(in) :: cdc
     real(real64), intent(in) :: ccx
-    real(real64), intent(in) :: dt
-    
+    real(real64), intent(in) :: dt    
     ccx_adj = cc_prev / (1. - 0.05 * (exp(dt * (cdc / ccx)) - 1.))
     cdc_adj = cdc * (ccx_adj / ccx)
-
   end subroutine update_ccx_cdc
-
   
   subroutine update_potential_cc( &
        cc_ns, &
@@ -163,7 +155,6 @@ contains
     real(real64), intent(in) :: maturity
     real(real64), intent(in) :: senescence
     real(real64), intent(in) :: canopy_dev_end
-
     real(real64) :: tmp_tcc
     
     ! potential canopy development
@@ -197,8 +188,6 @@ contains
     
   end subroutine update_potential_cc
 
-
-
   subroutine update_actual_cc( &
        cc, &
        ccx_act, &
@@ -222,8 +211,7 @@ contains
     real(real64), intent(inout) :: cc
     real(real64), intent(inout) :: ccx_act
     real(real64), intent(inout) :: cc0_adj
-    integer(int32), intent(inout) :: crop_dead
-    
+    integer(int32), intent(inout) :: crop_dead    
     real(real64), intent(in) :: cc_prev
     real(real64), intent(in) :: tcc
     real(real64), intent(in) :: tcc_adj
@@ -236,8 +224,7 @@ contains
     real(real64), intent(in) :: maturity
     real(real64), intent(in) :: senescence
     real(real64), intent(in) :: canopy_dev_end
-    real(real64), intent(in) :: ksw_exp
-    
+    real(real64), intent(in) :: ksw_exp    
     real(real64) :: treq, tmp_tcc
     real(real64) :: cgc_adj, cdc_adj, ccx_adj
         
@@ -545,6 +532,7 @@ contains
        f_shape_w3, &
        f_shape_w4, &
        growing_season, &
+       growing_season_day_one, &
        calendar_type, &
        dap, &
        delayed_cds, &
@@ -594,6 +582,7 @@ contains
     real(real64), intent(in) :: f_shape_w3
     real(real64), intent(in) :: f_shape_w4    
     integer(int32), intent(in) :: growing_season
+    integer(int32), intent(in) :: growing_season_day_one
     integer(int32), intent(in) :: calendar_type
     integer(int32), intent(in) :: dap
     integer(int32), intent(in) :: delayed_cds
@@ -608,9 +597,17 @@ contains
 
     ! update cc_prev (cc from previous timestep)
     cc_prev = cc
+
+    if ( growing_season_day_one == 1 ) then
+       t_early_sen = 0
+       ccx_early_sen = 0
+       cc_prev = 0
+       premat_senes = 0
+       crop_dead = 0
+       cc0_adj = cc0    
+    end if
     
     if ( growing_season == 1 ) then
-
        beta = 1
        call update_water_stress( &
             ksw_exp, &

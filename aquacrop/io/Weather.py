@@ -47,7 +47,7 @@ class Weather(object):
             if len(format_args) > 0:
                 if not format_args_ok:
                     msg = 'Filename ' + filename + ' contains invalid format arguments: only day, month and year are allowable'
-                    raise Messages.ModelError(msg)
+                    raise ModelError(msg)
                 
     def set_nc_variable_names(self):
         self.preVarName = self._configuration.WEATHER['precipitationVarName']
@@ -70,7 +70,7 @@ class Weather(object):
 
         if not all(result):
             msg = '\n'.join(msg)
-            raise Messages.ModelError(msg)
+            raise ModelError(msg)
         
     def set_weather_conversion_factors(self):
         self.preConst       = 0.0

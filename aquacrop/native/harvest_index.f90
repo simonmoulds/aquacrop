@@ -113,6 +113,7 @@ contains
     else
        ! reference harvest index is zero outside growing season
        hi_ref = 0.
+       pct_lag_phase = 0.       ! N.B. this is not in the original
     end if
     
   end subroutine update_harvest_index
@@ -502,6 +503,15 @@ contains
     else
        ! hi = 0
        hi_adj = 0
+       pre_adj = 0
+       f_pre = 1
+       f_post = 1
+       fpost_dwn = 1
+       fpost_upp = 1
+       f_pol = 0
+       s_cor1 = 0
+       s_cor2 = 0
+       
     end if
     
   end subroutine adjust_harvest_index
