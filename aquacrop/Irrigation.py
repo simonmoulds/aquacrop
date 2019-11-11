@@ -35,7 +35,7 @@ class Irrigation(object):
         Dr = np.clip(Dr, 0., None)
         return Dr
     
-    def compute_irrigation_depth_satoil_moisture_threshold(self, WCadj):
+    def compute_irrigation_depth_soil_moisture_threshold(self, WCadj):
         # If irrigation is based on soil moisture, get the soil moisture
         # target for the current growth stage and determine threshold to
         # initiate irrigation
@@ -63,7 +63,7 @@ class Irrigation(object):
         irrigate = self.var.GrowingSeasonIndex & self.irrigate_fixed_interval & ((nDays % self.var.IrrInterval) == 0)
         self.var.Irr[irrigate] = IrrReq[irrigate]
 
-    def compute_irrigation_depth_satchedule(self):
+    def compute_irrigation_depth_schedule(self):
         # If irrigation is based on a pre-defined schedule then the irrigation
         # requirement for each crop is read from a netCDF file. Note that if
         # the option 'irrScheduleFileNC' is None, then nothing will be imported
@@ -74,7 +74,8 @@ class Irrigation(object):
                 self.var.irrScheduleFileNC,
                 "irrigation_depth",
                 str(self.var._modelTime.fulldate), 
-                cloneMapFileName = self.var.cloneMapFileName)
+                cloneMapFileName = self.var.cloneMapFileName
+            )
             IrrReq = IrrReq[self.var.landmask_crop].reshape(self.var.nCrop,self.var.nCell)
             
         irrigate = self.var.GrowingSeasonIndex & self.irrigate_from_schedule
@@ -90,11 +91,11 @@ class Irrigation(object):
         self.var.Irr[:] = 0.
         if np.any(self.var.GrowingSeasonIndex):
             if np.any(self.irrigate_soil_moisture_threshold):
-                self.compute_irrigation_depth_satoil_moisture_threshold()
+                self.compute_irrigation_depth_soil_moisture_threshold()
             if np.any(self.irrigate_fixed_interval):
                 self.compute_irrigation_depth_fixed_interval()                    
             if np.any(self.irrigate_from_schedule):
-                self.compute_irrigation_depth_satchedule()
+                self.compute_irrigation_depth_schedule()
             if np.any(self.irrigate_net):
                 self.compute_irrigation_depth_net()
         self.var.IrrCum += self.var.Irr

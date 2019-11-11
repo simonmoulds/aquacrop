@@ -29,7 +29,7 @@ def context(tmpdir, request):
     # test_yr = str(1979)
     test_yr = str(2000)
     yrs = os.walk(str(tmpdir)).__next__()[1]
-    print(yrs)
+    test_yr = yrs[0]
     cwd = os.getcwd()
     aquacrop_dir = os.path.abspath("../..")
     for yr in yrs:
