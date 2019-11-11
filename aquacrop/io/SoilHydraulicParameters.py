@@ -5,7 +5,7 @@ import os
 import numpy as np
 import netCDF4 as nc
 from hm import file_handling
-
+            
 class SoilHydraulicParameters(object):
     def __init__(self, SoilHydraulicParameters_variable, config_section_name):
         self.var = SoilHydraulicParameters_variable
@@ -134,3 +134,37 @@ class SoilHydraulicParameters(object):
         
     def dynamic(self):
         pass
+
+# class SoilHydraulicParametersPoint(object):
+#     def __init__(self, SoilHydraulicParametersPoint_variable, config_section_name):
+#         self.var = SoilHydraulicParameters_variable
+#         soil_profile = read_csv(
+#             str(self.var._configuration.SOIL_PROFILE['soilProfileFilename']),
+#             delimiter='\s+|\t',
+#             header=None,
+#             names=['compartment','thickness','layer'],
+#             skiprows=2,
+#             engine='python')
+
+#         soil_hydrology = read_csv(
+#             str(self.var._configuration.SOIL_HYDROLOGY['soilHydrologyFilename']),
+#             delimiter='\s+|\t',
+#             header=None,
+#             names=['layer','thickness','th_s','th_fc','th_wp','ksat'],
+#             skiprows=2,
+#             engine='python')
+        
+#         self.var.dz = np.array(soil_profile['thickness'])
+#         self.var.dz_layer = np.array(soil_hydrology['thickness'].values)
+#         self.var.nLayer = len(self.var.dz_layer)
+
+#     def initial(self):
+#         pass
+    
+#     def read_soil_hydraulic_parameters(self):
+#         th_s = soil_hydrology['th_s'].values 
+#         th_fc = soil_hydrology['th_fc'].values
+#         th_wp = soil_hydrology['th_wp'].values
+#         k_sat = soil_hydrology['ksat'].values
+#         # TODO: np.broadcast_to()
+    
