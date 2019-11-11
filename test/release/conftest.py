@@ -27,7 +27,7 @@ def context(tmpdir, request):
         dir_util.copy_tree(test_dir, str(tmpdir))
 
     # test_yr = str(1979)
-    test_yr = str(2000)
+    # test_yr = str(2000)
     yrs = os.walk(str(tmpdir)).__next__()[1]
     test_yr = yrs[0]
     cwd = os.getcwd()
