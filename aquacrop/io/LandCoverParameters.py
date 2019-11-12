@@ -19,23 +19,28 @@ class BaseClass(object):
     def __init__(self, var, configuration):
         self.var = var
         self.configuration = configuration
+
+class CoverFractionPoint(BaseClass):
+    def __init__(self, var, configuration):
+        super(CoverFractionPoint, self).__init__(var, configuration)
+        
+    def initial(self):        
+        self.var.cover_fraction = 1
+        
+    def dynamic(self):
+        pass
     
-class CoverFraction(BaseClass):
+class CoverFractionGrid(BaseClass):
 
     def __init__(self, var, configuration):
-        super(CoverFraction, self).__init__(var, configuration)
-        # self.dynamicLandCover = bool(int(self.var._configuration.LAND_COVER['dynamicLandCover']))
-        # self.staticLandCoverYear = None
-        # if not self.dynamicLandCover:
-        #     self.staticLandCoverYear = int(self.var._configuration.LAND_COVER['staticLandCoverYear'])
+        super(CoverFractionGrid, self).__init__(var, configuration)
         
     def initial(self):
-        self.coverFractionNC = str(self.configuration['landCoverFractionNC'])
-        self.coverFractionVarName = str(self.configuration['landCoverFractionVarName'])
-        self.var.cover_fraction = np.zeros((self.var.nCell))
         self.update_cover_fraction()
         
     def update_cover_fraction(self):
+        self.coverFractionNC = str(self.configuration['landCoverFractionNC'])
+        self.coverFractionVarName = str(self.configuration['landCoverFractionVarName'])
         
         # # TODO: make flexible the day on which land cover is changed
         
@@ -88,12 +93,12 @@ class LandCoverParameters(object):
 class AquaCropParameters(LandCoverParameters):
     def __init__(self, var, config_section_name):
         super(AquaCropParameters, self).__init__(var, config_section_name)
-        self.soil_hydraulic_parameters_module = SoilHydraulicParameters(var, config_section_name)
-        self.soil_parameters_module = SoilParameters(var, config_section_name)
-        self.cover_fraction_module = CoverFraction(var, self.configuration)        
-        self.farm_parameters_module = FarmParameters(var)
-        self.crop_parameters_module = CropParameters(var)
-        self.crop_area_module = CropArea(var)
+        self.soil_hydraulic_parameters_module = SoilHydraulicParametersGrid(var, config_section_name)
+        self.soil_parameters_module = SoilParametersGrid(var, config_section_name)
+        self.cover_fraction_module = CoverFractionGrid(var, self.configuration)        
+        self.farm_parameters_module = FarmParametersGrid(var)
+        self.crop_parameters_module = CropParametersGrid(var)
+        self.crop_area_module = CropAreaGrid(var)
         self.field_mgmt_parameters_module = FieldManagementParameters(var)
         self.irrigation_parameters_module = IrrigationManagementParameters(var)
 

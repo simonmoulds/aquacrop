@@ -14,14 +14,25 @@ from hm import file_handling
 from hm.Messages import ModelError
 from . import data
 
-class CropArea(object):
+import aquacrop_fc
+
+class CropAreaPoint(object):
+    def __init__(self, CropArea_variable):
+        self.var = CropArea_variable
+
+    def initial(self):
+        self.var.CurrentCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        self.var.CroplandArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        self.var.CropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        self.var.FarmCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        
+    def dynamic(self):
+        pass
+    
+class CropAreaGrid(object):
     
     def __init__(self, CropArea_variable):
         self.var = CropArea_variable
-        self.var.CropAreaFileNC = str(self.var._configuration.CROP_PARAMETERS['cropAreaNC'])
-        self.var.CropAreaVarName = str(self.var._configuration.CROP_PARAMETERS['cropAreaVarName'])
-        self.var.CroplandAreaFileNC = str(self.var._configuration.CROP_PARAMETERS['croplandAreaNC'])
-        self.var.CroplandAreaVarName = str(self.var._configuration.CROP_PARAMETERS['croplandAreaVarName'])
         self.var.AnnualChangeInCropArea = bool(int(self.var._configuration.CROP_PARAMETERS['AnnualChangeInCropArea']))
         
         self.var.landmask_crop = np.broadcast_to(
@@ -34,15 +45,15 @@ class CropArea(object):
         )                
         
     def initial(self):
-        self.var.CurrentCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
-        
+        pass
+    
     def read_cropland_area(self):
         if self.var.AnnualChangeInCropArea:
             if self.var._modelTime.timeStepPCR == 1 or self.var._modelTime.doy == 1:
                 date = '%04i-%02i-%02i' % (self.var._modelTime.year, 1, 1)
                 CroplandArea = file_handling.netcdf_to_array(
-                    self.var.CroplandAreaFileNC,
-                    self.var.CroplandAreaVarName,
+                    self.var._configuration.CROP_PARAMETERS['croplandAreaNC'],
+                    self.var._configuration.CROP_PARAMETERS['croplandAreaVarName'],
                     date,
                     useDoy = None,
                     cloneMapFileName = self.var.cloneMapFileName,
@@ -52,10 +63,10 @@ class CropArea(object):
                 
         else:
             if self.var._modelTime.timeStepPCR == 1:
-                if not self.var.CropAreaFileNC == "None":
+                if not self.var._configuration.CROP_PARAMETERS['cropAreaNC'] == "None":
                     CroplandArea = file_handling.netcdf_to_arrayWithoutTime(
-                        self.var.CroplandAreaFileNC,
-                        self.var.CroplandAreaVarName,
+                        self.var._configuration.CROP_PARAMETERS['croplandAreaNC'],
+                        self.var._configuration.CROP_PARAMETERS['croplandAreaVarName'],
                         cloneMapFileName = self.var.cloneMapFileName
                     )
                     self.var.CroplandArea = CroplandArea[self.var.landmask]
@@ -74,16 +85,16 @@ class CropArea(object):
     def read_crop_area(self, date = None):
         if date is None:
             crop_area = file_handling.netcdf_to_arrayWithoutTime(
-                self.var.CropAreaFileNC,
-                self.var.CropAreaVarName,
+                self.var._configuration.CROP_PARAMETERS['cropAreaNC'],
+                self.var._configuration.CROP_PARAMETERS['cropAreaVarName'],
                 cloneMapFileName = self.var.cloneMapFileName,
                 LatitudeLongitude = True
             )
             
         else:
             crop_area = file_handling.netcdf_to_array(
-                self.var.CropAreaFileNC,
-                self.var.CropAreaVarName,
+                self.var._configuration.CROP_PARAMETERS['cropAreaNC'],
+                self.var._configuration.CROP_PARAMETERS['cropAreaVarName'],
                 date,
                 useDoy = None,
                 cloneMapFileName = self.var.cloneMapFileName,
@@ -92,8 +103,8 @@ class CropArea(object):
             
         crop_area_has_farm_dimension = (
             file_handling.check_if_nc_variable_has_dimension(
-                self.var.CropAreaFileNC,
-                self.var.CropAreaVarName,
+                self.var._configuration.CROP_PARAMETERS['cropAreaNC'],
+                self.var._configuration.CROP_PARAMETERS['cropAreaVarName'],
                 'farm'
             )
         )
@@ -168,7 +179,7 @@ class CropArea(object):
                 
         else:
             if self.var._modelTime.timeStepPCR == 1:
-                if not self.var.CropAreaFileNC == "None":
+                if not self.var._configuration.CROP_PARAMETERS['cropAreaNC'] == "None":
                     # If crop area doesn't change then there is no need for an
                     # intermediate variable
                     self.var.CropArea = self.read_crop_area(date = None)
@@ -241,50 +252,26 @@ class CropArea(object):
         self.compute_current_crop_area()
 
 class CropParameters(object):
-    
     def __init__(self, CropParameters_variable):
         self.var = CropParameters_variable
-
-        # TODO: sort this section out - most can go to 'initial' section, I think
+        self.get_num_crop()
+        self.get_crop_id()
+        self.get_crop_parameter_names()
+        self.load_crop_parameter_database()
         
-        with path(data, 'crop_parameter_database.sqlite3') as db_path:
-            try:
-                db_path = db_path.resolve()
-            except FileNotFoundError:
-                pass
-            self.var.CropParameterDatabase = sqlite3.connect(str(db_path))
-            
-        self.var.CropParameterFileNC = str(self.var._configuration.CROP_PARAMETERS['cropParametersNC'])
-        self.var.nCrop = file_handling.get_dimension_variable(self.var.CropParameterFileNC,'crop').size
+    def get_num_crop(self):
+        pass
+
+    def get_crop_id(self):
         ids = str(self.var._configuration.CROP_PARAMETERS['cropID'])
         try:
             ids = [int(x) for x in ids.split(',')]
             self.var.CropID = ids
         except:
             self.var.CropID = None
-        
-        # TODO: move these to main model class?
-        self.var.CalendarType = int(self.var._configuration.CROP_PARAMETERS['CalendarType'])
-        self.var.SwitchGDD = bool(int(self.var._configuration.CROP_PARAMETERS['SwitchGDD']))
-        self.var.GDDmethod = int(self.var._configuration.CROP_PARAMETERS['GDDmethod'])
-                                      
-        self.var.landmask_crop = (
-            self.var.landmask[None,:,:]
-            * np.ones((self.var.nCrop), dtype=np.bool)[:,None,None])
 
-    def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
-        self.var.GrowingSeasonIndex = np.copy(arr_zeros.astype(bool))
-        self.var.GrowingSeasonDayOne = np.copy(arr_zeros.astype(bool))
-        self.var.DAP = np.copy(arr_zeros)
-        # self.var.CurrentCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
-
-        # # TODO: move these to main model class?
-        # self.var.CalendarType = int(self.var._configuration.CROP_PARAMETERS['CalendarType'])
-        # self.var.SwitchGDD = bool(int(self.var._configuration.CROP_PARAMETERS['SwitchGDD']))
-        # self.var.GDDmethod = int(self.var._configuration.CROP_PARAMETERS['GDDmethod'])
+    def get_crop_parameter_names(self):
         
-        # Declare variables
         self.var.crop_parameters_to_read = [
             'CropType','PlantingDate','HarvestDate','Emergence','MaxRooting',
             'Senescence','Maturity','HIstart','Flowering','YldForm',
@@ -298,7 +285,6 @@ class CropParameters(object):
             'p_lo4','fshape_w1','fshape_w2','fshape_w3','fshape_w4','Aer','beta',
             'GermThr']
 
-        # self.var.crop_parameters_to_compute = []
         self.var.crop_parameters_to_compute = []
             # 'CC0','SxTop','SxBot','fCO2','tLinSwitch','dHILinear','HIGC',
             # 'CanopyDevEnd','CanopyDevEndCD','Canopy10Pct','Canopy10PctCD','MaxCanopy',
@@ -307,92 +293,51 @@ class CropParameters(object):
             # 'PlantingDateAdj','HarvestDateAdj',
             # 'CurrentConc']  # TODO: CGC and CDC are in both list - try removing them here?
 
-        # TODO: don't initialize here
         self.var.crop_parameter_names = self.var.crop_parameters_to_read + self.var.crop_parameters_to_compute
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
-        for param in self.var.crop_parameter_names:
-            vars(self.var)[param] = np.copy(arr_zeros)
-            
-        self.var.fCO2 = arr_zeros.copy()
-        self.var.CurrentConc = arr_zeros.copy()
-            
-        self.read()
-        self.compute_crop_parameters()
-        
-    def read(self):        
-        """Function to read crop input parameters"""
-        if len(self.var.crop_parameters_to_read) > 0:
-            for param in self.var.crop_parameters_to_read:
-                read_from_netcdf = file_handling.check_if_nc_has_variable(
-                    self.var.CropParameterFileNC,
-                    param
-                    )
-                if read_from_netcdf:
-                    d = file_handling.netcdf_to_arrayWithoutTime(
-                        self.var.CropParameterFileNC,
-                        param,
-                        cloneMapFileName=self.var.cloneMapFileName)
-                    d = d[self.var.landmask_crop].reshape(self.var.nCrop,self.var.nCell)
-                    vars(self.var)[param] = np.broadcast_to(d, (self.var.nFarm, self.var.nCrop, self.var.nCell))                    
-                else:
-                    try:
-                        parameter_values = np.zeros((self.var.nCrop))
-                        for index,crop_id in enumerate(self.var.CropID):
-                            parameter_values[index] = file_handling.read_crop_parameter_from_sqlite(
-                                self.var.CropParameterDatabase,
-                                crop_id,
-                                param
-                            )[0]
-                        vars(self.var)[param] = np.broadcast_to(
-                            parameter_values[:,None,None],
-                            (self.var.nFarm, self.var.nCrop, self.var.nCell)
-                        )
-                        
-                    except:
-                        raise ModelError("Error reading parameter " + param + " from crop parameter database")
-                        
-                    
-    def adjust_planting_and_harvesting_date(self):
+    
+    def load_crop_parameter_database(self):
+        with path(data, 'crop_parameter_database.sqlite3') as db_path:
+            try:
+                db_path = db_path.resolve()
+            except FileNotFoundError:
+                pass
+            self.var.CropParameterDatabase = sqlite3.connect(str(db_path))
 
-        if self.var._modelTime.timeStepPCR == 1 or self.var._modelTime.doy == 1:            
-            pd = np.copy(self.var.PlantingDate)
-            hd = np.copy(self.var.HarvestDate)
-            st = self.var._modelTime.currTime
-            sd = self.var._modelTime.currTime.timetuple().tm_yday
-            isLeapYear1 = calendar.isleap(st.year)            
-            pd[(isLeapYear1 & (pd >= 60))] += 1  # TODO: check these
-            hd[(isLeapYear1 & (hd >= 60) & (hd > pd))] += 1
-            self.var.PlantingDateAdj = np.copy(pd)
-            self.var.HarvestDateAdj = np.copy(hd)
+    def adjust_planting_and_harvesting_date(self):
+        leap_year = calendar.isleap(self.var._modelTime.currTime.year)
+        aquacrop_fc.crop_parameters_w.adjust_pd_hd_w(
+            self.var.PlantingDateAdj.T,
+            self.var.HarvestDateAdj.T,
+            self.var.PlantingDate.T,
+            self.var.HarvestDate.T,
+            np.int32(self.var._modelTime.doy),
+            np.int32(self.var._modelTime.timeStepPCR),
+            np.int32(leap_year),
+            self.var.nFarm, self.var.nCrop, self.var.nCell
+        )
 
     def update_growing_season(self):
-        # TODO: check both PlantingDateAdj and HarvestDateAdj are not the same!        
-        cond1 = ((self.var.PlantingDateAdj < self.var.HarvestDateAdj)
-                 & ((self.var.PlantingDateAdj <= self.var._modelTime.doy)
-                    & (self.var._modelTime.doy <= self.var.HarvestDateAdj)))
-        cond2 = ((self.var.PlantingDateAdj > self.var.HarvestDateAdj)
-                 & ((self.var.PlantingDateAdj <= self.var._modelTime.doy)
-                    | (self.var._modelTime.doy <= self.var.HarvestDateAdj)))
-
-        # check the harvest date is before the end of the simulation period
-        hd_arr = (np.datetime64(str(datetime.datetime(self.var._modelTime.year, 1, 1))) + np.array(self.var.HarvestDateAdj - 1, dtype='timedelta64[D]'))        
-        cond3 = hd_arr <= np.datetime64(str(self.var._modelTime.endTime))
-
-        # check the planting date is after the start of the simulation period
-        # N.B. timeStepPCR is the number of time steps since the model started
-        cond4 = ((self.var._modelTime.doy - self.var.PlantingDateAdj) < self.var._modelTime.timeStepPCR)
-
-        self.var.GrowingSeason = ((cond1 | cond2) & cond3 & cond4)
-
-        self.var.GrowingSeasonIndex = self.var.GrowingSeason.copy()
-        self.var.GrowingSeasonIndex *= np.logical_not(self.var.CropDead | self.var.CropMature)
-        self.var.GrowingSeasonDayOne = self.var._modelTime.doy == self.var.PlantingDateAdj
-        self.var.DAP[self.var.GrowingSeasonDayOne] = 0
-
-        self.var.GrowingSeasonIndex[self.var.GrowingSeasonDayOne] = True
-        self.var.DAP[self.var.GrowingSeasonIndex] += 1
-        self.var.DAP[np.logical_not(self.var.GrowingSeasonIndex)] = 0
-
+        gs = np.int32(self.var.GrowingSeasonIndex.copy())
+        gsd = np.int32(self.var.GrowingSeasonDayOne.copy())
+        aquacrop_fc.crop_parameters_w.update_growing_season_w(
+            gs.T,
+            gsd.T,
+            # np.int32(self.var.GrowingSeasonIndex).T,
+            # np.int32(self.var.GrowingSeasonDayOne).T,
+            np.int32(self.var.DAP).T,
+            np.int32(self.var.PlantingDateAdj).T,
+            np.int32(self.var.HarvestDateAdj).T,
+            np.int32(self.var.CropDead).T,
+            np.int32(self.var.CropMature).T,
+            self.var._modelTime.doy,
+            self.var._modelTime.timeStepPCR,
+            self.var._modelTime.currentYearStartNum,
+            self.var._modelTime.endTimeNum,
+            self.var.nFarm, self.var.nCrop, self.var.nCell
+            )
+        self.var.GrowingSeasonIndex = gs.astype(bool)
+        self.var.GrowingSeasonDayOne = gsd.astype(bool)
+        
     def compute_crop_parameters(self):
         """Function to compute additional crop variables required to run 
         AquaCrop"""
@@ -812,7 +757,9 @@ class CropParameters(object):
         # Update certain crop parameters if using GDD mode
         if (self.var.CalendarType == 2):
 
-            cond1 = ((self.var.GrowingSeason) & (self.var._modelTime.doy == pd))
+            # cond1 = ((self.var.GrowingSeasonIndex) & (self.var._modelTime.doy == pd))
+            # cond1 = ((self.var.GrowingSeason) & (self.var._modelTime.doy == pd))
+            cond1 = self.var.GrowingSeasonDayOne
             pd[np.logical_not(cond1)] = 0
             hd[np.logical_not(cond1)] = 0
             max_harvest_date = int(np.max(hd))
@@ -931,4 +878,108 @@ class CropParameters(object):
         self.compute_water_productivity_adjustment_factor()
         # self.read_crop_area()   # TEST
         self.update_crop_parameters()
+                                    
+def read_params(fn):
+    with open(fn) as f:
+        content = f.read().splitlines()
+
+    # remove commented lines
+    content = [x for x in content if re.search('^(?!%%).*', x)]
+    content = [re.split('\s*:\s*', x) for x in content]
+    params = {}
+    for x in content:
+        if len(x) > 1:
+            nm = x[0]
+            val = x[1]
+            params[nm] = val
+    return params
+
+class CropParametersPoint(CropParameters):
+    def __init__(self, CropParameters_variable):
+        super(CropParametersPoint, self).__init__(CropParameters_variable)
+
+    def get_num_crop(self):
+        self.var.nCrop = 1
+
+    def read(self):        
+        crop_parameter_values = read_params(self.var._configuration.CROP_PARAMETERS['cropParametersFile'])
+        for param in self.var.crop_parameter_names:
+            read_from_file = (param in crop_parameter_values.keys())
+            if read_from_file:
+                d = crop_parameter_values[param]
+                d = np.broadcast_to(d[None,None,:], (self.var.nFarm,self.var.nCrop, self.var.nCell))
+                vars(self.var)[param] = d.copy()                
+            else:                
+                try:
+                    parameter_values = np.zeros((self.var.nCrop))
+                    for index,crop_id in enumerate(self.var.CropID):
+                        parameter_values[index] = file_handling.read_crop_parameter_from_sqlite(
+                            self.var.CropParameterDatabase,
+                            crop_id,
+                            param
+                        )[0]
+                    vars(self.var)[param] = np.broadcast_to(
+                        parameter_values[:,None,None],
+                        (self.var.nFarm, self.var.nCrop, self.var.nCell)
+                    )
+                except:
+                    raise ModelError("Error reading parameter " + param + " from crop parameter database")
+        
+class CropParametersGrid(CropParameters):    
+    def __init__(self, CropParameters_variable):
+        super(CropParametersGrid, self).__init__(CropParameters_variable)
+        self.var.CalendarType = int(self.var._configuration.CROP_PARAMETERS['CalendarType'])
+        self.var.SwitchGDD = bool(int(self.var._configuration.CROP_PARAMETERS['SwitchGDD']))
+        self.var.GDDmethod = int(self.var._configuration.CROP_PARAMETERS['GDDmethod'])                                      
+
+    def get_num_crop(self):
+        self.var.nCrop = file_handling.get_dimension_variable(
+            self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
+            'crop'
+        ).size
+        
+    def initial(self):
+        # NB be careful with data types!
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        self.var.GrowingSeasonIndex = np.copy(arr_zeros.astype(bool))
+        self.var.GrowingSeasonDayOne = np.copy(arr_zeros.astype(bool))
+        self.var.DAP = np.copy(arr_zeros.astype(np.int32))
+        self.var.fCO2 = arr_zeros.copy()
+        self.var.CurrentConc = arr_zeros.copy()
+        self.read()
+        self.compute_crop_parameters()
+        self.var.PlantingDateAdj = np.copy(self.var.PlantingDate)  # TODO
+        self.var.HarvestDateAdj = np.copy(self.var.HarvestDate)    # TODO
+        
+    def read(self):        
+        """Function to read crop input parameters"""
+        if len(self.var.crop_parameters_to_read) > 0:
+            for param in self.var.crop_parameters_to_read:
+                read_from_netcdf = file_handling.check_if_nc_has_variable(
+                    self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
+                    param
+                    )
+                if read_from_netcdf:
+                    landmask_crop = np.broadcast_to(self.var.landmask[None,:,:], (self.var.nCrop, self.var.nLat, self.var.nLon))
+                    d = file_handling.netcdf_to_arrayWithoutTime(
+                        self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
+                        param,
+                        cloneMapFileName=self.var.cloneMapFileName)
+                    d = d[self.var.landmask_crop].reshape(self.var.nCrop,self.var.nCell)
+                    vars(self.var)[param] = np.broadcast_to(d, (self.var.nFarm, self.var.nCrop, self.var.nCell))                    
+                else:
+                    try:
+                        parameter_values = np.zeros((self.var.nCrop))
+                        for index,crop_id in enumerate(self.var.CropID):
+                            parameter_values[index] = file_handling.read_crop_parameter_from_sqlite(
+                                self.var.CropParameterDatabase,
+                                crop_id,
+                                param
+                            )[0]
+                        vars(self.var)[param] = np.broadcast_to(
+                            parameter_values[:,None,None],
+                            (self.var.nFarm, self.var.nCrop, self.var.nCell)
+                        )
                         
+                    except:
+                        raise ModelError("Error reading parameter " + param + " from crop parameter database")

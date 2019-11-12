@@ -77,12 +77,16 @@ class InitialCondition(object):
 
     def set_initial_condition_from_file(self):
         # TODO: use config to set initialConditionVarName, initialConditionDepthVarName
+        landmask_comp = np.broadcast_to(
+            self.var.landmask[None,...],
+            (self.var.nComp, self.var.nLat, self.var.nLon)
+        )        
         th = file_handling.netcdf_to_arrayWithoutTime(
             self.var.initialConditionNC,
             'th',
             cloneMapFileName=self.var.cloneMapFileName)
         th = self.interpolate_initial_condition_to_compartments(th)
-        th = th[self.var.landmask_comp].reshape(self.var.nComp, self.var.nCell)
+        th = th[landmask_comp].reshape(self.var.nComp, self.var.nCell)
         self.var.th = np.broadcast_to(
             th[None,None,...],
             (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nCell)
