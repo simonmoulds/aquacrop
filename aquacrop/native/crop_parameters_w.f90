@@ -93,7 +93,99 @@ contains
        end do
     end do
   end subroutine update_growing_season_w                    
-    
+
+  subroutine compute_root_extraction_terms_w( &
+       sx_top, &
+       sx_bot, &
+       sx_top_q, &
+       sx_bot_q, &
+       n_farm, n_crop, n_cell &
+       )
+
+    integer(int32) :: n_farm, n_crop, n_cell
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: sx_top
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: sx_bot
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: sx_top_q
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: sx_bot_q
+    integer(int32) :: i, j, k
+
+    do i = 1, n_farm
+       do j = 1, n_crop
+          do k = 1, n_cell
+             call compute_root_extraction_terms( &
+                  sx_top(k,j,i), &
+                  sx_bot(k,j,i), &
+                  sx_top_q(k,j,i), &
+                  sx_bot_q(k,j,i) &
+                  )
+          end do
+       end do
+    end do
+  end subroutine compute_root_extraction_terms_w
+
+  subroutine compute_hi_linear_w( &
+       t_lin_switch, &
+       dhi_linear, &
+       hi_ini, &
+       hi0, &
+       higc, &
+       yld_form_cd, &
+       n_farm, n_crop, n_cell &
+       )
+
+    integer(int32) :: n_farm, n_crop, n_cell
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(inout) :: t_lin_switch
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: dhi_linear
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: hi_ini
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: hi0
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: higc
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: yld_form_cd
+    integer(int32) :: i, j, k
+    do i = 1, n_farm
+       do j = 1, n_crop
+          do k = 1, n_cell
+             call compute_hi_linear( &
+                  t_lin_switch(k,j,i), &
+                  dhi_linear(k,j,i), &
+                  hi_ini(k,j,i), &
+                  hi0(k,j,i), &
+                  higc(k,j,i), &
+                  yld_form_cd(k,j,i) &
+                  )
+          end do
+       end do
+    end do
+  end subroutine compute_hi_linear_w
+
+  subroutine compute_higc_w( &
+       higc, &
+       yld_form_cd, &
+       hi0, &
+       hi_ini, &
+       n_farm, n_crop, n_cell &
+       )
+
+    integer(int32) :: n_farm, n_crop, n_cell
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: higc
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: yld_form_cd
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: hi0
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: hi_ini
+    integer(int32) :: i, j, k
+    do i = 1, n_farm
+       do j = 1, n_crop
+          do k = 1, n_cell
+             call compute_higc( &
+                  higc(k,j,i), &
+                  yld_form_cd(k,j,i), &
+                  hi0(k,j,i), &
+                  hi_ini(k,j,i) &
+                  )
+          end do
+       end do
+    end do
+  end subroutine compute_higc_w
+  
+                  
 end module crop_parameters_w
 
   

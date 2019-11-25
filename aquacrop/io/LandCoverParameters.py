@@ -10,11 +10,12 @@ from hm import file_handling
 
 from .SoilHydraulicParameters import *
 from .SoilParameters import *
+from .CropArea import *
 from .CropParameters import *
 from .FarmParameters import *
 from .IrrigationManagementParameters import *
 from .FieldManagementParameters import *
-
+    
 class BaseClass(object):
     def __init__(self, var, configuration):
         self.var = var

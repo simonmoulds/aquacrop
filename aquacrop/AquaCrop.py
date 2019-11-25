@@ -13,6 +13,8 @@ from .LandSurface import LandSurface
 import logging
 logger = logging.getLogger(__name__)
 
+# class AquaCrop1D(Model1D)
+# class AquaCrop2D(Model2D)
 class AquaCrop(Model):    
     def __init__(self, configuration, modelTime, initialState = None):
         super(AquaCrop, self).__init__(

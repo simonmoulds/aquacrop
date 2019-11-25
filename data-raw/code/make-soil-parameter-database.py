@@ -62,7 +62,7 @@ def run():
     parameters_df.to_sql('parameters', con, if_exists='replace', index=False)
     vals_df = pd.read_csv(os.path.join('../data','soil_parameter_values.csv'), encoding='utf-8')
     vals_df.to_sql('parameter_values', con, if_exists='append', index=False)
-    os.system("cp soil_parameter_database.sqlite3 ../../aquacrop/data")
+    os.system("cp soil_parameter_database.sqlite3 ../../aquacrop/io/data")
 
 if __name__ == "__main__":
     run()

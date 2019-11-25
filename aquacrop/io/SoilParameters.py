@@ -101,7 +101,7 @@ class SoilParametersGrid(SoilParameters):
                 vars(self.var)[param] = d.copy()
             else:
                 try:
-                    parameter_value = file_handling.read_soil_parameter_from_sqlite(
+                    parameter_value = file_handling.read_parameter_from_sqlite(
                         self.var.SoilParameterDatabase,
                         param
                     )
@@ -115,9 +115,8 @@ class SoilParametersGrid(SoilParameters):
 def read_params(fn):
     with open(fn) as f:
         content = f.read().splitlines()
-
     # remove commented lines
-    content = [x for x in content if re.search('^(?!%%).*', x)]
+    content = [x for x in content if re.search('^(?!%).*', x)]
     content = [re.split('\s*:\s*', x) for x in content]
     params = {}
     for x in content:

@@ -71,7 +71,7 @@ def run():
     for crop in ['cotton','maize','potato','quinoa','paddy','soybean','sugarbeet','sunflower','tomato','wheat','barley','sugarcane','sorghum','tef','drybean']:
         vals_df = pd.read_csv(os.path.join('../data',crop + '_parameter_values.csv'), encoding='utf-8')
         vals_df.to_sql('parameter_values', con, if_exists='append', index=False)
-    os.system("cp crop_parameter_database.sqlite3 ../../aquacrop/data")
+    os.system("cp crop_parameter_database.sqlite3 ../../aquacrop/io/data")
 
 if __name__ == "__main__":
     run()

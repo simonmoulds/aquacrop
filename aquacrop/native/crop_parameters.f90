@@ -92,5 +92,125 @@ contains
     end if
     
   end subroutine update_growing_season
+
+  function compute_init_cc( &
+       plant_pop, &
+       seed_size &
+       ) result (cc0)
+
+    integer(int32), intent(in) :: plant_pop
+    real(real64), intent(in) :: seed_size
+    real(real64) :: cc0
+    cc0 = nint(10000. * plant_pop * seed_size * 10 ** -8) / 10000.
+    
+  end function compute_init_cc
   
+  subroutine compute_root_extraction_terms( &
+       sx_top, &
+       sx_bot, &
+       sx_top_q, &
+       sx_bot_q &
+       )
+
+    real(real64), intent(inout) :: sx_top
+    real(real64), intent(inout) :: sx_bot
+    real(real64), intent(in) :: sx_top_q
+    real(real64), intent(in) :: sx_bot_q
+    real(real64) :: s1, s2, ss1, ss2, xx
+    
+    s1 = sx_top_q
+    s2 = sx_bot_q
+    if ( s1 == s2 ) then
+       sx_top = s1
+       sx_bot = s2
+    else
+       if ( sx_top_q < sx_bot_q ) then
+          s1 = sx_bot_q
+          s2 = sx_top_q
+       end if
+       xx = 3. * (s2 / (s1 - s2))
+       if ( xx < 0.5 ) then
+          ss1 = (4. / 3.5) * s1
+          ss2 = 0.
+       else
+          ss1 = (xx + 3.5) * (s1 / (xx + 3.))
+          ss2 = (xx - 0.5) * (s2 / xx)
+       end if
+
+       if ( sx_top_q > sx_bot_q ) then
+          sx_top = ss1
+          sx_bot = ss2
+       else
+          sx_top = ss2
+          sx_bot = ss1
+       end if
+    end if
+    
+  end subroutine compute_root_extraction_terms
+
+  subroutine compute_higc( &
+       higc, &
+       yld_form_cd, &
+       hi0, &
+       hi_ini &
+       ) 
+
+    real(real64), intent(inout) :: higc
+    integer(int32), intent(in) :: yld_form_cd
+    real(real64), intent(in) :: hi0
+    real(real64), intent(in) :: hi_ini
+    integer(int32) :: thi
+    real(real64) :: hi_est
+
+    thi = yld_form_cd
+    higc = 0.001
+    hi_est = 0.
+
+    do while ( hi_est <= (0.98 * hi0) )
+       higc = higc + 0.001
+       hi_est = (hi_ini * hi0) / (hi_ini + (hi0 - hi_ini) * exp(-higc * thi))
+    end do
+    
+    if ( hi_est >= hi0 ) then
+       higc = higc - 0.001
+    end if
+  end subroutine compute_higc
+  
+  subroutine compute_hi_linear( &
+       t_lin_switch, &
+       dhi_linear, &
+       hi_ini, &
+       hi0, &
+       higc, &
+       yld_form_cd &
+       )
+
+    ! real(real64), intent(inout) :: t_lin_switch
+    integer(int32), intent(inout) :: t_lin_switch
+    real(real64), intent(inout) :: dhi_linear
+    real(real64), intent(in) :: hi_ini
+    real(real64), intent(in) :: hi0
+    real(real64), intent(in) :: higc
+    integer(int32), intent(in) :: yld_form_cd
+    real(real64) :: ti, hi_est, hi_prev, hi_new
+    ti = 0.
+    hi_est = 0.
+    hi_prev = hi_ini
+    do while ( hi_est <= hi0 .and. ti < yld_form_cd )
+       ti = ti + 1
+       hi_new = (hi_ini * hi0) / (hi_ini + (hi0 - hi_ini) * exp(-higc * ti))
+       hi_est = hi_new + (yld_form_cd - ti) * (hi_new - hi_prev)
+       hi_prev = hi_new
+    end do
+    t_lin_switch = ti - 1
+
+    if ( t_lin_switch > 0. ) then
+       hi_est = (hi_ini * hi0) / (hi_ini + (hi0 - hi_ini) * exp(-higc * t_lin_switch))
+    else
+       hi_est = 0.
+    end if
+    dhi_linear = (hi0 - hi_est) / (yld_form_cd - t_lin_switch)
+    
+  end subroutine compute_hi_linear
+
 end module crop_parameters

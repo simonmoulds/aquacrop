@@ -50,22 +50,13 @@ class LandCover(object):
         self.dimensions = var.dimensions
         self.nLat, self.nLon, self.nCell = var.nLat, var.nLon, var.nCell
         self.nFarm, self.nCrop = 1, 1
-        
-        # attach weatherrological and groundwater data to land cover object
+        var.nFarm, var.nCrop = self.nFarm, self.nCrop
         self.weather = var.weather_module
         self.groundwater = var.groundwater_module
-        # self.canal = var.canal_module
 
     def initial(self):
         pass
     
-    def add_dimensions(self):
-        """Function to add dimensions to model dimensions 
-        object. This is necessary if the LandCover object 
-        contains a reporting method."""
-        self.dimensions['farm'] = np.arange(self.nFarm)
-        self.dimensions['crop'] = np.arange(self.nCrop)
-
     def dynamic(self):
         pass
 
@@ -96,18 +87,50 @@ class Cropland(LandCover):
         self.transpiration_module = Transpiration(self)
         self.evapotranspiration_module = Evapotranspiration(self)
         self.inflow_module = Inflow(self)
-
-        # plan is to merge these five classes:
+        # merge the following five classes?
         self.HI_ref_current_day_module = HarvestIndex(self)
-        # self.HI_ref_current_day_module = HIrefCurrentDay(self)
         self.biomass_accumulation_module = BiomassAccumulation(self)
         self.temperature_stress_module = TemperatureStress(self)
         self.harvest_index_module = HarvestIndexAdjusted(self)
         self.crop_yield_module = CropYield(self)
-        
 #         self.grid_cell_mean_module = GridCellMean(self)
         self.add_dimensions()
+        self.broadcast_landmask()
         
+    def add_dimensions(self):
+        """Function to add dimensions to model dimensions 
+        object. This is necessary if the LandCover object 
+        contains a reporting method.
+        """
+        self.dimensions['farm'] = np.arange(self.nFarm)
+        self.dimensions['crop'] = np.arange(self.nCrop)
+
+    def broadcast_landmask(self):
+        """Function broadcasts the landmask to the various 
+        shapes which are needed to select input data, 
+        accounting for farm, crop, and layer dimensions.
+        """
+        self.landmask_crop = np.broadcast_to(
+            self.landmask[None, ...],
+            (self.nCrop,) + self.landmask.shape
+        )
+        self.landmask_layer = np.broadcast_to(
+            self.landmask[None,...],
+            (self.nLayer,) + self.landmask.shape
+        )
+        self.landmask_comp = np.broadcast_to(
+            self.landmask[None,...],
+            (self.nComp,) + self.landmask.shape
+        )                
+        self.landmask_farm = np.broadcast_to(
+            self.landmask[None, ...],
+            (self.var.nFarm,) + self.landmask.shape
+        )
+        self.landmask_farm_crop = np.broadcast_to(
+            self.landmask[None, None, ...],
+            (self.nFarm, self.nCrop,) + self.landmask.shape
+        )
+    
     def initial(self):
         self.carbon_dioxide_module.initial()
         self.lc_parameters_module.initial()
@@ -142,7 +165,8 @@ class Cropland(LandCover):
             self._configuration.NETCDF_ATTRIBUTES,
             self._configuration.CROP_PARAMETERS,  # TODO: shouldn't have to specify this
             variable_list_crop,
-            'cropland')
+            'cropland'
+        )
         
     def dynamic(self):
         self.carbon_dioxide_module.dynamic()

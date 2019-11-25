@@ -1,0 +1,8 @@
+id,name,value,min,max,parameter_id
+1,Mulches,0,,,1
+2,MulchPctGS,0,,,2
+3,MulchPctOS,0,,,3
+4,fMulch,0,,,4
+5,Bunds,0,,,5
+6,zBund,0,,,6
+7,BundWater,0,,,7

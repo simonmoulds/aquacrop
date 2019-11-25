@@ -57,10 +57,6 @@ class FarmParametersGrid(object):
         return farm_area
         
     def set_farm_area(self):
-        self.var.landmask_farm = np.broadcast_to(
-            self.var.landmask[None,:,:],
-            (self.var.nFarm, self.var.nLat, self.var.nLon))
-        
         if self.var.AnnualChangeInFarmArea:
             if self.var._modelTime.timeStepPCR == 1 or self.var._modelTime.doy == 1:
                 date = '%04i-%02i-%02i' % (self.var._modelTime.year, 1, 1)

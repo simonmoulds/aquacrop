@@ -73,13 +73,13 @@ class Weather(object):
             raise ModelError(msg)
         
     def set_weather_conversion_factors(self):
-        self.preConst       = 0.0
-        self.preFactor      = 1.0
-        self.tminConst       = 0.0
-        self.tminFactor      = 1.0
-        self.tmaxConst       = 0.0
-        self.tmaxFactor      = 1.0
-        self.etrefConst  = 0.0
+        self.preConst = 0.0
+        self.preFactor = 1.0
+        self.tminConst = 0.0
+        self.tminFactor = 1.0
+        self.tmaxConst = 0.0
+        self.tmaxFactor = 1.0
+        self.etrefConst = 0.0
         self.etrefFactor = 1.0
         if 'precipitationConstant' in self._configuration.WEATHER:
             self.preConst = np.float64(self._configuration.WEATHER['precipitationConstant'])
@@ -115,7 +115,8 @@ class Weather(object):
             str(self._modelTime.fulldate),
             useDoy = method_for_time_index,
             cloneMapFileName = self.cloneMapFileName,
-            LatitudeLongitude = True)[self.landmask][None,None,:]
+            LatitudeLongitude = True
+        )[self.landmask][None,None,:]
         self.adjust_precipitation_input_data()
 
     def adjust_temperature_data(self):
