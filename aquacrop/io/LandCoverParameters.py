@@ -58,7 +58,6 @@ class CoverFractionGrid(BaseClass):
         #             self.coverFractionVarName,
         #             date,
         #             # useDoy = method_for_time_index,
-        #             # cloneMapAttributes = self.cloneMapAttributes,
         #             cloneMapFileName = self.var.cloneMapFileName,
         #             LatitudeLongitude = True)[self.var.landmask]
         #         cover_fraction = np.float64(cover_fraction)
@@ -74,7 +73,6 @@ class CoverFractionGrid(BaseClass):
         #             self.coverFractionVarName,
         #             date,
         #             # useDoy = method_for_time_index,
-        #             # cloneMapAttributes = self.cloneMapAttributes,
         #             cloneMapFileName = self.var.cloneMapFileName,
         #             LatitudeLongitude = True)[self.var.landmask]
         #         cover_fraction = np.float64(cover_fraction)

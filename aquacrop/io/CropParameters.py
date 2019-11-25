@@ -89,10 +89,10 @@ class CropParameters(object):
     def adjust_planting_and_harvesting_date(self):
         leap_year = calendar.isleap(self.var._modelTime.currTime.year)
         aquacrop_fc.crop_parameters_w.adjust_pd_hd_w(
-            self.var.PlantingDateAdj.T,
-            self.var.HarvestDateAdj.T,
-            self.var.PlantingDate.T,
-            self.var.HarvestDate.T,
+            np.int32(self.var.PlantingDateAdj).T,
+            np.int32(self.var.HarvestDateAdj).T,
+            np.int32(self.var.PlantingDate).T,
+            np.int32(self.var.HarvestDate).T,
             np.int32(self.var._modelTime.doy),
             np.int32(self.var._modelTime.timeStepPCR),
             np.int32(leap_year),

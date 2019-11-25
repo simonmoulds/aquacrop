@@ -23,6 +23,7 @@ class CarbonDioxide(object):
             self.var.co2VarName = self.var._configuration.CARBON_DIOXIDE['co2VarName']
         self.var.co2_set_per_year  = False
         self.var.conc = np.ones((self.var.nCell))
+        # one option would be to simply use xarray directly at this point: load the dataset, extract relevant points, etc.
         
     def dynamic(self):        
         if self.var._modelTime.timeStepPCR == 1 or self.var._modelTime.doy == 1:

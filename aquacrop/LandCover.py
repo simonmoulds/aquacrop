@@ -44,7 +44,7 @@ class LandCover(object):
         self._configuration = var._configuration
         self._modelTime = var._modelTime
         self.cloneMapFileName = var.cloneMapFileName
-        self.cloneMap = var.cloneMap
+        # self.cloneMap = var.cloneMap
         self.landmask = var.landmask
         self.grid_cell_area = var.grid_cell_area
         self.dimensions = var.dimensions

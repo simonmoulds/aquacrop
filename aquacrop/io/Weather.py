@@ -4,6 +4,7 @@
 import os
 import string
 import numpy as np
+import xarray as xr
 
 from hm import file_handling
 from hm.Messages import ModelError, ModelFileError, ModelWarning
@@ -17,7 +18,7 @@ class Weather(object):
         self._configuration = Weather_variable._configuration
         self._modelTime = Weather_variable._modelTime
         self.cloneMapFileName = Weather_variable.cloneMapFileName
-        self.cloneMap = Weather_variable.cloneMap
+        # self.cloneMap = Weather_variable.cloneMap
         self.landmask = Weather_variable.landmask
 
     def initial(self):
@@ -105,7 +106,11 @@ class Weather(object):
         self.precipitation = np.floor(self.precipitation * 100000.)/100000.
 
     def read_precipitation_data(self):
-        method_for_time_index = None
+        method_for_time_index = None        
+        # fn = self.preFileNC.format(day=self._modelTime.currTime.day, month=self._modelTime.currTime.month, year=self._modelTime.currTime.year)
+        # ds = xr.open_dataset(fn)
+        # ar = ds['precipitation'].sel(time=self._modelTime.fulldate)
+        # print(ar.values)
         self.precipitation = file_handling.netcdf_to_array(
             self.preFileNC.format(
                 day=self._modelTime.currTime.day,
@@ -117,6 +122,8 @@ class Weather(object):
             cloneMapFileName = self.cloneMapFileName,
             LatitudeLongitude = True
         )[self.landmask][None,None,:]
+        print(self.preVarName)
+        print(self.precipitation)
         self.adjust_precipitation_input_data()
 
     def adjust_temperature_data(self):
