@@ -58,10 +58,8 @@ class CropParameters(object):
         ]
         for param in int_params_to_compute:
             vars(self.var)[param] = np.copy(arr_zeros.astype(np.int32))
-
         for param in flt_params_to_compute:
             vars(self.var)[param] = np.copy(arr_zeros.astype(np.float64))
-
         self.compute_crop_parameters()
 
     def get_crop_parameter_names(self):        
@@ -298,7 +296,7 @@ class CropParameters(object):
         self.var.CanopyDevEndCD = np.copy(self.var.CanopyDevEnd)
         self.var.HIstartCD = np.copy(self.var.HIstart)
         self.var.HIendCD = np.copy(self.var.HIend)
-        self.var.YldFormCD = np.copy(self.var.YldForm)            
+        self.var.YldFormCD = np.copy(self.var.YldForm)
         FloweringEndCD = np.copy(self.var.FloweringEnd)
         self.var.FloweringCD = np.copy(self.var.Flowering)
 
@@ -311,29 +309,29 @@ class CropParameters(object):
                 # Find GDD equivalent for each crop calendar variable
                 m, n, p = pd.shape
                 I, J, K = np.ogrid[:m,:n,:p]
-                emergence_idx = pd + EmergenceCD
+                emergence_idx = np.int32(pd + EmergenceCD)
                 self.var.Emergence = GDDcum[emergence_idx,I,J,K]
-                canopy10pct_idx = pd + Canopy10PctCD
+                canopy10pct_idx = np.int32(pd + Canopy10PctCD)
                 self.var.Canopy10Pct = GDDcum[canopy10pct_idx,I,J,K]
-                maxrooting_idx = pd + MaxRootingCD
+                maxrooting_idx = np.int32(pd + MaxRootingCD)
                 self.var.MaxRooting = GDDcum[maxrooting_idx,I,J,K]
-                maxcanopy_idx = pd + self.var.MaxCanopyCD
+                maxcanopy_idx = np.int32(pd + self.var.MaxCanopyCD)
                 self.var.MaxCanopy = GDDcum[maxcanopy_idx,I,J,K]
-                canopydevend_idx = pd + self.var.CanopyDevEndCD
+                canopydevend_idx = np.int32(pd + self.var.CanopyDevEndCD)
                 self.var.CanopyDevEnd = GDDcum[canopydevend_idx,I,J,K]
-                senescence_idx = pd + SenescenceCD
+                senescence_idx = np.int32(pd + SenescenceCD)
                 self.var.Senescence = GDDcum[senescence_idx,I,J,K]
-                maturity_idx = pd + MaturityCD
+                maturity_idx = np.int32(pd + MaturityCD)
                 self.var.Maturity = GDDcum[maturity_idx,I,J,K]
-                histart_idx = pd + self.var.HIstartCD
+                histart_idx = np.int32(pd + self.var.HIstartCD)
                 self.var.HIstart = GDDcum[histart_idx,I,J,K]
-                hiend_idx = pd + self.var.HIendCD
+                hiend_idx = np.int32(pd + self.var.HIendCD)
                 self.var.HIend = GDDcum[hiend_idx,I,J,K]
-                yldform_idx = pd + self.var.YldFormCD
+                yldform_idx = np.int32(pd + self.var.YldFormCD)
                 self.var.YldForm = GDDcum[yldform_idx,I,J,K]
 
                 cond2 = (self.var.CropType == 3)
-                floweringend_idx = pd + FloweringEndCD
+                floweringend_idx = np.int32(pd + FloweringEndCD)
                 self.var.FloweringEnd[cond2] = GDDcum[floweringend_idx,I,J,K][cond2]
                 self.var.Flowering[cond2] = (self.var.FloweringEnd - self.var.HIstart)[cond2]
 
@@ -390,7 +388,7 @@ class CropParameters(object):
             self.var.FloweringCD[cond1] = floweringendcd[cond1]
             yldformcd = self.var.HIendCD - self.var.HIstartCD
             self.var.YldFormCD[self.var.GrowingSeasonDayOne] = yldformcd[self.var.GrowingSeasonDayOne]
-            
+                        
         else:            
             self.var.MaxCanopyCD = maxcanopy_idx - pd + 1
             self.var.CanopyDevEndCD = canopydevend_idx - pd + 1
@@ -399,8 +397,7 @@ class CropParameters(object):
             cond1 = (self.var.CropType == 3)
             floweringendcd = (floweringend_idx - pd + 1) - self.var.HIstartCD
             self.var.FloweringCD[cond1] = floweringendcd[cond1]        
-            self.var.YldFormCD = self.var.HIendCD - self.var.HIstartCD
-        print(self.var.CanopyDevEndCD)
+            self.var.YldFormCD = self.var.HIendCD - self.var.HIstartCD            
         
     def compute_crop_calendar(self):       
         if self.var.CalendarType == 1:

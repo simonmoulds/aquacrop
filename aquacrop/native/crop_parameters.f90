@@ -162,18 +162,21 @@ contains
     integer(int32) :: thi
     real(real64) :: hi_est
 
-    thi = yld_form_cd
     higc = 0.001
     hi_est = 0.
+    thi = yld_form_cd
 
-    do while ( hi_est <= (0.98 * hi0) )
-       higc = higc + 0.001
-       hi_est = (hi_ini * hi0) / (hi_ini + (hi0 - hi_ini) * exp(-higc * thi))
-    end do
+    if ( thi > 0 ) then
+       do while ( hi_est <= (0.98 * hi0) )
+          higc = higc + 0.001
+          hi_est = (hi_ini * hi0) / (hi_ini + (hi0 - hi_ini) * exp(-higc * thi))
+       end do
+    end if
     
     if ( hi_est >= hi0 ) then
        higc = higc - 0.001
     end if
+    
   end subroutine compute_higc
   
   subroutine compute_hi_linear( &

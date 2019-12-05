@@ -189,8 +189,6 @@ class SoilHydraulicParametersGrid(SoilHydraulicParameters):
                 var_name,
                 cloneMapFileName=self.var.cloneMapFileName
             )
-            print(d.shape)
-            print(self.var.landmask.shape)
             d = d[self.var.landmask_layer].reshape(self.var.nLayer,self.var.nCell)
             vars(self.var)[param] = np.broadcast_to(
                 d[None,None,:,:],

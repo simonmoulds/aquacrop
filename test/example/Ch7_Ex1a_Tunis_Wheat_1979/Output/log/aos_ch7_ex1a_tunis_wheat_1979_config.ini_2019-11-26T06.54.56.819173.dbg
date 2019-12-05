@@ -1,0 +1,824 @@
+2019-11-26 06:54:56,820 hm.disclaimer INFO 
+
+ HydroModelBuilder                                                                          
+
+ Copyright (C) 2018, Simon Moulds, Wouter Buytaert,                                         
+ Dept. of Civil and Environmental Engineering, Imperial College London, United Kingdom      
+
+ This program comes with ABSOLUTELY NO WARRANTY                                             
+ This is free software, and you are welcome to redistribute it under certain conditions     
+ See the LICENSE file for more details                                                      
+
+
+2019-11-26 06:54:56,821 hm.Configuration INFO Model run started at 2019-11-26 06:54:56.819173
+2019-11-26 06:54:56,821 hm.Configuration INFO Logging output to Output/log/aos_ch7_ex1a_tunis_wheat_1979_config.ini_2019-11-26T06.54.56.819173.log
+2019-11-26 06:54:56,821 hm.Configuration INFO Debugging output to Output/log/aos_ch7_ex1a_tunis_wheat_1979_config.ini_2019-11-26T06.54.56.819173.dbg
+2019-11-26 06:54:56,822 hm.ModelTime INFO number of time steps: 353
+2019-11-26 06:54:56,822 __main__ INFO Transient simulation run has started
+2019-11-26 06:54:56,824 rasterio.env DEBUG Entering env context: <rasterio.env.Env object at 0x7fcf81f86208>
+2019-11-26 06:54:56,824 rasterio.env DEBUG Starting outermost env
+2019-11-26 06:54:56,824 rasterio.env DEBUG No GDAL environment exists
+2019-11-26 06:54:56,824 rasterio.env DEBUG New GDAL environment <rasterio._env.GDALEnv object at 0x7fcf861e3198> created
+2019-11-26 06:54:56,827 rasterio._env DEBUG GDAL_DATA found in environment: '/home/simon/.virtualenvs/aquacrop/lib/python3.7/site-packages/rasterio/gdal_data'.
+2019-11-26 06:54:56,827 rasterio._env DEBUG PROJ data files are available at built-in paths
+2019-11-26 06:54:56,828 rasterio._env DEBUG Started GDALEnv <rasterio._env.GDALEnv object at 0x7fcf861e3198>.
+2019-11-26 06:54:56,828 rasterio.env DEBUG Got a copy of environment <rasterio._env.GDALEnv object at 0x7fcf861e3198> options
+2019-11-26 06:54:56,828 rasterio.env DEBUG Entered env context: <rasterio.env.Env object at 0x7fcf81f86208>
+2019-11-26 06:54:56,828 rasterio._base DEBUG Sharing flag: 32
+2019-11-26 06:54:56,828 rasterio._base DEBUG Nodata success: 0, Nodata value: -10000000000.000000
+2019-11-26 06:54:56,828 rasterio._base DEBUG Dataset <open DatasetReader name='Input/test.clone.tif' mode='r'> is started.
+2019-11-26 06:54:56,828 rasterio.env DEBUG Exiting env context: <rasterio.env.Env object at 0x7fcf81f86208>
+2019-11-26 06:54:56,829 rasterio.env DEBUG Cleared existing <rasterio._env.GDALEnv object at 0x7fcf861e3198> options
+2019-11-26 06:54:56,829 rasterio._env DEBUG Stopped GDALEnv <rasterio._env.GDALEnv object at 0x7fcf861e3198>.
+2019-11-26 06:54:56,829 rasterio.env DEBUG Exiting outermost env
+2019-11-26 06:54:56,829 rasterio.env DEBUG Exited env context: <rasterio.env.Env object at 0x7fcf81f86208>
+2019-11-26 06:54:56,836 hm.file_handling DEBUG Reading file: Input/test.landmask.tif
+2019-11-26 06:54:56,837 rasterio.env DEBUG Entering env context: <rasterio.env.Env object at 0x7fcf7cc7e828>
+2019-11-26 06:54:56,837 rasterio.env DEBUG Starting outermost env
+2019-11-26 06:54:56,837 rasterio.env DEBUG No GDAL environment exists
+2019-11-26 06:54:56,837 rasterio.env DEBUG New GDAL environment <rasterio._env.GDALEnv object at 0x7fcf7cc7ec88> created
+2019-11-26 06:54:56,838 rasterio._env DEBUG GDAL_DATA found in environment: '/home/simon/.virtualenvs/aquacrop/lib/python3.7/site-packages/rasterio/gdal_data'.
+2019-11-26 06:54:56,838 rasterio._env DEBUG PROJ data files are available at built-in paths
+2019-11-26 06:54:56,838 rasterio._env DEBUG Started GDALEnv <rasterio._env.GDALEnv object at 0x7fcf7cc7ec88>.
+2019-11-26 06:54:56,838 rasterio.env DEBUG Got a copy of environment <rasterio._env.GDALEnv object at 0x7fcf7cc7ec88> options
+2019-11-26 06:54:56,838 rasterio.env DEBUG Entered env context: <rasterio.env.Env object at 0x7fcf7cc7e828>
+2019-11-26 06:54:56,838 rasterio._base DEBUG Sharing flag: 32
+2019-11-26 06:54:56,839 rasterio._base DEBUG Nodata success: 0, Nodata value: -10000000000.000000
+2019-11-26 06:54:56,839 rasterio._base DEBUG Dataset <open DatasetReader name='Input/test.landmask.tif' mode='r'> is started.
+2019-11-26 06:54:56,839 rasterio.env DEBUG Exiting env context: <rasterio.env.Env object at 0x7fcf7cc7e828>
+2019-11-26 06:54:56,839 rasterio.env DEBUG Cleared existing <rasterio._env.GDALEnv object at 0x7fcf7cc7ec88> options
+2019-11-26 06:54:56,839 rasterio._env DEBUG Stopped GDALEnv <rasterio._env.GDALEnv object at 0x7fcf7cc7ec88>.
+2019-11-26 06:54:56,839 rasterio.env DEBUG Exiting outermost env
+2019-11-26 06:54:56,839 rasterio.env DEBUG Exited env context: <rasterio.env.Env object at 0x7fcf7cc7e828>
+2019-11-26 06:54:56,840 rasterio.env DEBUG Entering env context: <rasterio.env.Env object at 0x7fcf7cc0acf8>
+2019-11-26 06:54:56,840 rasterio.env DEBUG Starting outermost env
+2019-11-26 06:54:56,840 rasterio.env DEBUG No GDAL environment exists
+2019-11-26 06:54:56,840 rasterio.env DEBUG New GDAL environment <rasterio._env.GDALEnv object at 0x7fcf7cc0ad30> created
+2019-11-26 06:54:56,841 rasterio._env DEBUG GDAL_DATA found in environment: '/home/simon/.virtualenvs/aquacrop/lib/python3.7/site-packages/rasterio/gdal_data'.
+2019-11-26 06:54:56,841 rasterio._env DEBUG PROJ data files are available at built-in paths
+2019-11-26 06:54:56,841 rasterio._env DEBUG Started GDALEnv <rasterio._env.GDALEnv object at 0x7fcf7cc0ad30>.
+2019-11-26 06:54:56,841 rasterio.env DEBUG Got a copy of environment <rasterio._env.GDALEnv object at 0x7fcf7cc0ad30> options
+2019-11-26 06:54:56,841 rasterio.env DEBUG Entered env context: <rasterio.env.Env object at 0x7fcf7cc0acf8>
+2019-11-26 06:54:56,841 rasterio._base DEBUG Sharing flag: 32
+2019-11-26 06:54:56,841 rasterio._base DEBUG Nodata success: 0, Nodata value: -10000000000.000000
+2019-11-26 06:54:56,841 rasterio._base DEBUG Dataset <open DatasetReader name='Input/test.clone.tif' mode='r'> is started.
+2019-11-26 06:54:56,841 rasterio.env DEBUG Exiting env context: <rasterio.env.Env object at 0x7fcf7cc0acf8>
+2019-11-26 06:54:56,841 rasterio.env DEBUG Cleared existing <rasterio._env.GDALEnv object at 0x7fcf7cc0ad30> options
+2019-11-26 06:54:56,841 rasterio._env DEBUG Stopped GDALEnv <rasterio._env.GDALEnv object at 0x7fcf7cc0ad30>.
+2019-11-26 06:54:56,841 rasterio.env DEBUG Exiting outermost env
+2019-11-26 06:54:56,841 rasterio.env DEBUG Exited env context: <rasterio.env.Env object at 0x7fcf7cc0acf8>
+2019-11-26 06:54:56,843 rasterio._io DEBUG Output nodata value read from file: None
+2019-11-26 06:54:56,843 rasterio._io DEBUG Output nodata values: [None]
+2019-11-26 06:54:56,844 rasterio._io DEBUG all_valid: True
+2019-11-26 06:54:56,844 rasterio._io DEBUG mask_flags: ([<MaskFlags.all_valid: 1>],)
+2019-11-26 06:54:56,845 rasterio._io DEBUG Jump straight to _read()
+2019-11-26 06:54:56,845 rasterio._io DEBUG Window: Window(col_off=0, row_off=0, width=2, height=2)
+2019-11-26 06:54:56,846 rasterio._io DEBUG IO window xoff=0.0 yoff=0.0 width=2.0 height=2.0
+2019-11-26 06:54:56,850 hm.file_handling DEBUG Check whether the variable: crop is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,902 hm.file_handling DEBUG Check whether the variable: precipitation is defined in the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,905 hm.file_handling DEBUG Check whether the variable: Tmin is defined in the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,908 hm.file_handling DEBUG Check whether the variable: Tmax is defined in the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,908 hm.file_handling DEBUG Check whether the variable: referencePotET is defined in the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,944 hm.file_handling DEBUG Reading variable: ksat from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,947 hm.file_handling DEBUG Reading variable: th_s from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,948 hm.file_handling DEBUG Reading variable: th_fc from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,951 hm.file_handling DEBUG Reading variable: th_wp from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,953 hm.file_handling DEBUG Check whether the variable: EvapZsurf is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,953 hm.file_handling DEBUG Reading variable: EvapZsurf from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,954 hm.file_handling DEBUG Check whether the variable: EvapZmin is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,954 hm.file_handling DEBUG Reading variable: EvapZmin from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,956 hm.file_handling DEBUG Check whether the variable: EvapZmax is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,956 hm.file_handling DEBUG Reading variable: EvapZmax from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,957 hm.file_handling DEBUG Check whether the variable: Kex is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,958 hm.file_handling DEBUG Reading variable: Kex from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,961 hm.file_handling DEBUG Check whether the variable: fevap is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,962 hm.file_handling DEBUG Reading variable: fevap from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,964 hm.file_handling DEBUG Check whether the variable: fWrelExp is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,964 hm.file_handling DEBUG Reading variable: fWrelExp from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,966 hm.file_handling DEBUG Check whether the variable: fwcc is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,966 hm.file_handling DEBUG Reading variable: fwcc from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,968 hm.file_handling DEBUG Check whether the variable: CN is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,968 hm.file_handling DEBUG Reading variable: CN from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,969 hm.file_handling DEBUG Check whether the variable: zCN is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,969 hm.file_handling DEBUG Reading variable: zCN from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,973 hm.file_handling DEBUG Check whether the variable: zGerm is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,974 hm.file_handling DEBUG Reading variable: zGerm from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,975 hm.file_handling DEBUG Check whether the variable: zRes is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,975 hm.file_handling DEBUG Reading variable: zRes from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,978 hm.file_handling DEBUG Check whether the variable: fshape_cr is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,978 hm.file_handling DEBUG Reading variable: fshape_cr from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,980 hm.file_handling DEBUG Check whether the variable: CropType is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,980 hm.file_handling DEBUG Reading variable: CropType from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,982 hm.file_handling DEBUG Check whether the variable: PlantingDate is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,982 hm.file_handling DEBUG Reading variable: PlantingDate from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,986 hm.file_handling DEBUG Check whether the variable: HarvestDate is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,986 hm.file_handling DEBUG Reading variable: HarvestDate from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,987 hm.file_handling DEBUG Check whether the variable: Emergence is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,987 hm.file_handling DEBUG Reading variable: Emergence from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,989 hm.file_handling DEBUG Check whether the variable: MaxRooting is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,989 hm.file_handling DEBUG Reading variable: MaxRooting from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,991 hm.file_handling DEBUG Check whether the variable: Senescence is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,991 hm.file_handling DEBUG Reading variable: Senescence from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,992 hm.file_handling DEBUG Check whether the variable: Maturity is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,992 hm.file_handling DEBUG Reading variable: Maturity from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,994 hm.file_handling DEBUG Check whether the variable: HIstart is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,995 hm.file_handling DEBUG Reading variable: HIstart from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,997 hm.file_handling DEBUG Check whether the variable: Flowering is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,997 hm.file_handling DEBUG Reading variable: Flowering from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,999 hm.file_handling DEBUG Check whether the variable: YldForm is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:56,999 hm.file_handling DEBUG Reading variable: YldForm from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,003 hm.file_handling DEBUG Check whether the variable: PolHeatStress is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,003 hm.file_handling DEBUG Reading variable: PolHeatStress from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,009 hm.file_handling DEBUG Check whether the variable: PolColdStress is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,010 hm.file_handling DEBUG Reading variable: PolColdStress from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,013 hm.file_handling DEBUG Check whether the variable: BioTempStress is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,013 hm.file_handling DEBUG Reading variable: BioTempStress from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,016 hm.file_handling DEBUG Check whether the variable: PlantPop is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,016 hm.file_handling DEBUG Reading variable: PlantPop from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,020 hm.file_handling DEBUG Check whether the variable: Determinant is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,021 hm.file_handling DEBUG Reading variable: Determinant from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,022 hm.file_handling DEBUG Check whether the variable: ETadj is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,023 hm.file_handling DEBUG Reading variable: ETadj from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,024 hm.file_handling DEBUG Check whether the variable: LagAer is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,024 hm.file_handling DEBUG Reading variable: LagAer from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,026 hm.file_handling DEBUG Check whether the variable: Tbase is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,026 hm.file_handling DEBUG Reading variable: Tbase from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,027 hm.file_handling DEBUG Check whether the variable: Tupp is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,028 hm.file_handling DEBUG Reading variable: Tupp from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,029 hm.file_handling DEBUG Check whether the variable: Tmax_up is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,029 hm.file_handling DEBUG Reading variable: Tmax_up from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,031 hm.file_handling DEBUG Check whether the variable: Tmax_lo is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,032 hm.file_handling DEBUG Reading variable: Tmax_lo from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,033 hm.file_handling DEBUG Check whether the variable: Tmin_up is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,033 hm.file_handling DEBUG Reading variable: Tmin_up from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,035 hm.file_handling DEBUG Check whether the variable: Tmin_lo is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,035 hm.file_handling DEBUG Reading variable: Tmin_lo from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,037 hm.file_handling DEBUG Check whether the variable: GDD_up is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,038 hm.file_handling DEBUG Reading variable: GDD_up from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,040 hm.file_handling DEBUG Check whether the variable: GDD_lo is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,040 hm.file_handling DEBUG Reading variable: GDD_lo from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,043 hm.file_handling DEBUG Check whether the variable: fshape_b is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,043 hm.file_handling DEBUG Reading variable: fshape_b from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,045 hm.file_handling DEBUG Check whether the variable: PctZmin is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,045 hm.file_handling DEBUG Reading variable: PctZmin from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,046 hm.file_handling DEBUG Check whether the variable: Zmin is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,047 hm.file_handling DEBUG Reading variable: Zmin from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,049 hm.file_handling DEBUG Check whether the variable: Zmax is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,049 hm.file_handling DEBUG Reading variable: Zmax from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,051 hm.file_handling DEBUG Check whether the variable: fshape_r is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,051 hm.file_handling DEBUG Reading variable: fshape_r from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,052 hm.file_handling DEBUG Check whether the variable: fshape_ex is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,052 hm.file_handling DEBUG Reading variable: fshape_ex from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,054 hm.file_handling DEBUG Check whether the variable: SxTopQ is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,054 hm.file_handling DEBUG Reading variable: SxTopQ from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,055 hm.file_handling DEBUG Check whether the variable: SxBotQ is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,056 hm.file_handling DEBUG Reading variable: SxBotQ from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,058 hm.file_handling DEBUG Check whether the variable: a_Tr is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,058 hm.file_handling DEBUG Reading variable: a_Tr from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,059 hm.file_handling DEBUG Check whether the variable: SeedSize is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,059 hm.file_handling DEBUG Reading variable: SeedSize from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,061 hm.file_handling DEBUG Check whether the variable: CCmin is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,061 hm.file_handling DEBUG Reading variable: CCmin from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,062 hm.file_handling DEBUG Check whether the variable: CCx is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,063 hm.file_handling DEBUG Reading variable: CCx from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,064 hm.file_handling DEBUG Check whether the variable: CDC is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,064 hm.file_handling DEBUG Reading variable: CDC from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,065 hm.file_handling DEBUG Check whether the variable: CGC is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,066 hm.file_handling DEBUG Reading variable: CGC from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,067 hm.file_handling DEBUG Check whether the variable: Kcb is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,067 hm.file_handling DEBUG Reading variable: Kcb from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,068 hm.file_handling DEBUG Check whether the variable: fage is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,069 hm.file_handling DEBUG Reading variable: fage from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,070 hm.file_handling DEBUG Check whether the variable: WP is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,070 hm.file_handling DEBUG Reading variable: WP from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,072 hm.file_handling DEBUG Check whether the variable: WPy is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,072 hm.file_handling DEBUG Reading variable: WPy from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,073 hm.file_handling DEBUG Check whether the variable: fsink is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,073 hm.file_handling DEBUG Reading variable: fsink from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,077 hm.file_handling DEBUG Check whether the variable: bsted is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,077 hm.file_handling DEBUG Reading variable: bsted from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,079 hm.file_handling DEBUG Check whether the variable: bface is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,079 hm.file_handling DEBUG Reading variable: bface from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,080 hm.file_handling DEBUG Check whether the variable: HI0 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,080 hm.file_handling DEBUG Reading variable: HI0 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,082 hm.file_handling DEBUG Check whether the variable: HIini is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,082 hm.file_handling DEBUG Reading variable: HIini from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,083 hm.file_handling DEBUG Check whether the variable: dHI_pre is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,083 hm.file_handling DEBUG Reading variable: dHI_pre from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,085 hm.file_handling DEBUG Check whether the variable: a_HI is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,085 hm.file_handling DEBUG Reading variable: a_HI from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,088 hm.file_handling DEBUG Check whether the variable: b_HI is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,088 hm.file_handling DEBUG Reading variable: b_HI from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,090 hm.file_handling DEBUG Check whether the variable: dHI0 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,090 hm.file_handling DEBUG Reading variable: dHI0 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,096 hm.file_handling DEBUG Check whether the variable: exc is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,096 hm.file_handling DEBUG Reading variable: exc from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,098 hm.file_handling DEBUG Check whether the variable: MaxFlowPct is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,098 hm.file_handling DEBUG Reading variable: MaxFlowPct from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,099 hm.file_handling DEBUG Check whether the variable: p_up1 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,100 hm.file_handling DEBUG Reading variable: p_up1 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,104 hm.file_handling DEBUG Check whether the variable: p_up2 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,104 hm.file_handling DEBUG Reading variable: p_up2 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,106 hm.file_handling DEBUG Check whether the variable: p_up3 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,106 hm.file_handling DEBUG Reading variable: p_up3 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,108 hm.file_handling DEBUG Check whether the variable: p_up4 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,108 hm.file_handling DEBUG Reading variable: p_up4 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,111 hm.file_handling DEBUG Check whether the variable: p_lo1 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,111 hm.file_handling DEBUG Reading variable: p_lo1 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,113 hm.file_handling DEBUG Check whether the variable: p_lo2 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,113 hm.file_handling DEBUG Reading variable: p_lo2 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,117 hm.file_handling DEBUG Check whether the variable: p_lo3 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,117 hm.file_handling DEBUG Reading variable: p_lo3 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,119 hm.file_handling DEBUG Check whether the variable: p_lo4 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,119 hm.file_handling DEBUG Reading variable: p_lo4 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,120 hm.file_handling DEBUG Check whether the variable: fshape_w1 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,120 hm.file_handling DEBUG Reading variable: fshape_w1 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,122 hm.file_handling DEBUG Check whether the variable: fshape_w2 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,122 hm.file_handling DEBUG Reading variable: fshape_w2 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,130 hm.file_handling DEBUG Check whether the variable: fshape_w3 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,130 hm.file_handling DEBUG Reading variable: fshape_w3 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,132 hm.file_handling DEBUG Check whether the variable: fshape_w4 is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,132 hm.file_handling DEBUG Reading variable: fshape_w4 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,133 hm.file_handling DEBUG Check whether the variable: Aer is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,133 hm.file_handling DEBUG Reading variable: Aer from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,136 hm.file_handling DEBUG Check whether the variable: beta is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,136 hm.file_handling DEBUG Reading variable: beta from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,138 hm.file_handling DEBUG Check whether the variable: GermThr is defined in the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,138 hm.file_handling DEBUG Reading variable: GermThr from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,141 hm.file_handling DEBUG reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,155 hm.file_handling DEBUG reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,173 hm.file_handling DEBUG Reading variable: Mulches from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,174 hm.file_handling DEBUG Reading variable: MulchPctGS from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,176 hm.file_handling DEBUG Reading variable: MulchPctOS from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,177 hm.file_handling DEBUG Reading variable: fMulch from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,179 hm.file_handling DEBUG Reading variable: Bunds from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,181 hm.file_handling DEBUG Reading variable: zBund from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,182 hm.file_handling DEBUG Reading variable: BundWater from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,184 hm.file_handling DEBUG Reading variable: IrrMethod from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,185 hm.file_handling DEBUG Reading variable: IrrInterval from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,187 hm.file_handling DEBUG Reading variable: SMT1 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,189 hm.file_handling DEBUG Reading variable: SMT2 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,190 hm.file_handling DEBUG Reading variable: SMT3 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,192 hm.file_handling DEBUG Reading variable: SMT4 from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,194 hm.file_handling DEBUG Reading variable: MaxIrr from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,195 hm.file_handling DEBUG Reading variable: AppEff from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,198 hm.file_handling DEBUG Reading variable: NetIrrSMT from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,200 hm.file_handling DEBUG Reading variable: WetSurf from the file: Input/params_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,204 hm.file_handling DEBUG Reading variable: th from the file: Input/initial_conditions_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,212 hm.file_handling DEBUG Check whether the variable: depth is defined in the file: Input/initial_conditions_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,213 hm.Reporting INFO Creating the netcdf file for reporting the daily value of variable B.
+2019-11-26 06:54:57,221 hm.Reporting INFO Creating the netcdf file for reporting the daily value of variable Y.
+2019-11-26 06:54:57,229 hm.Reporting INFO Creating the netcdf file for reporting the daily value of variable th.
+2019-11-26 06:54:57,240 hm.Reporting INFO Creating the netcdf file for reporting the daily value of variable IrrCum.
+2019-11-26 06:54:57,251 hm.Reporting INFO Creating the netcdf file for reporting the daily value of variable Irr.
+2019-11-26 06:54:57,258 hm.Reporting INFO Creating the netcdf file for reporting the daily value of variable IrrNetCum.
+2019-11-26 06:54:57,267 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,271 hm.file_handling DEBUG The date 1979-10-15 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,271 hm.file_handling DEBUG Using date index 287
+2019-11-26 06:54:57,404 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,404 hm.file_handling DEBUG The date 1979-10-15 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,405 hm.file_handling DEBUG Using date index 287
+2019-11-26 06:54:57,405 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,406 hm.file_handling DEBUG The date 1979-10-15 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,406 hm.file_handling DEBUG Using date index 287
+2019-11-26 06:54:57,407 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,407 hm.file_handling DEBUG The date 1979-10-15 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,407 hm.file_handling DEBUG Using date index 287
+2019-11-26 06:54:57,408 hm.file_handling DEBUG Reading variable: co2 from the file: Input/annual_co2_conc_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,409 hm.file_handling DEBUG The date 1979-1-1 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,410 hm.file_handling DEBUG Using date index 77
+2019-11-26 06:54:57,411 hm.file_handling DEBUG reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,415 hm.file_handling DEBUG reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,423 hm.Reporting INFO reporting for time 1979-10-15
+2019-11-26 06:54:57,447 hm.Reporting INFO reporting for time 1979-10-15
+2019-11-26 06:54:57,447 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,447 hm.file_handling DEBUG The date 1979-10-16 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,447 hm.file_handling DEBUG Using date index 288
+2019-11-26 06:54:57,549 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,550 hm.file_handling DEBUG The date 1979-10-16 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,550 hm.file_handling DEBUG Using date index 288
+2019-11-26 06:54:57,551 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,551 hm.file_handling DEBUG The date 1979-10-16 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,551 hm.file_handling DEBUG Using date index 288
+2019-11-26 06:54:57,552 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,552 hm.file_handling DEBUG The date 1979-10-16 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,552 hm.file_handling DEBUG Using date index 288
+2019-11-26 06:54:57,554 hm.Reporting INFO reporting for time 1979-10-16
+2019-11-26 06:54:57,573 hm.Reporting INFO reporting for time 1979-10-16
+2019-11-26 06:54:57,573 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,573 hm.file_handling DEBUG The date 1979-10-17 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,574 hm.file_handling DEBUG Using date index 289
+2019-11-26 06:54:57,651 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,652 hm.file_handling DEBUG The date 1979-10-17 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,652 hm.file_handling DEBUG Using date index 289
+2019-11-26 06:54:57,653 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,653 hm.file_handling DEBUG The date 1979-10-17 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,653 hm.file_handling DEBUG Using date index 289
+2019-11-26 06:54:57,654 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,654 hm.file_handling DEBUG The date 1979-10-17 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,654 hm.file_handling DEBUG Using date index 289
+2019-11-26 06:54:57,656 hm.Reporting INFO reporting for time 1979-10-17
+2019-11-26 06:54:57,671 hm.Reporting INFO reporting for time 1979-10-17
+2019-11-26 06:54:57,671 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,672 hm.file_handling DEBUG The date 1979-10-18 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,672 hm.file_handling DEBUG Using date index 290
+2019-11-26 06:54:57,747 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,748 hm.file_handling DEBUG The date 1979-10-18 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,748 hm.file_handling DEBUG Using date index 290
+2019-11-26 06:54:57,748 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,749 hm.file_handling DEBUG The date 1979-10-18 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,749 hm.file_handling DEBUG Using date index 290
+2019-11-26 06:54:57,750 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,750 hm.file_handling DEBUG The date 1979-10-18 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,750 hm.file_handling DEBUG Using date index 290
+2019-11-26 06:54:57,752 hm.Reporting INFO reporting for time 1979-10-18
+2019-11-26 06:54:57,768 hm.Reporting INFO reporting for time 1979-10-18
+2019-11-26 06:54:57,768 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,768 hm.file_handling DEBUG The date 1979-10-19 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,768 hm.file_handling DEBUG Using date index 291
+2019-11-26 06:54:57,846 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,846 hm.file_handling DEBUG The date 1979-10-19 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,846 hm.file_handling DEBUG Using date index 291
+2019-11-26 06:54:57,847 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,848 hm.file_handling DEBUG The date 1979-10-19 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,848 hm.file_handling DEBUG Using date index 291
+2019-11-26 06:54:57,848 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,849 hm.file_handling DEBUG The date 1979-10-19 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,849 hm.file_handling DEBUG Using date index 291
+2019-11-26 06:54:57,851 hm.Reporting INFO reporting for time 1979-10-19
+2019-11-26 06:54:57,866 hm.Reporting INFO reporting for time 1979-10-19
+2019-11-26 06:54:57,867 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,867 hm.file_handling DEBUG The date 1979-10-20 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,867 hm.file_handling DEBUG Using date index 292
+2019-11-26 06:54:57,948 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,948 hm.file_handling DEBUG The date 1979-10-20 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,948 hm.file_handling DEBUG Using date index 292
+2019-11-26 06:54:57,949 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,949 hm.file_handling DEBUG The date 1979-10-20 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,949 hm.file_handling DEBUG Using date index 292
+2019-11-26 06:54:57,950 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,951 hm.file_handling DEBUG The date 1979-10-20 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,951 hm.file_handling DEBUG Using date index 292
+2019-11-26 06:54:57,953 hm.Reporting INFO reporting for time 1979-10-20
+2019-11-26 06:54:57,969 hm.Reporting INFO reporting for time 1979-10-20
+2019-11-26 06:54:57,970 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:57,970 hm.file_handling DEBUG The date 1979-10-21 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:57,970 hm.file_handling DEBUG Using date index 293
+2019-11-26 06:54:58,048 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,048 hm.file_handling DEBUG The date 1979-10-21 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,048 hm.file_handling DEBUG Using date index 293
+2019-11-26 06:54:58,049 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,050 hm.file_handling DEBUG The date 1979-10-21 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,050 hm.file_handling DEBUG Using date index 293
+2019-11-26 06:54:58,050 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,051 hm.file_handling DEBUG The date 1979-10-21 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,051 hm.file_handling DEBUG Using date index 293
+2019-11-26 06:54:58,053 hm.Reporting INFO reporting for time 1979-10-21
+2019-11-26 06:54:58,068 hm.Reporting INFO reporting for time 1979-10-21
+2019-11-26 06:54:58,068 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,069 hm.file_handling DEBUG The date 1979-10-22 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,069 hm.file_handling DEBUG Using date index 294
+2019-11-26 06:54:58,146 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,147 hm.file_handling DEBUG The date 1979-10-22 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,147 hm.file_handling DEBUG Using date index 294
+2019-11-26 06:54:58,148 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,148 hm.file_handling DEBUG The date 1979-10-22 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,148 hm.file_handling DEBUG Using date index 294
+2019-11-26 06:54:58,149 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,149 hm.file_handling DEBUG The date 1979-10-22 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,150 hm.file_handling DEBUG Using date index 294
+2019-11-26 06:54:58,151 hm.Reporting INFO reporting for time 1979-10-22
+2019-11-26 06:54:58,170 hm.Reporting INFO reporting for time 1979-10-22
+2019-11-26 06:54:58,170 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,170 hm.file_handling DEBUG The date 1979-10-23 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,170 hm.file_handling DEBUG Using date index 295
+2019-11-26 06:54:58,250 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,250 hm.file_handling DEBUG The date 1979-10-23 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,250 hm.file_handling DEBUG Using date index 295
+2019-11-26 06:54:58,251 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,252 hm.file_handling DEBUG The date 1979-10-23 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,252 hm.file_handling DEBUG Using date index 295
+2019-11-26 06:54:58,252 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,253 hm.file_handling DEBUG The date 1979-10-23 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,253 hm.file_handling DEBUG Using date index 295
+2019-11-26 06:54:58,255 hm.Reporting INFO reporting for time 1979-10-23
+2019-11-26 06:54:58,271 hm.Reporting INFO reporting for time 1979-10-23
+2019-11-26 06:54:58,271 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,271 hm.file_handling DEBUG The date 1979-10-24 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,271 hm.file_handling DEBUG Using date index 296
+2019-11-26 06:54:58,348 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,349 hm.file_handling DEBUG The date 1979-10-24 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,349 hm.file_handling DEBUG Using date index 296
+2019-11-26 06:54:58,349 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,350 hm.file_handling DEBUG The date 1979-10-24 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,350 hm.file_handling DEBUG Using date index 296
+2019-11-26 06:54:58,351 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,351 hm.file_handling DEBUG The date 1979-10-24 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,351 hm.file_handling DEBUG Using date index 296
+2019-11-26 06:54:58,353 hm.Reporting INFO reporting for time 1979-10-24
+2019-11-26 06:54:58,370 hm.Reporting INFO reporting for time 1979-10-24
+2019-11-26 06:54:58,370 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,370 hm.file_handling DEBUG The date 1979-10-25 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,370 hm.file_handling DEBUG Using date index 297
+2019-11-26 06:54:58,449 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,450 hm.file_handling DEBUG The date 1979-10-25 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,450 hm.file_handling DEBUG Using date index 297
+2019-11-26 06:54:58,452 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,453 hm.file_handling DEBUG The date 1979-10-25 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,453 hm.file_handling DEBUG Using date index 297
+2019-11-26 06:54:58,453 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,454 hm.file_handling DEBUG The date 1979-10-25 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,454 hm.file_handling DEBUG Using date index 297
+2019-11-26 06:54:58,456 hm.Reporting INFO reporting for time 1979-10-25
+2019-11-26 06:54:58,472 hm.Reporting INFO reporting for time 1979-10-25
+2019-11-26 06:54:58,472 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,472 hm.file_handling DEBUG The date 1979-10-26 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,472 hm.file_handling DEBUG Using date index 298
+2019-11-26 06:54:58,550 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,550 hm.file_handling DEBUG The date 1979-10-26 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,551 hm.file_handling DEBUG Using date index 298
+2019-11-26 06:54:58,551 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,552 hm.file_handling DEBUG The date 1979-10-26 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,552 hm.file_handling DEBUG Using date index 298
+2019-11-26 06:54:58,553 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,553 hm.file_handling DEBUG The date 1979-10-26 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,554 hm.file_handling DEBUG Using date index 298
+2019-11-26 06:54:58,556 hm.Reporting INFO reporting for time 1979-10-26
+2019-11-26 06:54:58,573 hm.Reporting INFO reporting for time 1979-10-26
+2019-11-26 06:54:58,573 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,574 hm.file_handling DEBUG The date 1979-10-27 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,574 hm.file_handling DEBUG Using date index 299
+2019-11-26 06:54:58,652 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,653 hm.file_handling DEBUG The date 1979-10-27 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,653 hm.file_handling DEBUG Using date index 299
+2019-11-26 06:54:58,654 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,654 hm.file_handling DEBUG The date 1979-10-27 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,654 hm.file_handling DEBUG Using date index 299
+2019-11-26 06:54:58,655 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,655 hm.file_handling DEBUG The date 1979-10-27 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,655 hm.file_handling DEBUG Using date index 299
+2019-11-26 06:54:58,657 hm.Reporting INFO reporting for time 1979-10-27
+2019-11-26 06:54:58,674 hm.Reporting INFO reporting for time 1979-10-27
+2019-11-26 06:54:58,674 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,675 hm.file_handling DEBUG The date 1979-10-28 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,675 hm.file_handling DEBUG Using date index 300
+2019-11-26 06:54:58,753 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,753 hm.file_handling DEBUG The date 1979-10-28 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,753 hm.file_handling DEBUG Using date index 300
+2019-11-26 06:54:58,754 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,754 hm.file_handling DEBUG The date 1979-10-28 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,754 hm.file_handling DEBUG Using date index 300
+2019-11-26 06:54:58,755 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,756 hm.file_handling DEBUG The date 1979-10-28 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,756 hm.file_handling DEBUG Using date index 300
+2019-11-26 06:54:58,757 hm.Reporting INFO reporting for time 1979-10-28
+2019-11-26 06:54:58,773 hm.Reporting INFO reporting for time 1979-10-28
+2019-11-26 06:54:58,773 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,773 hm.file_handling DEBUG The date 1979-10-29 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,773 hm.file_handling DEBUG Using date index 301
+2019-11-26 06:54:58,852 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,852 hm.file_handling DEBUG The date 1979-10-29 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,852 hm.file_handling DEBUG Using date index 301
+2019-11-26 06:54:58,853 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,854 hm.file_handling DEBUG The date 1979-10-29 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,854 hm.file_handling DEBUG Using date index 301
+2019-11-26 06:54:58,854 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,855 hm.file_handling DEBUG The date 1979-10-29 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,855 hm.file_handling DEBUG Using date index 301
+2019-11-26 06:54:58,857 hm.Reporting INFO reporting for time 1979-10-29
+2019-11-26 06:54:58,872 hm.Reporting INFO reporting for time 1979-10-29
+2019-11-26 06:54:58,872 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,873 hm.file_handling DEBUG The date 1979-10-30 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,873 hm.file_handling DEBUG Using date index 302
+2019-11-26 06:54:58,947 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,947 hm.file_handling DEBUG The date 1979-10-30 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,947 hm.file_handling DEBUG Using date index 302
+2019-11-26 06:54:58,948 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,948 hm.file_handling DEBUG The date 1979-10-30 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,948 hm.file_handling DEBUG Using date index 302
+2019-11-26 06:54:58,949 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,949 hm.file_handling DEBUG The date 1979-10-30 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,949 hm.file_handling DEBUG Using date index 302
+2019-11-26 06:54:58,951 hm.Reporting INFO reporting for time 1979-10-30
+2019-11-26 06:54:58,969 hm.Reporting INFO reporting for time 1979-10-30
+2019-11-26 06:54:58,969 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:58,970 hm.file_handling DEBUG The date 1979-10-31 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:58,970 hm.file_handling DEBUG Using date index 303
+2019-11-26 06:54:59,049 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,049 hm.file_handling DEBUG The date 1979-10-31 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,049 hm.file_handling DEBUG Using date index 303
+2019-11-26 06:54:59,050 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,050 hm.file_handling DEBUG The date 1979-10-31 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,050 hm.file_handling DEBUG Using date index 303
+2019-11-26 06:54:59,051 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,051 hm.file_handling DEBUG The date 1979-10-31 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,052 hm.file_handling DEBUG Using date index 303
+2019-11-26 06:54:59,053 hm.Reporting INFO reporting for time 1979-10-31
+2019-11-26 06:54:59,069 hm.Reporting INFO reporting for time 1979-10-31
+2019-11-26 06:54:59,069 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,069 hm.file_handling DEBUG The date 1979-11-1 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,069 hm.file_handling DEBUG Using date index 304
+2019-11-26 06:54:59,150 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,151 hm.file_handling DEBUG The date 1979-11-1 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,151 hm.file_handling DEBUG Using date index 304
+2019-11-26 06:54:59,152 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,152 hm.file_handling DEBUG The date 1979-11-1 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,152 hm.file_handling DEBUG Using date index 304
+2019-11-26 06:54:59,153 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,153 hm.file_handling DEBUG The date 1979-11-1 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,153 hm.file_handling DEBUG Using date index 304
+2019-11-26 06:54:59,155 hm.Reporting INFO reporting for time 1979-11-01
+2019-11-26 06:54:59,172 hm.Reporting INFO reporting for time 1979-11-01
+2019-11-26 06:54:59,173 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,173 hm.file_handling DEBUG The date 1979-11-2 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,173 hm.file_handling DEBUG Using date index 305
+2019-11-26 06:54:59,252 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,253 hm.file_handling DEBUG The date 1979-11-2 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,253 hm.file_handling DEBUG Using date index 305
+2019-11-26 06:54:59,254 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,254 hm.file_handling DEBUG The date 1979-11-2 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,254 hm.file_handling DEBUG Using date index 305
+2019-11-26 06:54:59,255 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,255 hm.file_handling DEBUG The date 1979-11-2 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,255 hm.file_handling DEBUG Using date index 305
+2019-11-26 06:54:59,257 hm.Reporting INFO reporting for time 1979-11-02
+2019-11-26 06:54:59,273 hm.Reporting INFO reporting for time 1979-11-02
+2019-11-26 06:54:59,273 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,274 hm.file_handling DEBUG The date 1979-11-3 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,274 hm.file_handling DEBUG Using date index 306
+2019-11-26 06:54:59,354 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,355 hm.file_handling DEBUG The date 1979-11-3 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,355 hm.file_handling DEBUG Using date index 306
+2019-11-26 06:54:59,355 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,356 hm.file_handling DEBUG The date 1979-11-3 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,356 hm.file_handling DEBUG Using date index 306
+2019-11-26 06:54:59,357 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,357 hm.file_handling DEBUG The date 1979-11-3 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,357 hm.file_handling DEBUG Using date index 306
+2019-11-26 06:54:59,359 hm.Reporting INFO reporting for time 1979-11-03
+2019-11-26 06:54:59,374 hm.Reporting INFO reporting for time 1979-11-03
+2019-11-26 06:54:59,374 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,375 hm.file_handling DEBUG The date 1979-11-4 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,375 hm.file_handling DEBUG Using date index 307
+2019-11-26 06:54:59,454 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,454 hm.file_handling DEBUG The date 1979-11-4 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,454 hm.file_handling DEBUG Using date index 307
+2019-11-26 06:54:59,455 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,456 hm.file_handling DEBUG The date 1979-11-4 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,456 hm.file_handling DEBUG Using date index 307
+2019-11-26 06:54:59,456 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,457 hm.file_handling DEBUG The date 1979-11-4 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,457 hm.file_handling DEBUG Using date index 307
+2019-11-26 06:54:59,459 hm.Reporting INFO reporting for time 1979-11-04
+2019-11-26 06:54:59,476 hm.Reporting INFO reporting for time 1979-11-04
+2019-11-26 06:54:59,476 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,476 hm.file_handling DEBUG The date 1979-11-5 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,476 hm.file_handling DEBUG Using date index 308
+2019-11-26 06:54:59,554 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,554 hm.file_handling DEBUG The date 1979-11-5 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,555 hm.file_handling DEBUG Using date index 308
+2019-11-26 06:54:59,555 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,556 hm.file_handling DEBUG The date 1979-11-5 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,556 hm.file_handling DEBUG Using date index 308
+2019-11-26 06:54:59,557 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,557 hm.file_handling DEBUG The date 1979-11-5 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,557 hm.file_handling DEBUG Using date index 308
+2019-11-26 06:54:59,559 hm.Reporting INFO reporting for time 1979-11-05
+2019-11-26 06:54:59,574 hm.Reporting INFO reporting for time 1979-11-05
+2019-11-26 06:54:59,575 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,575 hm.file_handling DEBUG The date 1979-11-6 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,575 hm.file_handling DEBUG Using date index 309
+2019-11-26 06:54:59,655 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,656 hm.file_handling DEBUG The date 1979-11-6 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,656 hm.file_handling DEBUG Using date index 309
+2019-11-26 06:54:59,657 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,657 hm.file_handling DEBUG The date 1979-11-6 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,657 hm.file_handling DEBUG Using date index 309
+2019-11-26 06:54:59,658 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,658 hm.file_handling DEBUG The date 1979-11-6 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,658 hm.file_handling DEBUG Using date index 309
+2019-11-26 06:54:59,660 hm.Reporting INFO reporting for time 1979-11-06
+2019-11-26 06:54:59,676 hm.Reporting INFO reporting for time 1979-11-06
+2019-11-26 06:54:59,676 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,677 hm.file_handling DEBUG The date 1979-11-7 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,677 hm.file_handling DEBUG Using date index 310
+2019-11-26 06:54:59,759 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,759 hm.file_handling DEBUG The date 1979-11-7 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,759 hm.file_handling DEBUG Using date index 310
+2019-11-26 06:54:59,760 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,760 hm.file_handling DEBUG The date 1979-11-7 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,760 hm.file_handling DEBUG Using date index 310
+2019-11-26 06:54:59,761 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,762 hm.file_handling DEBUG The date 1979-11-7 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,762 hm.file_handling DEBUG Using date index 310
+2019-11-26 06:54:59,764 hm.Reporting INFO reporting for time 1979-11-07
+2019-11-26 06:54:59,781 hm.Reporting INFO reporting for time 1979-11-07
+2019-11-26 06:54:59,781 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,782 hm.file_handling DEBUG The date 1979-11-8 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,782 hm.file_handling DEBUG Using date index 311
+2019-11-26 06:54:59,860 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,861 hm.file_handling DEBUG The date 1979-11-8 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,861 hm.file_handling DEBUG Using date index 311
+2019-11-26 06:54:59,862 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,862 hm.file_handling DEBUG The date 1979-11-8 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,862 hm.file_handling DEBUG Using date index 311
+2019-11-26 06:54:59,863 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,863 hm.file_handling DEBUG The date 1979-11-8 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,863 hm.file_handling DEBUG Using date index 311
+2019-11-26 06:54:59,865 hm.Reporting INFO reporting for time 1979-11-08
+2019-11-26 06:54:59,880 hm.Reporting INFO reporting for time 1979-11-08
+2019-11-26 06:54:59,881 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,881 hm.file_handling DEBUG The date 1979-11-9 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,881 hm.file_handling DEBUG Using date index 312
+2019-11-26 06:54:59,956 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,956 hm.file_handling DEBUG The date 1979-11-9 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,956 hm.file_handling DEBUG Using date index 312
+2019-11-26 06:54:59,957 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,958 hm.file_handling DEBUG The date 1979-11-9 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,958 hm.file_handling DEBUG Using date index 312
+2019-11-26 06:54:59,958 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,959 hm.file_handling DEBUG The date 1979-11-9 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,959 hm.file_handling DEBUG Using date index 312
+2019-11-26 06:54:59,961 hm.Reporting INFO reporting for time 1979-11-09
+2019-11-26 06:54:59,978 hm.Reporting INFO reporting for time 1979-11-09
+2019-11-26 06:54:59,979 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:54:59,979 hm.file_handling DEBUG The date 1979-11-10 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:54:59,979 hm.file_handling DEBUG Using date index 313
+2019-11-26 06:55:00,058 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,058 hm.file_handling DEBUG The date 1979-11-10 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,058 hm.file_handling DEBUG Using date index 313
+2019-11-26 06:55:00,059 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,060 hm.file_handling DEBUG The date 1979-11-10 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,060 hm.file_handling DEBUG Using date index 313
+2019-11-26 06:55:00,060 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,061 hm.file_handling DEBUG The date 1979-11-10 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,061 hm.file_handling DEBUG Using date index 313
+2019-11-26 06:55:00,063 hm.Reporting INFO reporting for time 1979-11-10
+2019-11-26 06:55:00,080 hm.Reporting INFO reporting for time 1979-11-10
+2019-11-26 06:55:00,080 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,080 hm.file_handling DEBUG The date 1979-11-11 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,080 hm.file_handling DEBUG Using date index 314
+2019-11-26 06:55:00,157 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,158 hm.file_handling DEBUG The date 1979-11-11 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,158 hm.file_handling DEBUG Using date index 314
+2019-11-26 06:55:00,159 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,160 hm.file_handling DEBUG The date 1979-11-11 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,160 hm.file_handling DEBUG Using date index 314
+2019-11-26 06:55:00,162 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,162 hm.file_handling DEBUG The date 1979-11-11 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,162 hm.file_handling DEBUG Using date index 314
+2019-11-26 06:55:00,165 hm.Reporting INFO reporting for time 1979-11-11
+2019-11-26 06:55:00,185 hm.Reporting INFO reporting for time 1979-11-11
+2019-11-26 06:55:00,186 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,187 hm.file_handling DEBUG The date 1979-11-12 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,187 hm.file_handling DEBUG Using date index 315
+2019-11-26 06:55:00,273 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,274 hm.file_handling DEBUG The date 1979-11-12 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,274 hm.file_handling DEBUG Using date index 315
+2019-11-26 06:55:00,275 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,275 hm.file_handling DEBUG The date 1979-11-12 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,275 hm.file_handling DEBUG Using date index 315
+2019-11-26 06:55:00,276 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,276 hm.file_handling DEBUG The date 1979-11-12 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,276 hm.file_handling DEBUG Using date index 315
+2019-11-26 06:55:00,278 hm.Reporting INFO reporting for time 1979-11-12
+2019-11-26 06:55:00,293 hm.Reporting INFO reporting for time 1979-11-12
+2019-11-26 06:55:00,294 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,295 hm.file_handling DEBUG The date 1979-11-13 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,295 hm.file_handling DEBUG Using date index 316
+2019-11-26 06:55:00,372 hm.file_handling DEBUG Reading variable: Tmin from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,373 hm.file_handling DEBUG The date 1979-11-13 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,373 hm.file_handling DEBUG Using date index 316
+2019-11-26 06:55:00,374 hm.file_handling DEBUG Reading variable: Tmax from the file: Input/temp_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,374 hm.file_handling DEBUG The date 1979-11-13 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,374 hm.file_handling DEBUG Using date index 316
+2019-11-26 06:55:00,375 hm.file_handling DEBUG Reading variable: referencePotET from the file: Input/eto_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,375 hm.file_handling DEBUG The date 1979-11-13 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,375 hm.file_handling DEBUG Using date index 316
+2019-11-26 06:55:00,377 hm.Reporting INFO reporting for time 1979-11-13
+2019-11-26 06:55:00,397 hm.Reporting INFO reporting for time 1979-11-13
+2019-11-26 06:55:00,397 hm.file_handling DEBUG Reading variable: precipitation from the file: Input/prec_aos_ch7_ex1a_tunis_wheat.nc
+2019-11-26 06:55:00,398 hm.file_handling DEBUG The date 1979-11-14 is available. The 'exact' option is 
+used while selecting netCDF time.
+2019-11-26 06:55:00,398 hm.file_handling DEBUG Using date index 317

@@ -18,13 +18,14 @@ class Weather(object):
         self._configuration = Weather_variable._configuration
         self._modelTime = Weather_variable._modelTime
         self.cloneMapFileName = Weather_variable.cloneMapFileName
-        # self.cloneMap = Weather_variable.cloneMap
+        self.clone = Weather_variable.clone
         self.landmask = Weather_variable.landmask
 
     def initial(self):
         self.set_input_filenames()
         self.set_nc_variable_names()
         self.set_weather_conversion_factors()
+        self.load_precipitation_dataset()
 
     def set_input_filenames(self):
         self.preFileNC = self._configuration.WEATHER['precipitationNC']
@@ -98,7 +99,13 @@ class Weather(object):
             self.etrefConst = np.float64(self._configuration.WEATHER['refEvapotranspirationConstant'])
         if 'ETpotFactor' in self._configuration.WEATHER:
             self.etrefFactor = np.float64(self._configuration.WEATHER['refEvapotranspirationFactor'])
-        
+
+    def load_precipitation_dataset(self):
+        # self.precipitation_ds = InputTimeVaryingNetCDF(self.clone, self.preFileNC, self.preVarName, self._modelTime.startTime, self._modelTime.endTime)
+        # fn = self.preFileNC.format(day=self._modelTime.currTime.day, month=self._modelTime.currTime.month, year=self._modelTime.currTime.year)
+        # self.precipitation_ds = xr.open_dataset(fn)
+        pass
+    
     def adjust_precipitation_input_data(self):
         self.precipitation = self.preConst + self.preFactor * self.precipitation
         self.precipitation = np.maximum(0.0, self.precipitation)
@@ -110,7 +117,7 @@ class Weather(object):
         # fn = self.preFileNC.format(day=self._modelTime.currTime.day, month=self._modelTime.currTime.month, year=self._modelTime.currTime.year)
         # ds = xr.open_dataset(fn)
         # ar = ds['precipitation'].sel(time=self._modelTime.fulldate)
-        # print(ar.values)
+        # self.precipitation = ar.values[self.landmask][None,None,:]
         self.precipitation = file_handling.netcdf_to_array(
             self.preFileNC.format(
                 day=self._modelTime.currTime.day,
@@ -122,8 +129,8 @@ class Weather(object):
             cloneMapFileName = self.cloneMapFileName,
             LatitudeLongitude = True
         )[self.landmask][None,None,:]
-        print(self.preVarName)
-        print(self.precipitation)
+        # self.precipitation = self.precipitation_ds.dataset_subset[self.preVarName].sel(time=self._modelTime.fulldate).values[self.landmask][None,None,:]
+        # self.precipitation = self.precipitation_ds['precipitation'].sel(time=self._modelTime.fulldate).values[self.landmask][None,None,:]
         self.adjust_precipitation_input_data()
 
     def adjust_temperature_data(self):

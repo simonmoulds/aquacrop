@@ -65,7 +65,7 @@ class Cropland(LandCover):
         super(Cropland, self).__init__(
             var,
             config_section_name)
-        
+
         self.carbon_dioxide_module = CarbonDioxide(self)
         self.lc_parameters_module = AquaCropParameters(self, config_section_name)
         self.initial_condition_module = InitialCondition(self)
@@ -167,6 +167,7 @@ class Cropland(LandCover):
             variable_list_crop,
             'cropland'
         )
+        print('d')
         
     def dynamic(self):
         self.carbon_dioxide_module.dynamic()
