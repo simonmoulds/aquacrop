@@ -9,7 +9,8 @@ import calendar as calendar
 import warnings
 import scipy.interpolate as interpolate
 
-from hm import file_handling
+# from hm import file_handling
+from hm.api import open_hmdataarray
 
 class InitialCondition(object):
     """Class to represent the initial condition of an AquaCrop run. 
@@ -77,12 +78,17 @@ class InitialCondition(object):
 
     def set_initial_condition_from_file(self):
         # TODO: use config to set initialConditionVarName, initialConditionDepthVarName
-        th = file_handling.netcdf_to_arrayWithoutTime(
+        th = open_hmdataarray(
             self.var.initialConditionNC,
             'th',
-            cloneMapFileName=self.var.cloneMapFileName)
+            self.var.domain
+        )
+        # th = file_handling.netcdf_to_arrayWithoutTime(
+        #     self.var.initialConditionNC,
+        #     'th',
+        #     cloneMapFileName=self.var.cloneMapFileName)
         th = self.interpolate_initial_condition_to_compartments(th)
-        th = th[self.var.landmask_comp].reshape(self.var.nComp, self.var.nCell)
+        # th = th[self.var.landmask_comp].reshape(self.var.nComp, self.var.nCell)
         self.var.th = np.broadcast_to(
             th[None,None,...],
             (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nCell)
