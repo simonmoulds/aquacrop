@@ -6,12 +6,10 @@ netcdf_standard_name = {}
 netcdf_long_name = {}
 netcdf_dimensions = {}
 netcdf_unit = {}
-# netcdf_monthly_total_unit = {} 
-# netcdf_yearly_total_unit  = {}
 netcdf_calendar = {}
 description = {}
 comment = {}
-latex_symbol = {}
+# latex_symbol = {}
 
 netcdf_short_name['time'] = 'time'
 netcdf_standard_name['time'] = 'time'
@@ -21,7 +19,7 @@ netcdf_long_name['time']  = 'Days since 1901-01-01'
 netcdf_calendar['time']   = 'standard'
 description['time']       = None
 comment['time']           = None
-latex_symbol['time']      = None
+# latex_symbol['time']      = None
 
 netcdf_short_name['lat'] = 'lat'
 netcdf_standard_name['lat'] = 'latitude'
@@ -30,7 +28,7 @@ netcdf_unit['lat']       = 'degrees_north'
 netcdf_long_name['lat']  = 'latitude'
 description['lat']       = None
 comment['lat']           = None
-latex_symbol['lat']      = None
+# latex_symbol['lat']      = None
 
 netcdf_short_name['lon'] = 'lon'
 netcdf_standard_name['lon'] = 'longitude'
@@ -39,7 +37,7 @@ netcdf_unit['lon']       = 'degrees_east'
 netcdf_long_name['lon']  = 'longitude'
 description['lon']       = None
 comment['lon']           = None
-latex_symbol['lon']      = None
+# latex_symbol['lon']      = None
 
 netcdf_short_name['crop'] = 'crop'
 netcdf_standard_name['crop'] = 'crop'
