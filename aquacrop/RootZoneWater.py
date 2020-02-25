@@ -12,7 +12,7 @@ class RootZoneWater(object):
         self.var = RootZoneWater_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.thRZ_Act = np.copy(arr_zeros)
         self.var.thRZ_Sat = np.copy(arr_zeros)
         self.var.thRZ_Fc = np.copy(arr_zeros)
@@ -45,6 +45,6 @@ class RootZoneWater(object):
             self.var.dz, 
             self.var.dz_sum, 
             layer_ix, 
-            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
         )
             

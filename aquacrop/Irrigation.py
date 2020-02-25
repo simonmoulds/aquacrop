@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from hm import file_handling
+# from hm import file_handling
 import logging
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ class Irrigation(object):
         self.var = Irrigation_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.Irr = np.copy(arr_zeros)
         self.var.IrrCum = np.copy(arr_zeros)
         self.var.IrrNetCum = np.copy(arr_zeros)
@@ -39,7 +39,7 @@ class Irrigation(object):
         # If irrigation is based on soil moisture, get the soil moisture
         # target for the current growth stage and determine threshold to
         # initiate irrigation
-        I,J,K = np.ogrid[:self.var.nFarm,:self.var.nCrop,:self.var.nCell]
+        I,J,K = np.ogrid[:self.var.nFarm,:self.var.nCrop,:self.var.domain.nxy]
         growth_stage_index = self.var.GrowthStage.astype(int) - 1
         SMT = np.concatenate((self.var.SMT1[None,:],
                               self.var.SMT2[None,:],
@@ -68,7 +68,7 @@ class Irrigation(object):
         # requirement for each crop is read from a netCDF file. Note that if
         # the option 'irrScheduleFileNC' is None, then nothing will be imported
         # and the irrigation requirement will be zero
-        IrrReq = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        IrrReq = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         if self.var.irrScheduleFileNC != None:            
             IrrReq = file_handling.netcdf_to_array(
                 self.var.irrScheduleFileNC,
@@ -76,7 +76,7 @@ class Irrigation(object):
                 str(self.var._modelTime.fulldate), 
                 cloneMapFileName = self.var.cloneMapFileName
             )
-            IrrReq = IrrReq[self.var.landmask_crop].reshape(self.var.nCrop,self.var.nCell)
+            IrrReq = IrrReq[self.var.landmask_crop].reshape(self.var.nCrop,self.var.domain.nxy)
             
         irrigate = self.var.GrowingSeasonIndex & self.irrigate_from_schedule
         self.var.Irr[irrigate] = IrrReq[irrigate]

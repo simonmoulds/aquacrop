@@ -14,7 +14,7 @@ class RainfallPartition(object):
         self.var = RainfallPartition_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm,self.var.nCrop, self.var.nCell))        
+        arr_zeros = np.zeros((self.var.nFarm,self.var.nCrop, self.var.domain.nxy))        
         self.var.Runoff = np.copy(arr_zeros)
         self.var.Infl = np.copy(arr_zeros)
         
@@ -23,7 +23,8 @@ class RainfallPartition(object):
         aquacrop_fc.rainfall_partition_w.update_rain_part_w(
             self.var.Runoff.T,
             self.var.Infl.T,
-            self.var.weather.precipitation.T,
+            self.var.model.prec.values.T,
+            # self.var.weather.precipitation.T,
             self.var.th.T,
             np.int32(self.var.DaySubmerged).T,
             np.int32(self.var.Bunds).T,
@@ -38,5 +39,5 @@ class RainfallPartition(object):
             self.var.dz,
             self.var.dz_sum,
             layer_ix,
-            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
             )

@@ -4,17 +4,17 @@
 import os
 import numpy as np
 
-from hm import file_handling
+# from hm import file_handling
 
 # class CropAreaPoint(object):
 #     def __init__(self, CropArea_variable):
 #         self.var = CropArea_variable
 
 #     def initial(self):
-#         self.var.CurrentCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
-#         self.var.CroplandArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
-#         self.var.CropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
-#         self.var.FarmCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
+#         self.var.CurrentCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+#         self.var.CroplandArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+#         self.var.CropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+#         self.var.FarmCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         
 #     def dynamic(self):
 #         pass
@@ -22,10 +22,10 @@ class CropArea(object):
     def __init__(self, model):
         self.model = model
     def initial(self):
-        self.model.CurrentCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.nCell))
-        self.model.CroplandArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.nCell))
-        self.model.CropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.nCell))
-        self.model.FarmCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.nCell))
+        self.model.CurrentCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+        self.model.CroplandArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+        self.model.CropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+        self.model.FarmCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
         
     def dynamic(self):
         pass
@@ -41,7 +41,7 @@ class CropArea(object):
     
 #     def read_cropland_area(self):
 #         if self.var.AnnualChangeInCropArea:
-#             if self.var._modelTime.timeStepPCR == 1 or self.var._modelTime.doy == 1:
+#             if self.var._modelTime.timestep == 1 or self.var._modelTime.doy == 1:
 #                 date = '%04i-%02i-%02i' % (self.var._modelTime.year, 1, 1)
 #                 CroplandArea = file_handling.netcdf_to_array(
 #                     self.var._configuration.CROP_PARAMETERS['croplandAreaNC'],
@@ -54,7 +54,7 @@ class CropArea(object):
 #                 self.var.CroplandArea = CroplandArea[self.var.landmask]
                 
 #         else:
-#             if self.var._modelTime.timeStepPCR == 1:
+#             if self.var._modelTime.timestep == 1:
 #                 if not self.var._configuration.CROP_PARAMETERS['cropAreaNC'] == "None":
 #                     CroplandArea = file_handling.netcdf_to_arrayWithoutTime(
 #                         self.var._configuration.CROP_PARAMETERS['croplandAreaNC'],
@@ -64,13 +64,13 @@ class CropArea(object):
 #                     self.var.CroplandArea = CroplandArea[self.var.landmask]
                     
 #                 else:
-#                     self.var.CroplandArea = np.ones((self.var.nCell)) * self.var.nCrop
+#                     self.var.CroplandArea = np.ones((self.var.domain.nxy)) * self.var.nCrop
                     
 #         self.var.CroplandArea = np.broadcast_to(
 #             self.var.CroplandArea,
 #             (self.var.nFarm,
 #              self.var.nCrop,
-#              self.var.nCell)
+#              self.var.domain.nxy)
 #         )        
 #         self.var.CroplandArea = self.var.CroplandArea.astype(np.float64)
         
@@ -106,19 +106,19 @@ class CropArea(object):
 #                 crop_area[self.var.landmask_farm_crop],
 #                 (self.var.nFarm,
 #                  self.var.nCrop,
-#                  self.var.nCell)
+#                  self.var.domain.nxy)
 #             )
 #         else:
 #             crop_area = np.reshape(
 #                 crop_area[self.var.landmask_crop],
 #                 (self.var.nCrop,
-#                  self.var.nCell)
+#                  self.var.domain.nxy)
 #             )
 #             crop_area = np.broadcast_to(
 #                 crop_area[None,:,:],
 #                 (self.var.nFarm,
 #                  self.var.nCrop,
-#                  self.var.nCell)
+#                  self.var.domain.nxy)
 #             )
             
 #         crop_area = crop_area.astype(np.float64)
@@ -132,7 +132,7 @@ class CropArea(object):
 #         max_harvest_date = int(np.max(hd))
 #         day_idx = (
 #             np.arange(1, max_harvest_date + 1)[:,None,None]
-#             * np.ones((self.var.nCrop, self.var.nCell))[None,:,:]
+#             * np.ones((self.var.nCrop, self.var.domain.nxy))[None,:,:]
 #         )
 #         growing_season_idx = ((day_idx >= pd) & (day_idx <= hd))
 #         crop_area = self.var.CropArea[0,...]  # remove farm dimension
@@ -156,7 +156,7 @@ class CropArea(object):
 #     def set_crop_area(self):
 #         """Function to read crop area"""
 #         if self.var.AnnualChangeInCropArea:
-#             if self.var._modelTime.timeStepPCR == 1 or self.var._modelTime.doy == 1:
+#             if self.var._modelTime.timestep == 1 or self.var._modelTime.doy == 1:
 #                 # In this case crop area is updated on the first day of each year,
 #                 # hence in order to prevent the area under a specific crop changing
 #                 # mid-season, it is necessary to introduce an intermediate variable
@@ -170,7 +170,7 @@ class CropArea(object):
 #                 self.scale_crop_area()
                 
 #         else:
-#             if self.var._modelTime.timeStepPCR == 1:
+#             if self.var._modelTime.timestep == 1:
 #                 if not self.var._configuration.CROP_PARAMETERS['cropAreaNC'] == "None":
 #                     # If crop area doesn't change then there is no need for an
 #                     # intermediate variable
@@ -179,7 +179,7 @@ class CropArea(object):
 #                     self.var.CropArea = np.ones(
 #                         (self.var.nFarm,
 #                          self.var.nCrop,
-#                          self.var.nCell)
+#                          self.var.domain.nxy)
 #                     )
 #                 self.scale_crop_area()
 

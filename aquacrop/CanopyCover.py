@@ -18,7 +18,7 @@ class CanopyCover(object):
         """Initialize the NumPy data structures modified by the class 
         instance.
         """
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.tEarlySen = np.copy(arr_zeros)
         self.var.CC = np.copy(arr_zeros)
         self.var.CCadj = np.copy(arr_zeros)
@@ -63,7 +63,8 @@ class CanopyCover(object):
             self.var.CanopyDevEnd.T,
             self.var.Dr.T,
             self.var.TAW.T,
-            self.var.weather.referencePotET.T,
+            self.var.model.etref.values.T,
+            # self.var.weather.referencePotET.T,
             self.var.ETadj.T,
             self.var.p_up1.T,
             self.var.p_up2.T,
@@ -85,5 +86,5 @@ class CanopyCover(object):
             self.var.DelayedGDDs.T,
             int(self.var.nFarm),
             int(self.var.nCrop),
-            int(self.var.nCell)
+            int(self.var.domain.nxy)
         )

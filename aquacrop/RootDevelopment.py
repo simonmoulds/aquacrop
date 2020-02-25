@@ -12,8 +12,8 @@ class RootDevelopment(object):
         self.var = RootDevelopment_variable
 
     def initial(self):
-        self.var.rCor = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
-        self.var.Zroot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        self.var.rCor = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        self.var.Zroot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 
     def reset_initial_conditions(self):
         self.var.rCor[self.var.GrowingSeasonDayOne] = 1
@@ -47,6 +47,6 @@ class RootDevelopment(object):
             self.var.groundwater.zGW, 
             self.var.CalendarType, 
             self.var.GrowingSeasonIndex.T,
-            self.var.nFarm, self.var.nCrop, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
         )
             

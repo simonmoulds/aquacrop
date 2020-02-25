@@ -13,7 +13,7 @@ class CheckGroundwaterTable(object):
 
     def initial(self):
         self.var.th_fc_adj = np.copy(self.var.th_fc_comp)
-        self.var.WTinSoil = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell), dtype=np.int32)
+        self.var.WTinSoil = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy), dtype=np.int32)
         
     def dynamic(self):
         layer_ix = self.var.layerIndex + 1
@@ -28,5 +28,5 @@ class CheckGroundwaterTable(object):
             self.var.groundwater.zGW,
             self.var.dz,
             layer_ix,
-            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
         )

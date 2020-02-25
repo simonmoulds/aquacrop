@@ -5,6 +5,8 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
+from .io.CarbonDioxide import refconc
+
 import aquacrop_fc
 
 class Transpiration(object):
@@ -12,8 +14,8 @@ class Transpiration(object):
         self.var = Transpiration_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
-        arr_ones = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        arr_ones = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.Ksa_Aer = np.copy(arr_zeros)
         self.var.TrPot0 = np.copy(arr_zeros)
         self.var.TrPot_NS = np.copy(arr_zeros)
@@ -22,7 +24,7 @@ class Transpiration(object):
         self.var.AgeDays = np.copy(arr_zeros)
         self.var.AgeDays_NS = np.copy(arr_zeros)
         self.var.AerDays = np.copy(arr_zeros)
-        self.var.AerDaysComp  = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nCell))
+        self.var.AerDaysComp  = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy))
         self.var.Tpot = np.copy(arr_zeros)        
         self.var.TrRatio = np.copy(arr_ones)
         self.var.DaySubmerged = np.copy(arr_zeros)
@@ -72,7 +74,8 @@ class Transpiration(object):
             self.var.IrrNet.T, 
             self.var.IrrNetCum.T, 
             self.var.CC.T, 
-            self.var.weather.referencePotET.T, 
+            self.var.model.etref.values.T, 
+            # self.var.weather.referencePotET.T, 
             self.var.th_sat.T, 
             self.var.th_fc.T, 
             self.var.th_wilt.T, 
@@ -101,12 +104,13 @@ class Transpiration(object):
             np.int32(self.var.IrrMethod).T,
             self.var.NetIrrSMT.T,
             self.var.CurrentConc.T, 
-            self.var.RefConc,
+            refconc,
+            # self.var.RefConc,
             np.int32(self.var.DAP).T,
             np.int32(self.var.DelayedCDs).T,
             self.var.dz.T, 
             self.var.dz_sum.T, 
             np.int32(layer_ix).T, 
             np.int32(self.var.GrowingSeasonIndex).T,
-            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
             )

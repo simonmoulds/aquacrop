@@ -15,7 +15,7 @@ class Infiltration(object):
 
     def initial(self):        
         cond1 = (self.var.Bunds == 0) & (self.var.zBund > 0.001)
-        SurfaceStorage = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        SurfaceStorage = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         SurfaceStorage[cond1] = self.var.BundWater[cond1]
         SurfaceStorage = np.clip(SurfaceStorage, None, self.var.zBund)
         self.var.SurfaceStorage = np.copy(SurfaceStorage)
@@ -51,5 +51,5 @@ class Infiltration(object):
             self.var.nCrop,
             self.var.nComp,
             self.var.nLayer,
-            self.var.nCell
+            self.var.domain.nxy
             )

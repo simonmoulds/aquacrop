@@ -13,7 +13,7 @@ class PreIrrigation(object):
         self.var = PreIrrigation_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.PreIrr = np.copy(arr_zeros)
         self.var.IrrNet = np.copy(arr_zeros)
         
@@ -32,5 +32,5 @@ class PreIrrigation(object):
             self.var.dz,
             self.var.dz_sum,
             layer_ix,
-            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
             )        

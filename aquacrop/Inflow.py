@@ -16,15 +16,15 @@ import aquacrop_fc
 #         self.var = GroundwaterInflow_variable
 
 #     def initial(self):
-#         self.GwIn = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+#         self.GwIn = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         
 #     def dynamic(self):
 #         """Function to calculate capillary rise in the presence of a 
 #         shallow groundwater table
 #         """
 
-#         zGW_comp = np.broadcast_to(self.var.groundwater.zGW[None,None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nCell))        
-#         GwIn = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+#         zGW_comp = np.broadcast_to(self.var.groundwater.zGW[None,None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy))        
+#         GwIn = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 
 #         # Water table in soil profile: calculate horizontal inflow; get
 #         # groundwater table elevation on current day
@@ -33,7 +33,7 @@ import aquacrop_fc
 #         zMid = (zTop + zBot) / 2
 
 #         # For compartments below water table, set to saturation
-#         dth = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nCell))
+#         dth = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy))
 
 #         cond1 = (np.broadcast_to(self.var.WTinSoil[:,:,None,:], self.var.th.shape)
 #                  & np.greater_equal(zMid, zGW_comp)# np.broadcast_to(self.var.zGW[:,None,:], self.var.th.shape))
@@ -56,13 +56,13 @@ class Inflow(object):
         self.var = GroundwaterInflow_variable
 
     def initial(self):
-        self.GwIn = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        self.GwIn = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         
     def dynamic(self):
         # """Function to calculate capillary rise in the presence of a 
         # shallow groundwater table
         # """
-        self.var.GwIn = np.zeros((self.var.nCrop, self.var.nFarm, self.var.nCell))
+        self.var.GwIn = np.zeros((self.var.nCrop, self.var.nFarm, self.var.domain.nxy))
         layer_ix = self.var.layerIndex + 1
         aquacrop_fc.inflow_w.update_inflow_w(
             self.var.GwIn.T,
@@ -72,5 +72,5 @@ class Inflow(object):
             self.var.th_sat.T,
             self.var.dz,
             layer_ix,
-            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
             )

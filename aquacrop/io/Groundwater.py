@@ -4,10 +4,11 @@
 import os
 import time
 import numpy as np
-import datetime as datetime
+# import datetime as datetime
+import pandas as pd
 
-from hm import file_handling
-from hm.Messages import ModelError, ModelFileError, ModelWarning
+# from hm import file_handling
+# from hm.Messages import ModelError, ModelFileError, ModelWarning
 
 class Groundwater(object):
 
@@ -17,14 +18,21 @@ class Groundwater(object):
         # self._modelTime = Groundwater_variable._modelTime
         # self.cloneMapFileName = Groundwater_variable.cloneMapFileName
         # self.landmask = Groundwater_variable.landmask
-        
-    def initial(self):
         self.WaterTable = bool(int(self.model.config.WATER_TABLE['WaterTable']))
         self.VariableWaterTable = bool(int(self.model.config.WATER_TABLE['VariableWaterTable']))
         self.DailyGroundwaterNC = bool(int(self.model.config.WATER_TABLE['DailyGroundwaterNC']))
+        self.gwFileNC = self.model.config.WATER_TABLE['GroundwaterNC']
+        self.zGW = np.zeros(self.model.domain.nxy)
+        
+    def initial(self):
+        # self.WaterTable = bool(int(self.model.config.WATER_TABLE['WaterTable']))
+        # self.VariableWaterTable = bool(int(self.model.config.WATER_TABLE['VariableWaterTable']))
+        # self.DailyGroundwaterNC = bool(int(self.model.config.WATER_TABLE['DailyGroundwaterNC']))
         # TODO:
-        zGW = np.ones_like(self.landmask) * 999.
-        self.zGW = zGW[self.landmask]
+        # self.zGW = np.ones(self.model.domain.nxy) * 999.
+        # zGW = np.ones_like(self.model.domain.mask) * 999.
+        # zGW = np.ones_like(self.landmask) * 999.
+        # self.zGW = zGW[self.landmask]
         
         if self.WaterTable:            
             self.gwTimeLag = int(self.config.model.WATER_TABLE['timeLag'])
@@ -34,7 +42,7 @@ class Groundwater(object):
                 # file
                 self.zGW = open_hmdataarray(
                     self.model.config.INITIAL_CONDITIONS['initialGroundwaterLevelNC'],
-                    self.model.config.WATER_TABLE['groundwaterVarName'],
+                    self.model.config.INITIAL_CONDITIONS['initialGroundwaterLevelVarName'],
                     self.model.domain
                 )                
                 # zGW = file_handling.netcdf_to_arrayWithoutTime(
@@ -44,14 +52,12 @@ class Groundwater(object):
                 # )
                 # self.zGW = zGW[self.landmask]
 
-    def read(self):
-        
-        if self.WaterTable:
-            
+    def read(self):        
+        if self.WaterTable:            
             # Fill named placeholders (NB we have already checked that
             # the specified filename contains these placeholders)
             
-            # gwFileNC = self._configuration.WATER_TABLE['groundwaterNC'].format(day=day, month=month, year=year)
+            # gwFileNC = self._configuration.WATER_TABLE['GroundwaterLevelNC'].format(day=day, month=month, year=year)
             
             if self.VariableWaterTable:
 
@@ -62,8 +68,10 @@ class Groundwater(object):
                     # introduce this test so that we do not ask the model to read
                     # a file from a timestep prior to the current simulation. 
                     if not (self.model.time.isFirstTimestep() & (self.gwTimeLag > 0)):                        
-                        tm = self.model.time.curr_time - datetime.timedelta(self.gwTimeLag)
-                        day, month, year = tm.day, tm.month, tm.year
+                        # tm = self.model.time.curr_time - datetime.timedelta(self.gwTimeLag)
+                        tm = self.model.time.curr_time - pd.Timedelta(self.gwTimeLag)                        
+                        # day, month, year = tm.day, tm.month, tm.year
+                        
                         # Check whether the file is present in the filesystem; if
                         # it doesn't, enter a while loop which periodically checks
                         # whether the file exists. We specify a maximum wait time
@@ -79,7 +87,7 @@ class Groundwater(object):
                             total_wait_time += wait_time
                         if not exists:
                             msg = "groundwater file doesn't exist and maximum wait time exceeded"
-                            raise ModelError(msg)
+                            raise OSError(msg)
 
                         self.zGW = hm.open_hmdataarray(
                             self.gwFileNC,
@@ -108,7 +116,7 @@ class Groundwater(object):
             else:
                 self.zGW = hm.open_hmdataarray(
                     self.gwFileNC,
-                    self.config.WATER_TABLE['groudnwaterVarName'],
+                    self.config.WATER_TABLE['groundwaterVarName'],
                     self.domain
                 )
                 # zGW = file_handling.netcdf_to_arrayWithoutTime(
@@ -117,7 +125,11 @@ class Groundwater(object):
                 #     cloneMapFileName = self.cloneMapFileName,
                 #     LatitudeLongitude = True)    
                 # self.zGW = zGW[self.landmask]
-                    
+        else:
+            # if groundwater is not supplied, set depth to a large number
+            # so that it doesn't influence root zone hydrological processes
+            self.zGW += 999.
+            
     def dynamic(self):
         self.read()
 

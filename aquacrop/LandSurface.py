@@ -4,20 +4,19 @@
 import os
 import numpy as np
 
-from hm import file_handling
-from hm.Model import Model
+from hm.model import Model
 from .LandCover import *
 
 class LandSurface(object):
-    def __init__(self, LandSurface_variable):
-        self.var = LandSurface_variable
+    def __init__(self, model):
+        self.model = model
         self.land_cover_modules = {
-            'cropland' : Cropland(LandSurface_variable, 'CROP_PARAMETERS')
-            }
+            'cropland' : Cropland(self.model)#, 'CROP_PARAMETERS')
+        }
         self.land_cover_module_names = [
             'cropland'
         ]
-        self.land_cover_module_names_with_satoil = [
+        self.land_cover_module_names_with_soil = [
             'cropland'
         ]
         # TODO
@@ -38,9 +37,9 @@ class LandSurface(object):
 
     def initialize_cover_fraction(self):
         self.cover_fraction = {
-            module : np.zeros((self.var.nCell)) for module in self.land_cover_module_names
+            module : np.zeros((self.model.domain.nxy)) for module in self.land_cover_module_names
         }
-        self.total_cover_fraction = np.zeros((self.var.nCell))
+        self.total_cover_fraction = np.zeros((self.model.domain.nxy))
         self.update_cover_fraction()
             
     def update_cover_fraction(self):
@@ -66,7 +65,7 @@ class LandSurface(object):
             list(self.cover_fraction.values()),
             axis=0)
         self.total_cover_fraction_soil = np.sum(
-            [self.cover_fraction[key] for key in self.land_cover_module_names_with_satoil],
+            [self.cover_fraction[key] for key in self.land_cover_module_names_with_soil],
             axis=0)
 
     def initialize_land_cover_variables_to_aggregate(self):
@@ -98,7 +97,7 @@ class LandSurface(object):
         for each land cover
         """
         self.aggregate_variables_for_all_land_covers()
-        self.aggregate_variables_for_land_covers_with_satoil()
+        self.aggregate_variables_for_land_covers_with_soil()
         
     def aggregate_variables_for_all_land_covers(self):
         for var_name in self.variables_to_aggregate:
@@ -107,16 +106,16 @@ class LandSurface(object):
                 self.land_cover_module_names,
                 self.total_cover_fraction
             )
-            vars(self.var)[var_name] = var.copy()  # remove farm, crop dimension
+            vars(self.model)[var_name] = var.copy()  # remove farm, crop dimension
             
-    def aggregate_variables_for_land_covers_with_satoil(self):
+    def aggregate_variables_for_land_covers_with_soil(self):
         for var_name in self.soil_variables_to_aggregate:
             var = self.aggregate_single_land_cover_variable(
                 var_name,
-                self.land_cover_module_names_with_satoil,
+                self.land_cover_module_names_with_soil,
                 self.total_cover_fraction_soil
                 )            
-            vars(self.var)[var_name] = var.copy()
+            vars(self.model)[var_name] = var.copy()
 
     def aggregate_single_land_cover_variable(self, var_name, module_names, total_cover_fraction):
         var_list = []
@@ -153,7 +152,7 @@ class LandSurface(object):
             
             # weight variable by area allocated to land cover
             # represented by module
-            attr *= (self.cover_fraction[module] * self.var.grid_cell_area)
+            attr *= (self.cover_fraction[module] * self.model.domain.area)
             var_list.append(attr)
 
         # sum variables; if average is required, divide by total
@@ -163,7 +162,7 @@ class LandSurface(object):
         # respective land cover
         var = np.sum(var_list, axis=0)
         if var_name in self.variables_to_aggregate_by_averaging:
-            var /= (self.var.grid_cell_area * total_cover_fraction)
+            var /= (self.model.domain.area * total_cover_fraction)
         return var
                 
     def dynamic(self):

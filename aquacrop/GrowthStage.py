@@ -12,7 +12,7 @@ class GrowthStage(object):
         self.var = GrowthStage_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.GrowthStage = arr_zeros.copy()
         self.var.time_since_germination = arr_zeros.copy()
         self.var.time_since_germination_previous = arr_zeros.copy()
@@ -29,5 +29,5 @@ class GrowthStage(object):
             self.var.DelayedGDDs.T,
             int(self.var.CalendarType),
             self.var.GrowingSeasonIndex.T,
-            self.var.nFarm, self.var.nCrop, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
         )

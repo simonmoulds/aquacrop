@@ -4,8 +4,7 @@
 import os
 import numpy as np
 
-from hm import file_handling
-from hm.Model import Model
+from hm.model import Model
 from .io.Weather import Weather
 from .io.Groundwater import Groundwater
 from .LandSurface import LandSurface
@@ -14,10 +13,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AquaCrop(Model):    
-    def __init__(self, config, time, init=None):
+    def __init__(self, config, time, domain, init=None):
         super(AquaCrop, self).__init__(
             config,
             time,
+            domain,
             init
         )
         self.weather_module = Weather(self)

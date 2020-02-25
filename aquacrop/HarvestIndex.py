@@ -12,7 +12,7 @@ class HarvestIndex(object):
         self.var = model_object
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.YieldForm = np.copy(arr_zeros).astype(np.int32)
         self.var.HI = np.copy(arr_zeros)
         self.var.HIt = np.copy(arr_zeros)
@@ -40,7 +40,7 @@ class HarvestIndex(object):
             self.var.CropType.T, 
             self.var.CalendarType, 
             self.var.GrowingSeasonIndex.T,
-            self.var.nFarm, self.var.nCrop, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
             )        
         
 class HarvestIndexAdjusted(object):
@@ -48,8 +48,8 @@ class HarvestIndexAdjusted(object):
         self.var = HarvestIndex_variable
 
     def initial(self):
-        arr_ones = np.ones((self.var.nFarm, self.var.nCrop, self.var.nCell))
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_ones = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.Fpre = np.copy(arr_ones)
         self.var.Fpost = np.copy(arr_ones)
         self.var.fpost_dwn = np.copy(arr_ones)
@@ -97,5 +97,5 @@ class HarvestIndexAdjusted(object):
             self.var.DelayedCDs.T, 
             self.var.CropType.T, 
             self.var.GrowingSeasonIndex.T, 
-            self.var.nFarm, self.var.nCrop, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
         )

@@ -14,7 +14,7 @@ class CapillaryRise(object):
         self.var = CapillaryRise_variable
 
     def initial(self):
-        self.var.CrTot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        self.var.CrTot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 
     def dynamic(self):
         """Function to calculate capillary rise from a shallow 
@@ -37,5 +37,5 @@ class CapillaryRise(object):
             self.var.dz,
             self.var.dz_layer,
             layer_ix,
-            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
             )

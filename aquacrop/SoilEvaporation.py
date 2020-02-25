@@ -13,7 +13,7 @@ class SoilEvaporation(object):
         self.var = SoilEvaporation_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.Epot = np.copy(arr_zeros)
         self.var.Stage2 = np.copy(arr_zeros.astype(bool))
         self.var.EvapZ = np.copy(arr_zeros)
@@ -31,11 +31,13 @@ class SoilEvaporation(object):
     def dynamic(self):
         
         # thh = np.asfortranarray(np.float64(self.var.th))
-        self.var.EsAct = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        self.var.EsAct = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         EvapTimeSteps = 20
         aquacrop_fc.soil_evaporation_w.update_soil_evap_w(
-            np.float64(self.var.weather.precipitation).T,
-            np.float64(self.var.weather.referencePotET).T,
+            np.float64(self.var.model.prec.values).T,
+            np.float64(self.var.model.etref.values).T,
+            # np.float64(self.var.weather.precipitation).T,
+            # np.float64(self.var.weather.referencePotET).T,
             self.var.EsAct.T,
             self.var.Epot.T,
             self.var.Irr.T,
@@ -75,10 +77,11 @@ class SoilEvaporation(object):
             np.int32(self.var.DAP).T,
             np.int32(self.var.DelayedCDs).T,
             np.int32(self.var.DelayedGDDs).T,
-            self.var._modelTime.timeStepPCR,
+            self.var.model.time.timestep,
+            # self.var._modelTime.timeStepPCR,
             EvapTimeSteps,
             self.var.nFarm,
             self.var.nCrop,
             self.var.nComp,
-            self.var.nCell)
+            self.var.domain.nxy)
         # self.var.th = np.ascontiguousarray(thh).copy()

@@ -41,21 +41,21 @@ class MeanTemperature(HmInputData):
             model.config.WEATHER['meanDailyTemperatureVarName']
         self.model_varname = 'tmean'
 
-class Temperature(object):
-    def __init__(self, model):
-        self.max_temperature_module = MaxTemperature(model)
-        self.min_temperature_module = MinTemperature(model)
-        self.mean_temperature_module = MeanTemperature(model)
+# class Temperature(object):
+#     def __init__(self, model):
+#         self.max_temperature_module = MaxTemperature(model)
+#         self.min_temperature_module = MinTemperature(model)
+#         self.mean_temperature_module = MeanTemperature(model)
 
-    def initial(self):
-        self.max_temperature_module.initial()
-        self.min_temperature_module.initial()
-        self.mean_temperature_module.initial()
+#     def initial(self):
+#         self.max_temperature_module.initial()
+#         self.min_temperature_module.initial()
+#         self.mean_temperature_module.initial()
 
-    def dynamic(self):
-        self.max_temperature_module.dynamic()
-        self.min_temperature_module.dynamic()
-        self.mean_temperature_module.dynamic()    
+#     def dynamic(self):
+#         self.max_temperature_module.dynamic()
+#         self.min_temperature_module.dynamic()
+#         self.mean_temperature_module.dynamic()    
 
 class Precipitation(HmInputData):
     def __init__(self, model):
@@ -75,6 +75,28 @@ class ETref(HmInputData):
             model.config.WEATHER['ETrefVarName']
         self.model_varname = 'etref'
 
+class Weather(object):
+    def __init__(self, model):
+        self.max_temperature_module = MaxTemperature(model)
+        self.min_temperature_module = MinTemperature(model)
+        # self.mean_temperature_module = MeanTemperature(model)
+        self.prec = Precipitation(model)
+        self.etref = ETref(model)
+
+    def initial(self):
+        self.max_temperature_module.initial()
+        self.min_temperature_module.initial()
+        # self.mean_temperature_module.initial()
+        self.prec.initial()
+        self.etref.initial()
+        
+    def dynamic(self):
+        self.max_temperature_module.dynamic()
+        self.min_temperature_module.dynamic()
+        # self.mean_temperature_module.dynamic()    
+        self.prec.dynamic()
+        self.etref.dynamic()
+        
 # TODO: class for open water evaporation
 
 

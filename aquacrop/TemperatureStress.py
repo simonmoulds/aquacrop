@@ -10,7 +10,7 @@ class TemperatureStress(object):
         self.var = TemperatureStress_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.Kst_Bio = np.copy(arr_zeros)
         self.var.Kst_PolH = np.copy(arr_zeros)
         self.var.Kst_PolC = np.copy(arr_zeros)
@@ -47,16 +47,19 @@ class TemperatureStress(object):
         cond4 = (self.var.PolHeatStress == 1)
         cond41 = (
             cond4
-            & (self.var.weather.tmax <= self.var.Tmax_lo)
+            & (self.var.model.tmax.values <= self.var.Tmax_lo)
+            # & (self.var.weather.tmax <= self.var.Tmax_lo)
         )
         self.var.Kst_PolH[cond41] = 1
         cond42 = (
             cond4
-            & (self.var.weather.tmax >= self.var.Tmax_up)
+            & (self.var.model.tmax.values >= self.var.Tmax_up)
+            # & (self.var.weather.tmax >= self.var.Tmax_up)
         )
         self.var.Kst_PolH[cond42] = 0
         cond43 = (cond4 & np.logical_not(cond41 | cond42))
-        Trel_divd = (self.var.weather.tmax - self.var.Tmax_lo)
+        Trel_divd = (self.var.model.tmax.values - self.var.Tmax_lo)
+        # Trel_divd = (self.var.weather.tmax - self.var.Tmax_lo)
         Trel_divs = (self.var.Tmax_up - self.var.Tmax_lo)
         Trel = np.divide(
             Trel_divd,
@@ -81,8 +84,9 @@ class TemperatureStress(object):
         """Function to calculate effects of cold stress on 
         pollination
         """
-        # tmin = np.broadcast_to(self.var.tmin[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nCell))
-        tmin = self.var.weather.tmin.copy()
+        # tmin = np.broadcast_to(self.var.tmin[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        tmin = self.var.model.tmin.values.copy()
+        # tmin = self.var.weather.tmin.copy()
         # tmin = self.var.tmin[None,:] * np.ones((self.var.nCrop))[:,None]
         cond5 = (self.var.PolColdStress == 0)
         self.var.Kst_PolC[cond5] = 1
@@ -113,7 +117,7 @@ class TemperatureStress(object):
 #         self.var = TemperatureStress_variable
 
 #     def initial(self):
-#         arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+#         arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 #         self.var.Kst_Bio = np.copy(arr_zeros)
 #         self.var.Kst_PolH = np.copy(arr_zeros)
 #         self.var.Kst_PolC = np.copy(arr_zeros)
@@ -184,7 +188,7 @@ class TemperatureStress(object):
 #         """Function to calculate effects of cold stress on 
 #         pollination
 #         """
-#         # tmin = np.broadcast_to(self.var.tmin[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nCell))
+#         # tmin = np.broadcast_to(self.var.tmin[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 #         tmin = self.var.weather.tmin.copy()
 #         # tmin = self.var.tmin[None,:] * np.ones((self.var.nCrop))[:,None]
 #         cond5 = (self.var.PolColdStress == 0)

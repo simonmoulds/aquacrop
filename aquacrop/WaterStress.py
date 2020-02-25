@@ -12,7 +12,7 @@ import aquacrop_fc
 #         self.var = WaterStress_variable
 
 #     def initial(self):
-#         arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+#         arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 #         self.var.Ksw_Exp = np.copy(arr_zeros)
 #         self.var.Ksw_Sto = np.copy(arr_zeros)
 #         self.var.Ksw_Sen = np.copy(arr_zeros)
@@ -39,7 +39,7 @@ import aquacrop_fc
 #              self.var.fshape_w3[None,...],
 #              self.var.fshape_w4[None,...]), axis=0)
 
-#         # et0 = np.broadcast_to(self.var.referencePotET[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nCell))
+#         # et0 = np.broadcast_to(self.var.referencePotET[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 #         et0 = self.var.weather.referencePotET.copy()
 #         # et0 = (self.var.referencePotET[None,:] * np.ones((self.var.nCrop))[:,None])
         
@@ -60,7 +60,7 @@ import aquacrop_fc
 #         p_lo = np.clip(p_lo, 0, 1)
 
 #         # Calculate relative depletion
-#         Drel = np.zeros((4, self.var.nFarm, self.var.nCrop, self.var.nCell))
+#         Drel = np.zeros((4, self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         
 #         # 1 - No water stress
 #         cond1 = (self.var.Dr <= (p_up * self.var.TAW))
@@ -97,7 +97,7 @@ class WaterStress(object):
         self.var = WaterStress_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.Ksw_Exp = np.copy(arr_zeros)
         self.var.Ksw_Sto = np.copy(arr_zeros)
         self.var.Ksw_Sen = np.copy(arr_zeros)
@@ -114,7 +114,8 @@ class WaterStress(object):
             self.var.Ksw_StoLin.T,
             self.var.Dr.T,
             self.var.TAW.T,
-            self.var.weather.referencePotET.T,
+            self.var.model.etref.values.T,
+            # self.var.weather.referencePotET.T,
             self.var.ETadj.T,
             self.var.tEarlySen.T,
             self.var.p_up1.T,
@@ -132,7 +133,7 @@ class WaterStress(object):
             beta,
             self.var.nFarm,
             self.var.nCrop,
-            self.var.nCell)
+            self.var.domain.nxy)
         # p_up = np.concatenate(
         #     (self.var.p_up1[None,...],
         #      self.var.p_up2[None,...],
@@ -151,7 +152,7 @@ class WaterStress(object):
         #      self.var.fshape_w3[None,...],
         #      self.var.fshape_w4[None,...]), axis=0)
 
-        # # et0 = np.broadcast_to(self.var.referencePotET[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.nCell))
+        # # et0 = np.broadcast_to(self.var.referencePotET[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         # et0 = self.var.weather.referencePotET.copy()
         # # et0 = (self.var.referencePotET[None,:] * np.ones((self.var.nCrop))[:,None])
         
@@ -172,7 +173,7 @@ class WaterStress(object):
         # p_lo = np.clip(p_lo, 0, 1)
 
         # # Calculate relative depletion
-        # Drel = np.zeros((4, self.var.nFarm, self.var.nCrop, self.var.nCell))
+        # Drel = np.zeros((4, self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         
         # # 1 - No water stress
         # cond1 = (self.var.Dr <= (p_up * self.var.TAW))

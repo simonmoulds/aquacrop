@@ -7,10 +7,11 @@ import netCDF4 as nc
 import datetime as datetime
 import calendar as calendar
 
-from hm import file_handling
-from hm.Reporting import Reporting
+# from hm import file_handling
+from hm.reporting import Reporting
 
-from .io.LandCoverParameters import LandCoverParameters, AquaCropParameters
+# from .io.LandCoverParameters import LandCoverParameters, AquaCropParameters
+from .io.LandCoverParameters import AquaCropParameters
 from .io.CarbonDioxide import CarbonDioxide
 from .io.InitialCondition import InitialCondition
 from .GrowingDegreeDay import GrowingDegreeDay
@@ -39,20 +40,25 @@ from .CropYield import CropYield
 from .io import variable_list_crop
 
 class LandCover(object):
-    def __init__(self, var, config_section_name):
-        self.var = var
-        self._configuration = var._configuration
-        self._modelTime = var._modelTime
-        self.cloneMapFileName = var.cloneMapFileName
+    def __init__(self, model):
+        self.model = model
+        self.config = model.config
+        self.time = model.time
+        self.domain = model.domain
+        self.weather = model.weather_module
+        self.groundwater = model.groundwater_module
+        # self._configuration = var._configuration
+        # self._modelTime = var._modelTime
+        # self.cloneMapFileName = var.cloneMapFileName
         # self.cloneMap = var.cloneMap
-        self.landmask = var.landmask
-        self.grid_cell_area = var.grid_cell_area
-        self.dimensions = var.dimensions
-        self.nLat, self.nLon, self.nCell = var.nLat, var.nLon, var.nCell
-        self.nFarm, self.nCrop = 1, 1
-        var.nFarm, var.nCrop = self.nFarm, self.nCrop
-        self.weather = var.weather_module
-        self.groundwater = var.groundwater_module
+        # self.landmask = var.landmask
+        # self.grid_cell_area = var.grid_cell_area
+        # self.dimensions = var.dimensions
+        # self.nLat, self.nLon, self.nCell = var.nLat, var.nLon, var.nCell
+        # self.nFarm, self.nCrop = 1, 1
+        # var.nFarm, var.nCrop = self.nFarm, self.nCrop
+        # self.weather = var.weather_module
+        # self.groundwater = var.groundwater_module
 
     def initial(self):
         pass
@@ -61,13 +67,10 @@ class LandCover(object):
         pass
 
 class Cropland(LandCover):
-    def __init__(self, var, config_section_name):
-        super(Cropland, self).__init__(
-            var,
-            config_section_name)
-
+    def __init__(self, var):
+        super(Cropland, self).__init__(var)
         self.carbon_dioxide_module = CarbonDioxide(self)
-        self.lc_parameters_module = AquaCropParameters(self, config_section_name)
+        self.lc_parameters_module = AquaCropParameters(self)
         self.initial_condition_module = InitialCondition(self)
         self.gdd_module = GrowingDegreeDay(self)        
         self.check_groundwater_table_module = CheckGroundwaterTable(self)
@@ -94,42 +97,42 @@ class Cropland(LandCover):
         self.harvest_index_module = HarvestIndexAdjusted(self)
         self.crop_yield_module = CropYield(self)
 #         self.grid_cell_mean_module = GridCellMean(self)
-        self.add_dimensions()
-        self.broadcast_landmask()
+        # self.add_dimensions()
+        # self.broadcast_landmask()
         
-    def add_dimensions(self):
-        """Function to add dimensions to model dimensions 
-        object. This is necessary if the LandCover object 
-        contains a reporting method.
-        """
-        self.dimensions['farm'] = np.arange(self.nFarm)
-        self.dimensions['crop'] = np.arange(self.nCrop)
+    # def add_dimensions(self):
+    #     """Function to add dimensions to model dimensions 
+    #     object. This is necessary if the LandCover object 
+    #     contains a reporting method.
+    #     """
+    #     self.dimensions['farm'] = np.arange(self.nFarm)
+    #     self.dimensions['crop'] = np.arange(self.nCrop)
 
-    def broadcast_landmask(self):
-        """Function broadcasts the landmask to the various 
-        shapes which are needed to select input data, 
-        accounting for farm, crop, and layer dimensions.
-        """
-        self.landmask_crop = np.broadcast_to(
-            self.landmask[None, ...],
-            (self.nCrop,) + self.landmask.shape
-        )
-        self.landmask_layer = np.broadcast_to(
-            self.landmask[None,...],
-            (self.nLayer,) + self.landmask.shape
-        )
-        self.landmask_comp = np.broadcast_to(
-            self.landmask[None,...],
-            (self.nComp,) + self.landmask.shape
-        )                
-        self.landmask_farm = np.broadcast_to(
-            self.landmask[None, ...],
-            (self.var.nFarm,) + self.landmask.shape
-        )
-        self.landmask_farm_crop = np.broadcast_to(
-            self.landmask[None, None, ...],
-            (self.nFarm, self.nCrop,) + self.landmask.shape
-        )
+    # def broadcast_landmask(self):
+    #     """Function broadcasts the landmask to the various 
+    #     shapes which are needed to select input data, 
+    #     accounting for farm, crop, and layer dimensions.
+    #     """
+    #     self.landmask_crop = np.broadcast_to(
+    #         self.landmask[None, ...],
+    #         (self.nCrop,) + self.landmask.shape
+    #     )
+    #     self.landmask_layer = np.broadcast_to(
+    #         self.landmask[None,...],
+    #         (self.nLayer,) + self.landmask.shape
+    #     )
+    #     self.landmask_comp = np.broadcast_to(
+    #         self.landmask[None,...],
+    #         (self.nComp,) + self.landmask.shape
+    #     )                
+    #     self.landmask_farm = np.broadcast_to(
+    #         self.landmask[None, ...],
+    #         (self.var.nFarm,) + self.landmask.shape
+    #     )
+    #     self.landmask_farm_crop = np.broadcast_to(
+    #         self.landmask[None, None, ...],
+    #         (self.nFarm, self.nCrop,) + self.landmask.shape
+    #     )
     
     def initial(self):
         self.carbon_dioxide_module.initial()
@@ -159,15 +162,7 @@ class Cropland(LandCover):
         self.harvest_index_module.initial()
         self.crop_yield_module.initial()
 #         self.grid_cell_mean_module.initial()
-        self.reporting_module = Reporting(
-            self,
-            self._configuration.outNCDir,
-            self._configuration.NETCDF_ATTRIBUTES,
-            self._configuration.CROP_PARAMETERS,  # TODO: shouldn't have to specify this
-            variable_list_crop,
-            'cropland'
-        )
-        print('d')
+        self.reporting_module = Reporting(self, variable_list_crop, 'CROP_PARAMETERS')
         
     def dynamic(self):
         self.carbon_dioxide_module.dynamic()
@@ -205,7 +200,8 @@ class Cropland(LandCover):
         self.crop_yield_module.dynamic()
         self.root_zone_water_module.dynamic()
 #         self.grid_cell_mean_module.dynamic()
-        self.reporting_module.report()
+        self.reporting_module.update()
+        # self.reporting_module.report()
     
 # class Cropland(LandCover):
 #     def __init__(self, var, config_section_name):

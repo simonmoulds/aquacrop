@@ -10,7 +10,7 @@ class CropYield(object):
         self.var = CropYield_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.CropMature = np.copy(arr_zeros).astype(bool)
         self.var.Y = np.copy(arr_zeros)
 

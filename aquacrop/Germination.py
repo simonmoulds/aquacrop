@@ -12,7 +12,7 @@ class Germination(object):
         self.var = Germination_variable
 
     def initial(self):
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.DelayedGDDs = np.copy(arr_zeros)
         self.var.DelayedCDs = np.copy(arr_zeros.astype(np.int32))
         self.var.Germination = np.copy(arr_zeros.astype(np.int32))
@@ -38,5 +38,5 @@ class Germination(object):
             self.var.nCrop,
             self.var.nComp,
             self.var.nLayer,
-            self.var.nCell
+            self.var.domain.nxy
         )

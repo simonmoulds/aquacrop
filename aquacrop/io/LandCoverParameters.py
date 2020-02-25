@@ -6,7 +6,7 @@ import numpy as np
 import netCDF4 as nc
 import datetime as datetime
 
-from hm import file_handling
+# from hm import file_handling
 
 from .SoilHydraulicParameters import *
 from .SoilParameters import *
@@ -16,36 +16,35 @@ from .FarmParameters import *
 from .IrrigationManagementParameters import *
 from .FieldManagementParameters import *
     
-class BaseClass(object):
-    def __init__(self, var, configuration):
-        self.var = var
-        self.configuration = configuration
+# class BaseClass(object):
+#     def __init__(self, var, configuration):
+#         self.var = var
+#         self.configuration = configuration
 
-class CoverFractionPoint(BaseClass):
-    def __init__(self, var, configuration):
-        super(CoverFractionPoint, self).__init__(var, configuration)
+# class CoverFractionPoint(BaseClass):
+#     def __init__(self, var, configuration):
+#         super(CoverFractionPoint, self).__init__(var, configuration)
         
-    def initial(self):        
-        self.var.cover_fraction = 1
+#     def initial(self):        
+#         self.var.cover_fraction = 1
         
-    def dynamic(self):
-        pass
+#     def dynamic(self):
+#         pass
     
-class CoverFractionGrid(BaseClass):
-
-    def __init__(self, var, configuration):
-        super(CoverFractionGrid, self).__init__(var, configuration)
+class CoverFraction(object):
+    def __init__(self, var):
+        self.var = var
         
     def initial(self):
         self.update_cover_fraction()
         
     def update_cover_fraction(self):
-        self.coverFractionNC = str(self.configuration['landCoverFractionNC'])
-        self.coverFractionVarName = str(self.configuration['landCoverFractionVarName'])
+        # self.coverFractionNC = str(self.configuration['landCoverFractionNC'])
+        # self.coverFractionVarName = str(self.configuration['landCoverFractionVarName'])
         
         # # TODO: make flexible the day on which land cover is changed
         
-        # start_of_model_run = (self.var._modelTime.timeStepPCR == 1)
+        # start_of_model_run = (self.var._modelTime.timestep == 1)
         # start_of_year = (self.var._modelTime.doy == 1)
         # if self.dynamicLandCover:
         #     if start_of_model_run or start_of_year:
@@ -77,27 +76,29 @@ class CoverFractionGrid(BaseClass):
         #             LatitudeLongitude = True)[self.var.landmask]
         #         cover_fraction = np.float64(cover_fraction)
         #         self.var.cover_fraction = cover_fraction
-        self.var.cover_fraction = np.ones_like(self.var.landmask)  # TEMPORARY
+        self.var.cover_fraction = np.ones_like(self.var.domain.mask)  # TEMPORARY
         
     def dynamic(self):
         self.update_cover_fraction()
 
-class LandCoverParameters(object):
-    def __init__(self, LandCoverParameters_variable, config_section_name):
-        self.var = LandCoverParameters_variable
-        self.configuration = getattr(
-            self.var._configuration,
-            config_section_name)
+# class LandCoverParameters(object):
+#     def __init__(self, LandCoverParameters_variable, config_section_name):
+#         self.var = LandCoverParameters_variable
+#         self.configuration = getattr(
+#             self.var._configuration,
+#             config_section_name)
 
-class AquaCropParameters(LandCoverParameters):
-    def __init__(self, var, config_section_name):
-        super(AquaCropParameters, self).__init__(var, config_section_name)
-        self.soil_hydraulic_parameters_module = SoilHydraulicParametersGrid(var, config_section_name)
-        self.soil_parameters_module = SoilParametersGrid(var, config_section_name)
-        self.cover_fraction_module = CoverFractionGrid(var, self.configuration)        
-        self.farm_parameters_module = FarmParametersGrid(var)
-        self.crop_parameters_module = CropParametersGrid(var)
-        self.crop_area_module = CropAreaGrid(var)
+# class AquaCropParameters(LandCoverParameters):
+class AquaCropParameters(object):
+    def __init__(self, var):#, config_section_name):
+        # super(AquaCropParameters, self).__init__(var, config_section_name)
+        # self.soil_hydraulic_parameters_module = SoilHydraulicParametersGrid(var)#, config_section_name)
+        self.soil_hydraulic_parameters_module = SoilHydraulicParameters(var)#, config_section_name)
+        self.soil_parameters_module = SoilParameters(var)#, config_section_name)
+        self.cover_fraction_module = CoverFraction(var)        
+        self.farm_parameters_module = FarmParameters(var)
+        self.crop_parameters_module = CropParameters(var)
+        self.crop_area_module = CropArea(var)
         self.field_mgmt_parameters_module = FieldManagementParameters(var)
         self.irrigation_parameters_module = IrrigationManagementParameters(var)
 

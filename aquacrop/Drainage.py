@@ -12,9 +12,9 @@ class Drainage(object):
         self.var = Drainage_variable
 
     def initial(self):
-        self.var.FluxOut = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nCell))
-        self.var.DeepPerc = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
-        self.var.Recharge = np.zeros((self.var.nCell))
+        self.var.FluxOut = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy))
+        self.var.DeepPerc = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        self.var.Recharge = np.zeros((self.var.domain.nxy))
 
     def dynamic(self):
         """Function to redistribute stored soil water"""
@@ -31,5 +31,5 @@ class Drainage(object):
             self.var.dz,
             self.var.dz_sum,
             layer_ix,
-            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.nCell
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
             )
