@@ -4,20 +4,6 @@
 import os
 import numpy as np
 
-# from hm import file_handling
-
-# class CropAreaPoint(object):
-#     def __init__(self, CropArea_variable):
-#         self.var = CropArea_variable
-
-#     def initial(self):
-#         self.var.CurrentCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-#         self.var.CroplandArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-#         self.var.CropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-#         self.var.FarmCropArea = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        
-#     def dynamic(self):
-#         pass
 class CropArea(object):
     def __init__(self, model):
         self.model = model
@@ -25,12 +11,11 @@ class CropArea(object):
         self.model.CurrentCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
         self.model.CroplandArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
         self.model.CropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-        self.model.FarmCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-        
+        self.model.FarmCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))        
     def dynamic(self):
         pass
         
-# class CropAreaGrid(object):
+# class CropArea(object):
     
 #     def __init__(self, CropArea_variable):
 #         self.var = CropArea_variable

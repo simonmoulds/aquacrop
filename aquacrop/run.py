@@ -43,23 +43,21 @@ def main(argv):
         pd.Timedelta(configuration.CLOCK['timeDelta'])
     )
     
-    # set model domain: retrieve z coordinate information from config
+    # retrieve z coordinate information from config
     dz_lyr = configuration.SOIL_PROFILE['dzLayer']
     z_lyr_bot = np.cumsum(dz_lyr)
     z_lyr_top = z_lyr_bot - dz_lyr
     z_lyr_mid = (z_lyr_top + z_lyr_bot) / 2
-
     dz_comp = configuration.SOIL_PROFILE['dzComp']
     z_comp_bot = np.cumsum(dz_comp)
     z_comp_top = z_comp_bot - dz_comp
-    z_comp_mid = (z_comp_top + z_comp_bot) / 2
-    
+    z_comp_mid = (z_comp_top + z_comp_bot) / 2    
     z_coords = {
         'layer' : z_lyr_mid,
         'depth' : z_comp_mid
-        # 'compartment' : z_comp_mid
     }
     
+    # set model domain
     domain = set_domain(
         configuration.MODEL_GRID['mask'],
         modeltime,
@@ -82,7 +80,7 @@ def main(argv):
         initial_state
     )
     # run model
-    dynamic_framework = HmDynamicFramework(dynamic_model, len(modeltime))
+    dynamic_framework = HmDynamicFramework(dynamic_model, len(modeltime) + 1)
     dynamic_framework.setQuiet(True)
     dynamic_framework.run()    
 

@@ -5,13 +5,13 @@ import os
 import numpy as np
 
 from hm.model import Model
-from .LandCover import *
+from .LandCover import LandCover, Cropland
 
 class LandSurface(object):
     def __init__(self, model):
         self.model = model
         self.land_cover_modules = {
-            'cropland' : Cropland(self.model)#, 'CROP_PARAMETERS')
+            'cropland' : Cropland(self.model)
         }
         self.land_cover_module_names = [
             'cropland'

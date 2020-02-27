@@ -68,6 +68,9 @@ class InitialCondition(object):
         # return th
     
     def interpolate_initial_condition_to_compartments_by_layer(self):
+        zBot = np.cumsum(self.var.dz)
+        zTop = zBot - self.var.dz
+        zMid = (zTop + zBot) / 2
         self.var.th_init.select(depth=zMid, method='nearest')  # is this the same???
         # th = th[self.var.layerIndex,:,:]
         # return th

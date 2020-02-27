@@ -4,15 +4,14 @@
 import os
 import numpy as np
 import pandas
-import netCDF4 #as nc
+import netCDF4
 import datetime as datetime
 import calendar as calendar
 import sqlite3
 from importlib_resources import path
 
-# from hm import file_handling
-# from hm.Messages import ModelError
 from hm.api import open_hmdataarray
+
 from .utils import read_crop_parameter_from_sqlite
 from . import data
 from .CarbonDioxide import refconc
@@ -20,48 +19,33 @@ from .CarbonDioxide import refconc
 import aquacrop_fc
 
 class CropParameters(object):
-    def __init__(self, CropParameters_variable):
-        self.var = CropParameters_variable
-        self.var.nCrop = len(self.var.domain._coords['crop'])
-        # self.get_num_crop()
-        # self.get_crop_id()
-        self.var.CropID = self.var.config.CROP_PARAMETERS['cropID']
-        self.var.CalendarType = self.var.config.CROP_PARAMETERS['CalendarType']
-        self.var.SwitchGDD = self.var.config.CROP_PARAMETERS['SwitchGDD']
-        self.var.GDDmethod = self.var.config.CROP_PARAMETERS['GDDmethod']
+    def __init__(self, model):
+        self.model = model
+        self.model.nCrop = len(self.model.domain._coords['crop'])
+        self.model.CropID = self.model.config.CROP_PARAMETERS['cropID']
+        self.model.CalendarType = self.model.config.CROP_PARAMETERS['CalendarType']
+        self.model.SwitchGDD = self.model.config.CROP_PARAMETERS['SwitchGDD']
+        self.model.GDDmethod = self.model.config.CROP_PARAMETERS['GDDmethod']
         self.load_crop_parameter_database()
         
-    # def get_num_crop(self):
-    #     self.var.nCrop = file_handling.get_dimension_variable(
-    #         self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
-    #         'crop'
-    #     ).size
-    # # def get_num_crop(self):
-    # #     pass
-
-    # def get_crop_id(self):
-    #     ids = str(self.var._configuration.CROP_PARAMETERS['cropID'])
-    #     try:
-    #         ids = [int(x) for x in ids.split(',')]
-    #         self.var.CropID = ids
-    #     except:
-    #         self.var.CropID = None
     def load_crop_parameter_database(self):
         with path(data, 'crop_parameter_database.sqlite3') as db_path:
             try:
                 db_path = db_path.resolve()
             except FileNotFoundError:
                 pass
-            self.var.CropParameterDatabase = sqlite3.connect(str(db_path))
+            self.model.CropParameterDatabase = sqlite3.connect(str(db_path))
 
     def initial(self):
         self.read()        
-        self.var.PlantingDateAdj = np.copy(self.var.PlantingDate)
-        self.var.HarvestDateAdj = np.copy(self.var.HarvestDate)
-        
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        self.var.GrowingSeasonIndex = np.copy(arr_zeros.astype(bool))
-        self.var.GrowingSeasonDayOne = np.copy(arr_zeros.astype(bool))
+        self.model.PlantingDateAdj = np.copy(self.model.PlantingDate)
+        self.model.HarvestDateAdj = np.copy(self.model.HarvestDate)        
+        arr_zeros = np.zeros((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+        self.model.GrowingSeasonIndex = np.copy(arr_zeros.astype(bool))
+        self.model.GrowingSeasonDayOne = np.copy(arr_zeros.astype(bool))
+        # divide into int/float parameters because this makes it
+        # easier when passing as arguments to Fortran extension
+        # (where the data type has to be specified)
         int_params_to_compute = [
             'tLinSwitch','DAP','CanopyDevEndCD','CanopyDevEndCD',
             'Canopy10PctCD','MaxCanopyCD','HIstartCD','HIendCD',
@@ -69,66 +53,51 @@ class CropParameters(object):
         ]
         flt_params_to_compute = [
             'CC0','SxTop','SxBot','fCO2','dHILinear','HIGC',
-            'CanopyDevEnd',
-            'Canopy10Pct',
-            'MaxCanopy',
-            'HIend',
-            'FloweringEnd',
-            'CurrentConc'
+            'CanopyDevEnd','Canopy10Pct','MaxCanopy','HIend',
+            'FloweringEnd','CurrentConc'
         ]
         for param in int_params_to_compute:
-            vars(self.var)[param] = np.copy(arr_zeros.astype(np.int32))
+            vars(self.model)[param] = np.copy(arr_zeros.astype(np.int32))
         for param in flt_params_to_compute:
-            vars(self.var)[param] = np.copy(arr_zeros.astype(np.float64))
+            vars(self.model)[param] = np.copy(arr_zeros.astype(np.float64))
         self.compute_crop_parameters()
 
     def read(self):        
         self.get_crop_parameter_names()
-        if len(self.var.crop_parameters_to_read) > 0:
-            for param in self.var.crop_parameters_to_read:
-                # read_from_netcdf = False
-                # read_from_netcdf = file_handling.check_if_nc_has_variable(
-                #     self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
-                #     param
-                #     )
+        if len(self.model.crop_parameters_to_read) > 0:
+            for param in self.model.crop_parameters_to_read:
+                # try to read from netCDF file, otherwise read from database
+                # N.B. some parameters must be specified in netCDF
+                # (e.g. (Planting|Harvest)Date)
                 try:
-                # if read_from_netcdf:
                     arr = open_hmdataarray(
-                        self.var.config.CROP_PARAMETERS['cropParametersNC'],
+                        self.model.config.CROP_PARAMETERS['cropParametersNC'],
                         param,
-                        self.var.domain
+                        self.model.domain
                     )
-                    vars(self.var)[param] = np.broadcast_to(
-                        arr.values,#[None,None,:,:],
-                        (self.var.nFarm, self.var.nCrop, self.var.domain.nxy)
+                    vars(self.model)[param] = np.broadcast_to(
+                        arr.values,
+                        (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
                     )                                
-                    # d = file_handling.netcdf_to_arrayWithoutTime(
-                    #     self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
-                    #     param,
-                    #     cloneMapFileName=self.var.cloneMapFileName)
-                    # d = d[self.var.landmask_crop].reshape(self.var.nCrop,self.var.domain.nxy)
-                    # vars(self.var)[param] = np.broadcast_to(d, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))                    
                 except:
-                    
                     try:
-                        parameter_values = np.zeros((self.var.nCrop))
-                        for index,crop_id in enumerate(self.var.CropID):
-                            # print(index,crop_id)
+                        parameter_values = np.zeros((self.model.nCrop))
+                        for index,crop_id in enumerate(self.model.CropID):
                             parameter_values[index] = read_crop_parameter_from_sqlite(
-                                self.var.CropParameterDatabase,
+                                self.model.CropParameterDatabase,
                                 crop_id,
                                 param
                             )[0]
-                        vars(self.var)[param] = np.broadcast_to(
+                        vars(self.model)[param] = np.broadcast_to(
                             parameter_values[:,None,None],
-                            (self.var.nFarm, self.var.nCrop, self.var.domain.nxy)
+                            (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
                         )
                         
                     except:
                         raise KeyError("Error reading parameter " + param + " from crop parameter database")
         
     def get_crop_parameter_names(self):        
-        self.var.crop_parameters_to_read = [
+        self.model.crop_parameters_to_read = [
             'CropType','PlantingDate','HarvestDate','Emergence','MaxRooting',
             'Senescence','Maturity','HIstart','Flowering','YldForm',
             'PolHeatStress','PolColdStress','BioTempStress','PlantPop',
@@ -141,47 +110,6 @@ class CropParameters(object):
             'p_lo4','fshape_w1','fshape_w2','fshape_w3','fshape_w4','Aer','beta',
             'GermThr']
 
-    def adjust_planting_and_harvesting_date(self):
-        leap_year = calendar.isleap(self.var.time.curr_time.year)
-        aquacrop_fc.crop_parameters_w.adjust_pd_hd_w(
-            np.int32(self.var.PlantingDateAdj).T,
-            np.int32(self.var.HarvestDateAdj).T,
-            np.int32(self.var.PlantingDate).T,
-            np.int32(self.var.HarvestDate).T,
-            np.int32(self.var.time.doy),
-            np.int32(self.var.time.timestep),
-            np.int32(leap_year),
-            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
-        )
-
-    def update_growing_season(self):
-        gs = np.int32(self.var.GrowingSeasonIndex.copy())
-        gsd = np.int32(self.var.GrowingSeasonDayOne.copy())
-        endnum = netCDF4.date2num(datetime.datetime(self.var.time.endtime.year, self.var.time.endtime.month, self.var.time.endtime.day), units="days since 1900-01-01 00:00:00")
-        startnum = netCDF4.date2num(datetime.datetime(self.var.time.year, 1, 1), units="days since 1900-01-01 00:00:00")
-        # print(endnum)
-        # print(startnum)
-        aquacrop_fc.crop_parameters_w.update_growing_season_w(
-            gs.T,
-            gsd.T,
-            # np.int32(self.var.GrowingSeasonIndex).T,
-            # np.int32(self.var.GrowingSeasonDayOne).T,
-            np.int32(self.var.DAP).T,
-            np.int32(self.var.PlantingDateAdj).T,
-            np.int32(self.var.HarvestDateAdj).T,
-            np.int32(self.var.CropDead).T,
-            np.int32(self.var.CropMature).T,
-            self.var.time.doy,
-            self.var.time.timestep,
-            startnum,
-            endnum,
-            # self.var.time.currentYearStartNum,
-            # self.var.time.endTimeNum,
-            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
-        )
-        self.var.GrowingSeasonIndex = gs.astype(bool)
-        self.var.GrowingSeasonDayOne = gsd.astype(bool)
-        
     def compute_crop_parameters(self):
         self.compute_initial_canopy_cover()
         self.compute_root_extraction_terms()
@@ -196,102 +124,140 @@ class CropParameters(object):
         self.compute_HI_linear()
         
     def compute_initial_canopy_cover(self):
-        self.var.CC0 = np.round(10000. * (self.var.PlantPop * self.var.SeedSize) * 10 ** -8) / 10000
+        self.model.CC0 = np.round(10000. * (self.model.PlantPop * self.model.SeedSize) * 10 ** -8) / 10000
         
     def compute_root_extraction_terms(self):
         aquacrop_fc.crop_parameters_w.compute_root_extraction_terms_w(
-            self.var.SxTop.T,
-            self.var.SxBot.T,
-            self.var.SxTopQ.T,
-            self.var.SxBotQ.T,
-            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
+            self.model.SxTop.T,
+            self.model.SxBot.T,
+            self.model.SxTopQ.T,
+            self.model.SxBotQ.T,
+            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
             )
         
-    def compute_HI_linear(self):
-        aquacrop_fc.crop_parameters_w.compute_hi_linear_w(
-            self.var.tLinSwitch.T,
-            self.var.dHILinear.T,
-            self.var.HIini.T,
-            self.var.HI0.T,
-            self.var.HIGC.T,
-            self.var.YldFormCD.T,
-            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
+    def adjust_planting_and_harvesting_date(self):
+        """Adjust planting and harvest date to account for 
+        leap year.
+        """
+        leap_year = calendar.isleap(self.model.time.curr_time.year)
+        aquacrop_fc.crop_parameters_w.adjust_pd_hd_w(
+            np.int32(self.model.PlantingDateAdj).T,
+            np.int32(self.model.HarvestDateAdj).T,
+            np.int32(self.model.PlantingDate).T,
+            np.int32(self.model.HarvestDate).T,
+            np.int32(self.model.time.doy),
+            np.int32(self.model.time.timestep),
+            np.int32(leap_year),
+            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
         )
-                    
-    def compute_HIGC(self):
-        aquacrop_fc.crop_parameters_w.compute_higc_w(
-            self.var.HIGC.T,
-            self.var.YldFormCD.T,
-            self.var.HI0.T,
-            self.var.HIini.T,
-            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
-            )
 
     def compute_canopy_dev_end(self):
-        # Time from sowing to end of vegetative growth period
-        self.var.CanopyDevEnd = np.copy(self.var.Senescence)
-        cond1 = (self.var.Determinant == 1)
-        self.var.CanopyDevEnd[cond1] = (np.round(self.var.HIstart + (self.var.Flowering / 2)))[cond1]
+        """Calculate time from sowing to end of vegetative
+        growth period.
+        """
+        self.model.CanopyDevEnd = np.copy(self.model.Senescence)
+        cond1 = (self.model.Determinant == 1)
+        self.model.CanopyDevEnd[cond1] = (np.round(self.model.HIstart + (self.model.Flowering / 2)))[cond1]
         
     def compute_canopy_10pct(self):
-        # Time from sowing to 10% canopy cover (non-stressed conditions)
-        self.var.Canopy10Pct = np.round(
-            self.var.Emergence +
+        """Calculate time from sowing to 10% canopy cover
+        (non-stressed conditions).
+        """
+        self.model.Canopy10Pct = np.round(
+            self.model.Emergence +
             np.divide(
                 np.log(
                     np.divide(
                         0.1,
-                        self.var.CC0,
-                        out=np.ones_like(self.var.CC0),
-                        where=self.var.CC0!=0
+                        self.model.CC0,
+                        out=np.ones_like(self.model.CC0),
+                        where=self.model.CC0!=0
                         )
                 ),
-                self.var.CGC,
-                out=np.zeros_like(self.var.CGC),
-                where=self.var.CGC!=0
+                self.model.CGC,
+                out=np.zeros_like(self.model.CGC),
+                where=self.model.CGC!=0
             )
         )
 
     def compute_max_canopy(self):
-        # Time from sowing to maximum canopy cover (non-stressed conditions)
-        self.var.MaxCanopy = np.round(
-            self.var.Emergence +
+        """Calculate time from sowing to maximum canopy 
+        cover (non-stressed conditions).
+        """
+        self.model.MaxCanopy = np.round(
+            self.model.Emergence +
             (np.log(
-                (0.25 * self.var.CCx * self.var.CCx / self.var.CC0)
-                / (self.var.CCx - (0.98 * self.var.CCx))
+                (0.25 * self.model.CCx * self.model.CCx / self.model.CC0)
+                / (self.model.CCx - (0.98 * self.model.CCx))
             ) /
-             self.var.CGC)
+             self.model.CGC)
         )
 
     def compute_hi_end(self):
-        # Time from sowing to end of yield formation
-        self.var.HIend = self.var.HIstart + self.var.YldForm
+        """Calculate time from sowing to end of yield
+        formation.
+        """
+        self.model.HIend = self.model.HIstart + self.model.YldForm
 
     def compute_flowering_end_cd(self):
-        arr_zeros = np.zeros_like(self.var.CropType)
-        self.var.FloweringEnd = np.copy(arr_zeros)
+        arr_zeros = np.zeros_like(self.model.CropType)
+        cond2 = (self.model.CropType == 3)
+        self.model.FloweringEnd = np.copy(arr_zeros)
+        self.model.FloweringEnd[cond2] = (self.model.HIstart + self.model.Flowering)[cond2]
         FloweringEndCD = np.copy(arr_zeros)
-        self.var.FloweringCD = np.copy(arr_zeros)
-        cond2 = (self.var.CropType == 3)
-        self.var.FloweringEnd[cond2] = (self.var.HIstart + self.var.Flowering)[cond2]
-        FloweringEndCD[cond2] = self.var.FloweringEnd[cond2]
-        self.var.FloweringCD[cond2] = self.var.Flowering[cond2]
+        FloweringEndCD[cond2] = self.model.FloweringEnd[cond2]
+        self.model.FloweringCD = np.copy(arr_zeros)
+        self.model.FloweringCD[cond2] = self.model.Flowering[cond2]
 
+    def compute_HIGC(self):
+        aquacrop_fc.crop_parameters_w.compute_higc_w(
+            self.model.HIGC.T,
+            self.model.YldFormCD.T,
+            self.model.HI0.T,
+            self.model.HIini.T,
+            self.model.nFarm,
+            self.model.nCrop,
+            self.model.domain.nxy
+            )
+        
+    def compute_HI_linear(self):
+        aquacrop_fc.crop_parameters_w.compute_hi_linear_w(
+            self.model.tLinSwitch.T,
+            self.model.dHILinear.T,
+            self.model.HIini.T,
+            self.model.HI0.T,
+            self.model.HIGC.T,
+            self.model.YldFormCD.T,
+            self.model.nFarm,
+            self.model.nCrop,
+            self.model.domain.nxy
+        )
+                    
     def compute_pd_hd(self):
-        pd = np.copy(self.var.PlantingDateAdj)
-        hd = np.copy(self.var.HarvestDateAdj)
+        """Adjust harvest date so that it always falls 
+        after the planting date.
+        """
+        pd = np.copy(self.model.PlantingDateAdj)
+        hd = np.copy(self.model.HarvestDateAdj)
         hd[hd < pd] += 365
-        sd = self.var.time.curr_time.timetuple().tm_yday
+        sd = self.model.time.curr_time.timetuple().tm_yday
         planting_day_before_start_day = sd > pd
         pd[planting_day_before_start_day] = 0  # is this possible?
         hd[planting_day_before_start_day] = 0
-        return pd,hd
+        return pd, hd
 
     def compute_day_index(self, pd, hd):
-        sd = self.var.time.curr_time.timetuple().tm_yday
+        sd = self.model.time.curr_time.timetuple().tm_yday
         max_harvest_date = int(np.max(hd))
         day_index = np.arange(sd, max_harvest_date + 1)
-        day_index = day_index[:,None,None,None] * np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))[None,...]
+        day_index = (
+            day_index[:,None,None,None] *
+            np.ones(
+                (self.model.nFarm,
+                 self.model.nCrop,
+                 self.model.domain.nxy)
+            )[None,...]
+        )
         return day_index
     
     def compute_growing_season_index(self, day_idx, pd, hd):
@@ -299,127 +265,108 @@ class CropParameters(object):
         return growing_season_index
         
     def compute_cumulative_gdd(self, hd, growing_season_index):        
-        sd = self.var.time.curr_time.timetuple().tm_yday
+        sd = self.model.time.curr_time.timetuple().tm_yday
         max_harvest_date = int(np.max(hd))
-        start_time = self.var.time.curr_time
-
+        start_time = self.model.time.curr_time
         time_slc = slice(
-            self.var.time.curr_time,
-            self.var.time.curr_time + datetime.timedelta(int(max_harvest_date - sd))
+            self.model.time.curr_time,
+            self.model.time.curr_time + datetime.timedelta(int(max_harvest_date - sd))
         )
-        self.var.model.tmin.select(time_slc)
-        self.var.model.tmax.select(time_slc)
-        # tmin = file_handling.netcdf_time_slice_to_array(
-        #     self.var.weather.minDailyTemperatureNC,
-        #     self.var.weather.tminVarName,
-        #     start_time,
-        #     start_time + datetime.timedelta(int(max_harvest_date - sd)),
-        #     cloneMapFileName = self.var.cloneMapFileName,
-        #     LatitudeLongitude = True)
-
-        # tmax = file_handling.netcdf_time_slice_to_array(
-        #     self.var.weather.maxDailyTemperatureNC,
-        #     self.var.weather.tmaxVarName,
-        #     start_time,
-        #     start_time + datetime.timedelta(int(max_harvest_date - sd)),
-        #     cloneMapFileName = self.var.cloneMapFileName,
-        #     LatitudeLongitude = True)
-
-        # # broadcast to crop dimension
-        # tmin = tmin[...,self.var.landmask]
-        # tmax = tmax[...,self.var.landmask]
-        tmin = self.var.model.tmin.values[:,None,None,...] * np.ones_like(growing_season_index)
-        tmax = self.var.model.tmax.values[:,None,None,...] * np.ones_like(growing_season_index)
-        # print(tmin.shape)
-        # print(tmax.shape)
-        self.var.model.tmin.select(time=self.var.time.curr_time)
-        self.var.model.tmax.select(time=self.var.time.curr_time)
+        self.model.model.tmin.select(time_slc)
+        self.model.model.tmax.select(time_slc)
+        tmin = (
+            self.model.model.tmin.values[:,None,None,...]
+            * np.ones_like(growing_season_index)
+        )
+        tmax = (
+            self.model.model.tmax.values[:,None,None,...]
+            * np.ones_like(growing_season_index)
+        )
+        self.model.model.tmin.select(time=self.model.time.curr_time)
+        self.model.model.tmax.select(time=self.model.time.curr_time)
         
-        # for convenience
-        tupp = np.broadcast_to(self.var.Tupp, tmin.shape).copy()
-        tbase = np.broadcast_to(self.var.Tbase, tmin.shape).copy()
-
         # calculate GDD according to the various methods
-        if self.var.GDDmethod == 1:
+        if self.model.GDDmethod == 1:
             tmean = ((tmax + tmin) / 2)
-            tmean = np.clip(tmean, self.var.Tbase, self.var.Tupp)
-        elif self.var.GDDmethod == 2:
-            tmax = np.clip(tmax, self.var.Tbase, self.var.Tupp)
-            tmin = np.clip(tmin, self.var.Tbase, self.var.Tupp)
+            tmean = np.clip(tmean, self.model.Tbase, self.model.Tupp)
+        elif self.model.GDDmethod == 2:
+            tmax = np.clip(tmax, self.model.Tbase, self.model.Tupp)
+            tmin = np.clip(tmin, self.model.Tbase, self.model.Tupp)
             tmean = ((tmax + tmin) / 2)
-        elif self.var.GDDmethod == 3:
-            tmax = np.clip(tmax, self.var.Tbase, self.var.Tupp)
-            tmin = np.clip(tmin, None, self.var.Tupp)
+        elif self.model.GDDmethod == 3:
+            tmax = np.clip(tmax, self.model.Tbase, self.model.Tupp)
+            tmin = np.clip(tmin, None, self.model.Tupp)
             tmean = ((tmax + tmin) / 2)
-            tmean = np.clip(tmean, self.var.Tbase, None)
+            tmean = np.clip(tmean, self.model.Tbase, None)
 
-        tmean *= growing_season_index
+        tbase = np.broadcast_to(self.model.Tbase, tmin.shape).copy()
         tbase *= growing_season_index
+        tmean *= growing_season_index
         GDD = (tmean - tbase)
         GDDcum = np.cumsum(GDD, axis=0)
         return GDDcum
 
     def compute_crop_calendar_type_1(self):        
-        EmergenceCD = np.copy(self.var.Emergence)
-        Canopy10PctCD = np.copy(self.var.Canopy10Pct)
-        MaxRootingCD = np.copy(self.var.MaxRooting)
-        SenescenceCD = np.copy(self.var.Senescence)
-        MaturityCD = np.copy(self.var.Maturity)
-        self.var.MaxCanopyCD = np.copy(self.var.MaxCanopy)
-        self.var.CanopyDevEndCD = np.copy(self.var.CanopyDevEnd)
-        self.var.HIstartCD = np.copy(self.var.HIstart)
-        self.var.HIendCD = np.copy(self.var.HIend)
-        self.var.YldFormCD = np.copy(self.var.YldForm)
-        FloweringEndCD = np.copy(self.var.FloweringEnd)
-        self.var.FloweringCD = np.copy(self.var.Flowering)
+        EmergenceCD = np.copy(self.model.Emergence)
+        Canopy10PctCD = np.copy(self.model.Canopy10Pct)
+        MaxRootingCD = np.copy(self.model.MaxRooting)
+        SenescenceCD = np.copy(self.model.Senescence)
+        MaturityCD = np.copy(self.model.Maturity)
+        self.model.MaxCanopyCD = np.copy(self.model.MaxCanopy)
+        self.model.CanopyDevEndCD = np.copy(self.model.CanopyDevEnd)
+        self.model.HIstartCD = np.copy(self.model.HIstart)
+        self.model.HIendCD = np.copy(self.model.HIend)
+        self.model.YldFormCD = np.copy(self.model.YldForm)
+        FloweringEndCD = np.copy(self.model.FloweringEnd)
+        self.model.FloweringCD = np.copy(self.model.Flowering)
 
-        if self.var.SwitchGDD:                
+        if self.model.SwitchGDD:                
             pd, hd = self.compute_pd_hd()
             day_idx = self.compute_day_index(pd, hd)
             growing_season_idx = self.compute_growing_season_index(day_idx, pd, hd)            
             GDDcum = self.compute_cumulative_gdd(hd, growing_season_idx)
-            if (self.var.CalendarType == 1) & (self.var.SwitchGDD):
+            if (self.model.CalendarType == 1) & (self.model.SwitchGDD):
                 # Find GDD equivalent for each crop calendar variable
                 m, n, p = pd.shape
                 I, J, K = np.ogrid[:m,:n,:p]
                 emergence_idx = np.int32(pd + EmergenceCD)
-                self.var.Emergence = GDDcum[emergence_idx,I,J,K]
+                self.model.Emergence = GDDcum[emergence_idx,I,J,K]
                 canopy10pct_idx = np.int32(pd + Canopy10PctCD)
-                self.var.Canopy10Pct = GDDcum[canopy10pct_idx,I,J,K]
+                self.model.Canopy10Pct = GDDcum[canopy10pct_idx,I,J,K]
                 maxrooting_idx = np.int32(pd + MaxRootingCD)
-                self.var.MaxRooting = GDDcum[maxrooting_idx,I,J,K]
-                maxcanopy_idx = np.int32(pd + self.var.MaxCanopyCD)
-                self.var.MaxCanopy = GDDcum[maxcanopy_idx,I,J,K]
-                canopydevend_idx = np.int32(pd + self.var.CanopyDevEndCD)
-                self.var.CanopyDevEnd = GDDcum[canopydevend_idx,I,J,K]
+                self.model.MaxRooting = GDDcum[maxrooting_idx,I,J,K]
+                maxcanopy_idx = np.int32(pd + self.model.MaxCanopyCD)
+                self.model.MaxCanopy = GDDcum[maxcanopy_idx,I,J,K]
+                canopydevend_idx = np.int32(pd + self.model.CanopyDevEndCD)
+                self.model.CanopyDevEnd = GDDcum[canopydevend_idx,I,J,K]
                 senescence_idx = np.int32(pd + SenescenceCD)
-                self.var.Senescence = GDDcum[senescence_idx,I,J,K]
+                self.model.Senescence = GDDcum[senescence_idx,I,J,K]
                 maturity_idx = np.int32(pd + MaturityCD)
-                self.var.Maturity = GDDcum[maturity_idx,I,J,K]
-                histart_idx = np.int32(pd + self.var.HIstartCD)
-                self.var.HIstart = GDDcum[histart_idx,I,J,K]
-                hiend_idx = np.int32(pd + self.var.HIendCD)
-                self.var.HIend = GDDcum[hiend_idx,I,J,K]
-                yldform_idx = np.int32(pd + self.var.YldFormCD)
-                self.var.YldForm = GDDcum[yldform_idx,I,J,K]
+                self.model.Maturity = GDDcum[maturity_idx,I,J,K]
+                histart_idx = np.int32(pd + self.model.HIstartCD)
+                self.model.HIstart = GDDcum[histart_idx,I,J,K]
+                hiend_idx = np.int32(pd + self.model.HIendCD)
+                self.model.HIend = GDDcum[hiend_idx,I,J,K]
+                yldform_idx = np.int32(pd + self.model.YldFormCD)
+                self.model.YldForm = GDDcum[yldform_idx,I,J,K]
 
-                cond2 = (self.var.CropType == 3)
+                cond2 = (self.model.CropType == 3)
                 floweringend_idx = np.int32(pd + FloweringEndCD)
-                self.var.FloweringEnd[cond2] = GDDcum[floweringend_idx,I,J,K][cond2]
-                self.var.Flowering[cond2] = (self.var.FloweringEnd - self.var.HIstart)[cond2]
+                self.model.FloweringEnd[cond2] = GDDcum[floweringend_idx,I,J,K][cond2]
+                self.model.Flowering[cond2] = (self.model.FloweringEnd - self.model.HIstart)[cond2]
 
                 # Convert CGC to GDD mode
-                self.var.CGC = (np.log((((0.98 * self.var.CCx) - self.var.CCx) * self.var.CC0) / (-0.25 * (self.var.CCx ** 2)))) / (-(self.var.MaxCanopy - self.var.Emergence))
+                self.model.CGC = (np.log((((0.98 * self.model.CCx) - self.model.CCx) * self.model.CC0) / (-0.25 * (self.model.CCx ** 2)))) / (-(self.model.MaxCanopy - self.model.Emergence))
 
                 # Convert CDC to GDD mode
                 tCD = MaturityCD - SenescenceCD
                 tCD[tCD <= 0] = 1
-                tGDD = self.var.Maturity - self.var.Senescence
+                tGDD = self.model.Maturity - self.model.Senescence
                 tGDD[tGDD <= 0] = 5
-                self.var.CDC = (self.var.CCx / tGDD) * np.log(1 + ((1 - self.var.CCi / self.var.CCx) / 0.05))
+                self.model.CDC = (self.model.CCx / tGDD) * np.log(1 + ((1 - self.model.CCi / self.model.CCx) / 0.05))
 
                 # Set calendar type to GDD mode
-                self.var._configuration.CROP_PARAMETERS['CalendarType'] = "2"
+                self.model._configuration.CROP_PARAMETERS['CalendarType'] = "2"
 
     def compute_crop_calendar_type_2(self, update=False):
         pd, hd = self.compute_pd_hd()
@@ -428,59 +375,59 @@ class CropParameters(object):
         GDDcum = self.compute_cumulative_gdd(hd, growing_season_idx)
         
         maxcanopy_idx = np.copy(day_idx)
-        maxcanopy_idx[np.logical_not(GDDcum > self.var.MaxCanopy)] = 999
+        maxcanopy_idx[np.logical_not(GDDcum > self.model.MaxCanopy)] = 999
         maxcanopy_idx = np.nanmin(maxcanopy_idx, axis=0)
 
         canopydevend_idx = np.copy(day_idx)
-        canopydevend_idx[np.logical_not(GDDcum > self.var.CanopyDevEnd)] = 999        
+        canopydevend_idx[np.logical_not(GDDcum > self.model.CanopyDevEnd)] = 999        
         canopydevend_idx = np.nanmin(canopydevend_idx, axis=0)
 
         histart_idx = np.copy(day_idx)
-        histart_idx[np.logical_not(GDDcum > self.var.HIstart)] = 999
+        histart_idx[np.logical_not(GDDcum > self.model.HIstart)] = 999
         histart_idx = np.nanmin(histart_idx, axis=0)
 
         hiend_idx = np.copy(day_idx)
-        hiend_idx[np.logical_not(GDDcum > self.var.HIend)] = 999
+        hiend_idx[np.logical_not(GDDcum > self.model.HIend)] = 999
         hiend_idx = np.nanmin(hiend_idx, axis=0)
 
         floweringend_idx = np.copy(day_idx)
-        floweringend_idx[np.logical_not(GDDcum > self.var.FloweringEnd)] = 999
+        floweringend_idx[np.logical_not(GDDcum > self.model.FloweringEnd)] = 999
         floweringend_idx = np.nanmin(floweringend_idx, axis=0)
 
         if update:
             maxcanopycd = maxcanopy_idx - pd + 1
-            self.var.MaxCanopyCD[self.var.GrowingSeasonDayOne] = maxcanopycd[self.var.GrowingSeasonDayOne]
+            self.model.MaxCanopyCD[self.model.GrowingSeasonDayOne] = maxcanopycd[self.model.GrowingSeasonDayOne]
             canopydevendcd = canopydevend_idx - pd + 1
-            self.var.CanopyDevEndCD[self.var.GrowingSeasonDayOne] = canopydevendcd[self.var.GrowingSeasonDayOne]
+            self.model.CanopyDevEndCD[self.model.GrowingSeasonDayOne] = canopydevendcd[self.model.GrowingSeasonDayOne]
             histartcd = histart_idx - pd + 1
-            self.var.HIstartCD[self.var.GrowingSeasonDayOne] = histartcd[self.var.GrowingSeasonDayOne]
+            self.model.HIstartCD[self.model.GrowingSeasonDayOne] = histartcd[self.model.GrowingSeasonDayOne]
             hiendcd = hiend_idx - pd + 1
-            self.var.HIendCD[self.var.GrowingSeasonDayOne] = hiendcd[self.var.GrowingSeasonDayOne]
-            floweringendcd = (floweringend_idx - pd + 1) - self.var.HIstartCD
-            cond1 = (self.var.CropType == 3) & (self.var.GrowingSeasonDayOne)
-            self.var.FloweringCD[cond1] = floweringendcd[cond1]
-            yldformcd = self.var.HIendCD - self.var.HIstartCD
-            self.var.YldFormCD[self.var.GrowingSeasonDayOne] = yldformcd[self.var.GrowingSeasonDayOne]
+            self.model.HIendCD[self.model.GrowingSeasonDayOne] = hiendcd[self.model.GrowingSeasonDayOne]
+            floweringendcd = (floweringend_idx - pd + 1) - self.model.HIstartCD
+            cond1 = (self.model.CropType == 3) & (self.model.GrowingSeasonDayOne)
+            self.model.FloweringCD[cond1] = floweringendcd[cond1]
+            yldformcd = self.model.HIendCD - self.model.HIstartCD
+            self.model.YldFormCD[self.model.GrowingSeasonDayOne] = yldformcd[self.model.GrowingSeasonDayOne]
                         
         else:            
-            self.var.MaxCanopyCD = maxcanopy_idx - pd + 1
-            self.var.CanopyDevEndCD = canopydevend_idx - pd + 1
-            self.var.HIstartCD = histart_idx - pd + 1
-            self.var.HIendCD = hiend_idx - pd + 1        
-            cond1 = (self.var.CropType == 3)
-            floweringendcd = (floweringend_idx - pd + 1) - self.var.HIstartCD
-            self.var.FloweringCD[cond1] = floweringendcd[cond1]        
-            self.var.YldFormCD = self.var.HIendCD - self.var.HIstartCD            
+            self.model.MaxCanopyCD = maxcanopy_idx - pd + 1
+            self.model.CanopyDevEndCD = canopydevend_idx - pd + 1
+            self.model.HIstartCD = histart_idx - pd + 1
+            self.model.HIendCD = hiend_idx - pd + 1        
+            cond1 = (self.model.CropType == 3)
+            floweringendcd = (floweringend_idx - pd + 1) - self.model.HIstartCD
+            self.model.FloweringCD[cond1] = floweringendcd[cond1]        
+            self.model.YldFormCD = self.model.HIendCD - self.model.HIstartCD            
         
     def compute_crop_calendar(self):       
-        if self.var.CalendarType == 1:
+        if self.model.CalendarType == 1:
             self.compute_crop_calendar_type_1()
-        elif self.var.CalendarType == 2:
+        elif self.model.CalendarType == 2:
             self.compute_crop_calendar_type_2()
             
     def update_crop_parameters(self):
-        if (self.var.CalendarType == 2):
-            if (np.any(self.var.GrowingSeasonDayOne)):
+        if (self.model.CalendarType == 2):
+            if (np.any(self.model.GrowingSeasonDayOne)):
                 self.compute_crop_calendar_type_2(update=True)
                 self.compute_HIGC()
                 self.compute_HI_linear()
@@ -490,30 +437,30 @@ class CropParameters(object):
         for elevation in CO2 concentration"""
 
         # Get CO2 weighting factor
-        fw = np.zeros_like(self.var.conc.values)
-        cond1 = (self.var.conc.values > refconc)#self.var.RefConc)
-        cond11 = (cond1 & (self.var.conc.values >= 550))
+        fw = np.zeros_like(self.model.conc.values)
+        cond1 = (self.model.conc.values > refconc)#self.model.RefConc)
+        cond11 = (cond1 & (self.model.conc.values >= 550))
         fw[cond11] = 1
         cond12 = (cond1 & np.logical_not(cond11))
-        fw[cond12] = (1 - ((550 - self.var.conc.values) / (550 - refconc)))[cond12]#self.var.RefConc)))[cond12]
+        fw[cond12] = (1 - ((550 - self.model.conc.values) / (550 - refconc)))[cond12]#self.model.RefConc)))[cond12]
 
         # Determine adjustment for each crop in first year of simulation
-        fCO2 = ((self.var.conc.values / refconc) /#self.var.RefConc) /
-                (1 + (self.var.conc.values - refconc) * ((1 - fw)#self.var.RefConc) * ((1 - fw)
-                                           * self.var.bsted + fw
-                                           * ((self.var.bsted * self.var.fsink)
-                                              + (self.var.bface
-                                                 * (1 - self.var.fsink))))))
+        fCO2 = ((self.model.conc.values / refconc) /#self.model.RefConc) /
+                (1 + (self.model.conc.values - refconc) * ((1 - fw)#self.model.RefConc) * ((1 - fw)
+                                           * self.model.bsted + fw
+                                           * ((self.model.bsted * self.model.fsink)
+                                              + (self.model.bface
+                                                 * (1 - self.model.fsink))))))
 
         # Consider crop type
-        ftype = (40 - self.var.WP) / (40 - 20)
+        ftype = (40 - self.model.WP) / (40 - 20)
         ftype = np.clip(ftype, 0, 1)
         fCO2 = 1 + ftype * (fCO2 - 1)
         
-        self.var.fCO2[self.var.GrowingSeasonDayOne] = fCO2[self.var.GrowingSeasonDayOne]
-        conc = np.broadcast_to(self.var.conc.values, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        # conc = (self.var.conc[None,:] * np.ones((self.var.nCrop))[:,None])
-        self.var.CurrentConc[self.var.GrowingSeasonDayOne] = conc[self.var.GrowingSeasonDayOne]
+        self.model.fCO2[self.model.GrowingSeasonDayOne] = fCO2[self.model.GrowingSeasonDayOne]
+        conc = np.broadcast_to(self.model.conc.values, (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+        # conc = (self.model.conc[None,:] * np.ones((self.model.nCrop))[:,None])
+        self.model.CurrentConc[self.model.GrowingSeasonDayOne] = conc[self.model.GrowingSeasonDayOne]
         
     def dynamic(self):
         """Function to update parameters for current crop grown as well 
@@ -527,6 +474,45 @@ class CropParameters(object):
         # self.read_crop_area()   # TEST
         self.update_crop_parameters()
 
+    def update_growing_season(self):
+        gs = np.int32(self.model.GrowingSeasonIndex.copy())
+        gsd = np.int32(self.model.GrowingSeasonDayOne.copy())
+        endnum = netCDF4.date2num(
+            datetime.datetime(
+                self.model.time.endtime.year,
+                self.model.time.endtime.month,
+                self.model.time.endtime.day
+            ),
+            units='days since 1900-01-01 00:00:00'
+        )
+        startnum = netCDF4.date2num(
+            datetime.datetime(
+                self.model.time.year, 1, 1
+            ),
+            units='days since 1900-01-01 00:00:00'
+        )
+        aquacrop_fc.crop_parameters_w.update_growing_season_w(
+            gs.T,
+            gsd.T,
+            # np.int32(self.model.GrowingSeasonIndex).T,
+            # np.int32(self.model.GrowingSeasonDayOne).T,
+            np.int32(self.model.DAP).T,
+            np.int32(self.model.PlantingDateAdj).T,
+            np.int32(self.model.HarvestDateAdj).T,
+            np.int32(self.model.CropDead).T,
+            np.int32(self.model.CropMature).T,
+            self.model.time.doy,
+            self.model.time.timestep,
+            startnum,
+            endnum,
+            # self.model.time.currentYearStartNum,
+            # self.model.time.endTimeNum,
+            self.model.nFarm,
+            self.model.nCrop,
+            self.model.domain.nxy
+        )
+        self.model.GrowingSeasonIndex = gs.astype(bool)
+        self.model.GrowingSeasonDayOne = gsd.astype(bool)
 
 
 
@@ -539,43 +525,43 @@ class CropParameters(object):
 # class CropParametersGrid(CropParameters):    
 #     def __init__(self, CropParameters_variable):
 #         super(CropParametersGrid, self).__init__(CropParameters_variable)
-#         self.var.CalendarType = int(self.var._configuration.CROP_PARAMETERS['CalendarType'])
-#         self.var.SwitchGDD = bool(int(self.var._configuration.CROP_PARAMETERS['SwitchGDD']))
-#         self.var.GDDmethod = int(self.var._configuration.CROP_PARAMETERS['GDDmethod'])                                      
+#         self.model.CalendarType = int(self.model._configuration.CROP_PARAMETERS['CalendarType'])
+#         self.model.SwitchGDD = bool(int(self.model._configuration.CROP_PARAMETERS['SwitchGDD']))
+#         self.model.GDDmethod = int(self.model._configuration.CROP_PARAMETERS['GDDmethod'])                                      
 
 #     def get_num_crop(self):
-#         self.var.nCrop = file_handling.get_dimension_variable(
-#             self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
+#         self.model.nCrop = file_handling.get_dimension_variable(
+#             self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
 #             'crop'
 #         ).size
         
 #     def read(self):        
 #         self.get_crop_parameter_names()
-#         if len(self.var.crop_parameters_to_read) > 0:
-#             for param in self.var.crop_parameters_to_read:
+#         if len(self.model.crop_parameters_to_read) > 0:
+#             for param in self.model.crop_parameters_to_read:
 #                 read_from_netcdf = file_handling.check_if_nc_has_variable(
-#                     self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
+#                     self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
 #                     param
 #                     )
 #                 if read_from_netcdf:
 #                     d = file_handling.netcdf_to_arrayWithoutTime(
-#                         self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
+#                         self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
 #                         param,
-#                         cloneMapFileName=self.var.cloneMapFileName)
-#                     d = d[self.var.landmask_crop].reshape(self.var.nCrop,self.var.domain.nxy)
-#                     vars(self.var)[param] = np.broadcast_to(d, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))                    
+#                         cloneMapFileName=self.model.cloneMapFileName)
+#                     d = d[self.model.landmask_crop].reshape(self.model.nCrop,self.model.domain.nxy)
+#                     vars(self.model)[param] = np.broadcast_to(d, (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))                    
 #                 else:
 #                     try:
-#                         parameter_values = np.zeros((self.var.nCrop))
-#                         for index,crop_id in enumerate(self.var.CropID):
+#                         parameter_values = np.zeros((self.model.nCrop))
+#                         for index,crop_id in enumerate(self.model.CropID):
 #                             parameter_values[index] = file_handling.read_crop_parameter_from_sqlite(
-#                                 self.var.CropParameterDatabase,
+#                                 self.model.CropParameterDatabase,
 #                                 crop_id,
 #                                 param
 #                             )[0]
-#                         vars(self.var)[param] = np.broadcast_to(
+#                         vars(self.model)[param] = np.broadcast_to(
 #                             parameter_values[:,None,None],
-#                             (self.var.nFarm, self.var.nCrop, self.var.domain.nxy)
+#                             (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
 #                         )
                         
 #                     except:
@@ -601,29 +587,29 @@ class CropParameters(object):
 #         super(CropParametersPoint, self).__init__(CropParameters_variable)
 
 #     def get_num_crop(self):
-#         self.var.nCrop = 1
+#         self.model.nCrop = 1
 
 #     def read(self):
 #         self.get_crop_parameter_names()        
-#         crop_parameter_values = read_params(self.var._configuration.CROP_PARAMETERS['cropParametersFile'])
-#         for param in self.var.crop_parameters_to_read:
+#         crop_parameter_values = read_params(self.model._configuration.CROP_PARAMETERS['cropParametersFile'])
+#         for param in self.model.crop_parameters_to_read:
 #             read_from_file = (param in crop_parameter_values.keys())
 #             if read_from_file:
 #                 d = crop_parameter_values[param]
-#                 d = np.broadcast_to(d[None,None,:], (self.var.nFarm,self.var.nCrop, self.var.domain.nxy))
-#                 vars(self.var)[param] = d.copy()                
+#                 d = np.broadcast_to(d[None,None,:], (self.model.nFarm,self.model.nCrop, self.model.domain.nxy))
+#                 vars(self.model)[param] = d.copy()                
 #             else:                
 #                 try:
-#                     parameter_values = np.zeros((self.var.nCrop))
-#                     for index,crop_id in enumerate(self.var.CropID):
+#                     parameter_values = np.zeros((self.model.nCrop))
+#                     for index,crop_id in enumerate(self.model.CropID):
 #                         parameter_values[index] = file_handling.read_crop_parameter_from_sqlite(
-#                             self.var.CropParameterDatabase,
+#                             self.model.CropParameterDatabase,
 #                             crop_id,
 #                             param
 #                         )[0]
-#                     vars(self.var)[param] = np.broadcast_to(
+#                     vars(self.model)[param] = np.broadcast_to(
 #                         parameter_values[:,None,None],
-#                         (self.var.nFarm, self.var.nCrop, self.var.domain.nxy)
+#                         (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
 #                     )
 #                 except:
 #                     raise ModelError("Error reading parameter " + param + " from crop parameter database")
@@ -631,43 +617,43 @@ class CropParameters(object):
 # class CropParametersGrid(CropParameters):    
 #     def __init__(self, CropParameters_variable):
 #         super(CropParametersGrid, self).__init__(CropParameters_variable)
-#         self.var.CalendarType = int(self.var._configuration.CROP_PARAMETERS['CalendarType'])
-#         self.var.SwitchGDD = bool(int(self.var._configuration.CROP_PARAMETERS['SwitchGDD']))
-#         self.var.GDDmethod = int(self.var._configuration.CROP_PARAMETERS['GDDmethod'])                                      
+#         self.model.CalendarType = int(self.model._configuration.CROP_PARAMETERS['CalendarType'])
+#         self.model.SwitchGDD = bool(int(self.model._configuration.CROP_PARAMETERS['SwitchGDD']))
+#         self.model.GDDmethod = int(self.model._configuration.CROP_PARAMETERS['GDDmethod'])                                      
 
 #     def get_num_crop(self):
-#         self.var.nCrop = file_handling.get_dimension_variable(
-#             self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
+#         self.model.nCrop = file_handling.get_dimension_variable(
+#             self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
 #             'crop'
 #         ).size
         
 #     def read(self):        
 #         self.get_crop_parameter_names()
-#         if len(self.var.crop_parameters_to_read) > 0:
-#             for param in self.var.crop_parameters_to_read:
+#         if len(self.model.crop_parameters_to_read) > 0:
+#             for param in self.model.crop_parameters_to_read:
 #                 read_from_netcdf = file_handling.check_if_nc_has_variable(
-#                     self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
+#                     self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
 #                     param
 #                     )
 #                 if read_from_netcdf:
 #                     d = file_handling.netcdf_to_arrayWithoutTime(
-#                         self.var._configuration.CROP_PARAMETERS['cropParametersNC'],
+#                         self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
 #                         param,
-#                         cloneMapFileName=self.var.cloneMapFileName)
-#                     d = d[self.var.landmask_crop].reshape(self.var.nCrop,self.var.domain.nxy)
-#                     vars(self.var)[param] = np.broadcast_to(d, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))                    
+#                         cloneMapFileName=self.model.cloneMapFileName)
+#                     d = d[self.model.landmask_crop].reshape(self.model.nCrop,self.model.domain.nxy)
+#                     vars(self.model)[param] = np.broadcast_to(d, (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))                    
 #                 else:
 #                     try:
-#                         parameter_values = np.zeros((self.var.nCrop))
-#                         for index,crop_id in enumerate(self.var.CropID):
+#                         parameter_values = np.zeros((self.model.nCrop))
+#                         for index,crop_id in enumerate(self.model.CropID):
 #                             parameter_values[index] = file_handling.read_crop_parameter_from_sqlite(
-#                                 self.var.CropParameterDatabase,
+#                                 self.model.CropParameterDatabase,
 #                                 crop_id,
 #                                 param
 #                             )[0]
-#                         vars(self.var)[param] = np.broadcast_to(
+#                         vars(self.model)[param] = np.broadcast_to(
 #                             parameter_values[:,None,None],
-#                             (self.var.nFarm, self.var.nCrop, self.var.domain.nxy)
+#                             (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
 #                         )
                         
 #                     except:

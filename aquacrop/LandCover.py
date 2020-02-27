@@ -7,10 +7,8 @@ import netCDF4 as nc
 import datetime as datetime
 import calendar as calendar
 
-# from hm import file_handling
 from hm.reporting import Reporting
 
-# from .io.LandCoverParameters import LandCoverParameters, AquaCropParameters
 from .io.LandCoverParameters import AquaCropParameters
 from .io.CarbonDioxide import CarbonDioxide
 from .io.InitialCondition import InitialCondition
@@ -47,18 +45,6 @@ class LandCover(object):
         self.domain = model.domain
         self.weather = model.weather_module
         self.groundwater = model.groundwater_module
-        # self._configuration = var._configuration
-        # self._modelTime = var._modelTime
-        # self.cloneMapFileName = var.cloneMapFileName
-        # self.cloneMap = var.cloneMap
-        # self.landmask = var.landmask
-        # self.grid_cell_area = var.grid_cell_area
-        # self.dimensions = var.dimensions
-        # self.nLat, self.nLon, self.nCell = var.nLat, var.nLon, var.nCell
-        # self.nFarm, self.nCrop = 1, 1
-        # var.nFarm, var.nCrop = self.nFarm, self.nCrop
-        # self.weather = var.weather_module
-        # self.groundwater = var.groundwater_module
 
     def initial(self):
         pass
@@ -67,8 +53,8 @@ class LandCover(object):
         pass
 
 class Cropland(LandCover):
-    def __init__(self, var):
-        super(Cropland, self).__init__(var)
+    def __init__(self, model):
+        super(Cropland, self).__init__(model)
         self.carbon_dioxide_module = CarbonDioxide(self)
         self.lc_parameters_module = AquaCropParameters(self)
         self.initial_condition_module = InitialCondition(self)
@@ -97,42 +83,6 @@ class Cropland(LandCover):
         self.harvest_index_module = HarvestIndexAdjusted(self)
         self.crop_yield_module = CropYield(self)
 #         self.grid_cell_mean_module = GridCellMean(self)
-        # self.add_dimensions()
-        # self.broadcast_landmask()
-        
-    # def add_dimensions(self):
-    #     """Function to add dimensions to model dimensions 
-    #     object. This is necessary if the LandCover object 
-    #     contains a reporting method.
-    #     """
-    #     self.dimensions['farm'] = np.arange(self.nFarm)
-    #     self.dimensions['crop'] = np.arange(self.nCrop)
-
-    # def broadcast_landmask(self):
-    #     """Function broadcasts the landmask to the various 
-    #     shapes which are needed to select input data, 
-    #     accounting for farm, crop, and layer dimensions.
-    #     """
-    #     self.landmask_crop = np.broadcast_to(
-    #         self.landmask[None, ...],
-    #         (self.nCrop,) + self.landmask.shape
-    #     )
-    #     self.landmask_layer = np.broadcast_to(
-    #         self.landmask[None,...],
-    #         (self.nLayer,) + self.landmask.shape
-    #     )
-    #     self.landmask_comp = np.broadcast_to(
-    #         self.landmask[None,...],
-    #         (self.nComp,) + self.landmask.shape
-    #     )                
-    #     self.landmask_farm = np.broadcast_to(
-    #         self.landmask[None, ...],
-    #         (self.var.nFarm,) + self.landmask.shape
-    #     )
-    #     self.landmask_farm_crop = np.broadcast_to(
-    #         self.landmask[None, None, ...],
-    #         (self.nFarm, self.nCrop,) + self.landmask.shape
-    #     )
     
     def initial(self):
         self.carbon_dioxide_module.initial()
@@ -163,6 +113,7 @@ class Cropland(LandCover):
         self.crop_yield_module.initial()
 #         self.grid_cell_mean_module.initial()
         self.reporting_module = Reporting(self, variable_list_crop, 'CROP_PARAMETERS')
+        self.reporting_module.initial()
         
     def dynamic(self):
         self.carbon_dioxide_module.dynamic()
@@ -191,7 +142,7 @@ class Cropland(LandCover):
         self.evapotranspiration_module.dynamic()
         self.inflow_module.dynamic()
         self.HI_ref_current_day_module.dynamic()
-        self.temperature_stress_module.dynamic()  # PREVIOUSLY THIS WAS CALLED FROM BIOMASS_ACCUMULATION
+        self.temperature_stress_module.dynamic()
         self.biomass_accumulation_module.dynamic()
         self.root_zone_water_module.dynamic()
         self.water_stress_module.dynamic(beta=True)
@@ -199,123 +150,4 @@ class Cropland(LandCover):
         self.harvest_index_module.dynamic()
         self.crop_yield_module.dynamic()
         self.root_zone_water_module.dynamic()
-#         self.grid_cell_mean_module.dynamic()
-        self.reporting_module.update()
-        # self.reporting_module.report()
-    
-# class Cropland(LandCover):
-#     def __init__(self, var, config_section_name):
-#         super(Cropland, self).__init__(
-#             var,
-#             config_section_name)
-        
-#         self.carbon_dioxide_module = CarbonDioxide(self)
-#         self.lc_parameters_module = AquaCropParameters(self, config_section_name)
-#         self.initial_condition_module = InitialCondition(self)
-#         self.gdd_module = GrowingDegreeDay(self)        
-#         self.check_groundwater_table_module = CheckGroundwaterTable(self)
-#         self.pre_irrigation_module = PreIrrigation(self)
-#         self.drainage_module = Drainage(self)
-#         self.rainfall_partition_module = RainfallPartition(self)
-#         self.root_zone_water_module = RootZoneWater(self)
-#         self.irrigation_module = Irrigation(self)
-#         self.infiltration_module = Infiltration(self)
-#         self.capillary_rise_module = CapillaryRise(self)
-#         self.germination_module = Germination(self)
-#         self.growth_stage_module = GrowthStage(self)
-#         self.root_development_module = RootDevelopment(self)
-#         self.water_stress_module = WaterStress(self)
-#         self.canopy_cover_module = CanopyCover(self)
-#         self.soil_evaporation_module = SoilEvaporation(self)
-#         self.transpiration_module = Transpiration(self)
-#         self.evapotranspiration_module = Evapotranspiration(self)
-#         self.inflow_module = Inflow(self)
-
-#         # plan is to merge these five classes:
-#         self.HI_ref_current_day_module = HarvestIndex(self)
-#         # self.HI_ref_current_day_module = HIrefCurrentDay(self)
-#         self.biomass_accumulation_module = BiomassAccumulation(self)
-#         self.temperature_stress_module = TemperatureStress(self)
-#         self.harvest_index_module = HarvestIndexAdjusted(self)
-#         self.crop_yield_module = CropYield(self)
-        
-# #         self.grid_cell_mean_module = GridCellMean(self)
-#         self.add_dimensions()
-        
-#     def initial(self):
-#         self.carbon_dioxide_module.initial()
-#         self.lc_parameters_module.initial()
-#         self.gdd_module.initial()
-#         self.initial_condition_module.initial()
-#         self.check_groundwater_table_module.initial()
-#         self.pre_irrigation_module.initial()
-#         self.drainage_module.initial()
-#         self.rainfall_partition_module.initial()
-#         self.root_zone_water_module.initial()
-#         self.irrigation_module.initial()
-#         self.infiltration_module.initial()
-#         self.capillary_rise_module.initial()
-#         self.germination_module.initial()
-#         self.growth_stage_module.initial()
-#         self.root_development_module.initial()
-#         self.water_stress_module.initial()
-#         self.canopy_cover_module.initial()
-#         self.soil_evaporation_module.initial()
-#         self.transpiration_module.initial()
-#         self.evapotranspiration_module.initial()
-#         self.inflow_module.initial()
-#         self.HI_ref_current_day_module.initial()
-#         self.biomass_accumulation_module.initial()
-#         self.temperature_stress_module.initial()
-#         self.harvest_index_module.initial()
-#         self.crop_yield_module.initial()
-# #         self.grid_cell_mean_module.initial()
-#         self.reporting_module = Reporting(
-#             self,
-#             self._configuration.outNCDir,
-#             self._configuration.NETCDF_ATTRIBUTES,
-#             self._configuration.CROP_PARAMETERS,  # TODO: shouldn't have to specify this
-#             variable_list_crop,
-#             'cropland')
-        
-#     def dynamic(self):
-#         print(self.th[...,0,1])
-#         self.carbon_dioxide_module.dynamic()
-#         self.lc_parameters_module.dynamic()
-#         self.gdd_module.dynamic()
-#         self.growth_stage_module.dynamic()
-#         self.initial_condition_module.dynamic()
-#         self.check_groundwater_table_module.dynamic()
-#         self.pre_irrigation_module.dynamic()
-#         self.drainage_module.dynamic()
-#         self.rainfall_partition_module.dynamic()
-#         self.root_zone_water_module.dynamic()
-#         self.irrigation_module.dynamic()
-#         self.infiltration_module.dynamic()
-#         self.capillary_rise_module.dynamic()
-#         self.germination_module.dynamic()
-#         # self.growth_stage_module.dynamic() # TODO: compare against AquaCropOS - don't think this is needed
-#         self.root_development_module.dynamic()
-#         self.root_zone_water_module.dynamic()
-#         self.water_stress_module.dynamic(beta=True)
-#         self.canopy_cover_module.dynamic()
-#         self.soil_evaporation_module.dynamic()
-#         self.root_zone_water_module.dynamic()
-#         self.water_stress_module.dynamic(beta=True)
-#         self.transpiration_module.dynamic()
-#         self.evapotranspiration_module.dynamic()
-#         self.inflow_module.dynamic()
-#         self.HI_ref_current_day_module.dynamic()
-#         self.temperature_stress_module.dynamic()  # PREVIOUSLY THIS WAS CALLED FROM BIOMASS_ACCUMULATION
-#         self.biomass_accumulation_module.dynamic()
-#         self.root_zone_water_module.dynamic()
-#         self.water_stress_module.dynamic(beta=True)
-#         self.temperature_stress_module.dynamic()
-#         self.harvest_index_module.dynamic()
-#         self.crop_yield_module.dynamic()
-#         self.root_zone_water_module.dynamic()
-#         print(self.th[...,0,1])
-# #         self.grid_cell_mean_module.dynamic()
-#         self.reporting_module.report()
-        
-    
+        self.reporting_module.dynamic()

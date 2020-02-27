@@ -943,19 +943,27 @@ def run():
             ])
 
             config['MODEL_GRID'] = collections.OrderedDict([
-                ('cloneMap', '${FILE_PATHS:PathIn}/test.clone.tif'),
-                ('landmask', '${FILE_PATHS:PathIn}/test.landmask.tif')
+                ('mask', '${FILE_PATHS:PathIn}/test.landmask.tif')
+                # ('cloneMap', '${FILE_PATHS:PathIn}/test.clone.tif'),
+                # ('landmask', '${FILE_PATHS:PathIn}/test.landmask.tif')
             ])
 
+            config['PSEUDO_COORDS'] = collections.OrderedDict([
+                ('crop',str(1)),
+                ('farm',str(1))
+            ])
+            
             config['CLOCK'] = collections.OrderedDict([
                 ('startTime', start_time),
-                ('endTime', end_time)
+                ('endTime', end_time),
+                ('timeDelta', '1 day')
             ])
 
             config['INITIAL_WATER_CONTENT'] = collections.OrderedDict([
                 ('initialConditionType', 'FILE'),
                 ('initialConditionNC', '${FILE_PATHS:PathIn}' + '/' + 'initial_conditions_' + nc_prefix + '.nc'),
-                ('initialConditionInterpMethod', init_cond_interp)
+                ('initialConditionInterpMethod', init_cond_interp),
+                ('initialConditionDepthVarName', 'depth')
             ])
 
             config['NETCDF_ATTRIBUTES'] = collections.OrderedDict([
@@ -988,15 +996,16 @@ def run():
                 ('maxDailyTemperatureTimeDimName', 'time'),
                 ('maxDailyTemperatureOffset', str(0)),
                 ('maxDailyTemperatureFactor', str(1)),
-                ('refEvapotranspirationNC', '${FILE_PATHS:PathIn}' + '/' + 'eto_' + nc_prefix + '.nc'),
-                ('refEvapotranspirationVarName', 'referencePotET'),
-                ('refEvapotranspirationTimeDimName', 'time'),
-                ('refEvapotranspirationOffset', str(0)),
-                ('refEvapotranspirationFactor', str(1))
+                ('ETrefNC', '${FILE_PATHS:PathIn}' + '/' + 'eto_' + nc_prefix + '.nc'),
+                ('ETrefVarName', 'referencePotET'),
+                ('ETrefTimeDimName', 'time'),
+                ('ETrefOffset', str(0)),
+                ('ETrefFactor', str(1))
             ])
 
             config['CARBON_DIOXIDE'] = collections.OrderedDict([
-                ('carbonDioxideNC', '${FILE_PATHS:PathIn}/annual_co2_conc_' + nc_prefix + '.nc')
+                ('carbonDioxideNC', '${FILE_PATHS:PathIn}/annual_co2_conc_' + nc_prefix + '.nc'),
+                ('carbonDioxideVarName', 'co2')
             ])
 
             config['WATER_TABLE'] = collections.OrderedDict([
@@ -1011,13 +1020,13 @@ def run():
             config['LAND_COVER'] = collections.OrderedDict([])
 
             config['CROP_PARAMETERS'] = collections.OrderedDict([
-                ('nCrop', str(ncrop)),
+                # ('nCrop', str(ncrop)),
                 ('cropParametersNC', '${FILE_PATHS:PathIn}/params_' + nc_prefix + '.nc'),
                 ('CalendarType', str(calendar_type)),
                 ('SwitchGDD', str(switch_gdd)),
                 ('GDDmethod', str(gdd_method)),
-                ('outDailyTotal', str('th,Y,Irr,B,IrrCum,IrrNetCum')),
-                ('outYearMaxNC', str('Y'))
+                ('daily_total', str('th, Y, Irr, B, IrrCum, IrrNetCum')),
+                ('year_max', str('Y'))
             ])
 
             config['IRRIGATION_MANAGEMENT'] = collections.OrderedDict([
@@ -1029,15 +1038,20 @@ def run():
                 ('fieldManagementNC', '${FILE_PATHS:PathIn}/params_' + nc_prefix + '.nc')
             ])
 
+            config['SOIL_PROFILE'] = collections.OrderedDict([
+                ('dzLayer',','.join(['%.5f' % num for num in zLayer])),
+                ('dzComp',','.join(['%.5f' % num for num in zcomp]))
+            ])
+            
             config['SOIL_HYDRAULIC_PARAMETERS'] = collections.OrderedDict([
                 ('calculateSoilHydraulicParametersFromSoilTexture', '0'),
                 ('soilHydraulicParametersNC', '${FILE_PATHS:PathIn}/params_' + nc_prefix + '.nc'),
                 ('saturatedHydraulicConductivityVarName', 'ksat'),
                 ('saturatedVolumetricWaterContentVarName', 'th_s'),
                 ('fieldCapacityVolumetricWaterContentVarName', 'th_fc'),
-                ('wiltingPointVolumetricWaterContentVarName', 'th_wp'),
-                ('dzSoilLayer',','.join(['%.5f' % num for num in zLayer])),
-                ('dzSoilCompartment',','.join(['%.5f' % num for num in zcomp]))
+                ('wiltingPointVolumetricWaterContentVarName', 'th_wp')# ,
+                # ('dzSoilLayer',','.join(['%.5f' % num for num in zLayer])),
+                # ('dzSoilCompartment',','.join(['%.5f' % num for num in zcomp]))
             ])
 
             config['SOIL_PARAMETERS'] = collections.OrderedDict([
