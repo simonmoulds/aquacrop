@@ -64,7 +64,6 @@ end
 %% Initialise counters %%
 ii = 0;
 Runoff = 0;
-
 %% Infiltrate incoming water %%
 if ToStore > 0
     while (ToStore > 0) && (ii < Soil.nComp)

@@ -585,6 +585,7 @@ contains
           
        end do
     end if
+    ! print *, th(2)
     
   end subroutine update_soil_evap
   

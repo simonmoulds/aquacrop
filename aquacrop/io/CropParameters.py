@@ -444,7 +444,7 @@ class CropParameters(object):
         cond12 = (cond1 & np.logical_not(cond11))
         fw[cond12] = (1 - ((550 - self.model.conc.values) / (550 - refconc)))[cond12]#self.model.RefConc)))[cond12]
 
-        # Determine adjustment for each crop in first year of simulation
+        # Determine adjustment for each crop in first year of simulation        
         fCO2 = ((self.model.conc.values / refconc) /#self.model.RefConc) /
                 (1 + (self.model.conc.values - refconc) * ((1 - fw)#self.model.RefConc) * ((1 - fw)
                                            * self.model.bsted + fw
@@ -453,7 +453,7 @@ class CropParameters(object):
                                                  * (1 - self.model.fsink))))))
 
         # Consider crop type
-        ftype = (40 - self.model.WP) / (40 - 20)
+        ftype = (40. - self.model.WP) / (40. - 20)
         ftype = np.clip(ftype, 0, 1)
         fCO2 = 1 + ftype * (fCO2 - 1)
         

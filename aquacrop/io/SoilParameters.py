@@ -8,7 +8,7 @@ import sqlite3
 from importlib_resources import path
 
 # from .AquaCropConfiguration import interpret_logical_string
-# from hm import file_handling
+from hm.api import open_hmdataarray
 from .utils import read_parameter_from_sqlite
 from . import data
 
@@ -81,21 +81,19 @@ class SoilParameters(object):
             'CN', 'zCN', 'zGerm', 'zRes', 'fshape_cr'
         ]
         for param in soil_parameters:
-            read_from_netcdf = False
-            # read_from_netcdf = file_handling.check_if_nc_has_variable(
-            #     self.model._configuration.SOIL_PARAMETERS['soilParametersNC'],
-            #     param
-            #     )
-            if read_from_netcdf:
-                d = file_handling.netcdf_to_arrayWithoutTime(
+            try:
+                arr = open_hmdataarray(
                     self.model.config.SOIL_PARAMETERS['soilParametersNC'],
                     param,
-                    cloneMapFileName=self.model.cloneMapFileName
-                ) # TODO: CHECK DIMENSIONS CONFORM TO n_layer,n_lat,n_lon                
-                d = d[self.model.landmask]
-                d = np.broadcast_to(d[None,None,:], (self.model.nFarm,self.model.nCrop, self.model.domain.nxy))
-                vars(self.model)[param] = d.copy()
-            else:
+                    self.model.domain
+                )
+                vars(self.model)[param] = np.broadcast_to(
+                    arr.values,
+                    (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
+                )
+                
+            except:
+                print("Hello, world")
                 try:
                     parameter_value = read_parameter_from_sqlite(
                         self.model.SoilParameterDatabase,

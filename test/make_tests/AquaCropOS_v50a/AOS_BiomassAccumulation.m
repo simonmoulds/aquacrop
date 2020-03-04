@@ -40,7 +40,6 @@ if GrowingSeason == true
     if isnan(dB) == true
         dB = 0;
     end
-
     % Update biomass accumulation
     NewCond.B = NewCond.B+dB;
     NewCond.B_NS = NewCond.B_NS+dB_NS;
