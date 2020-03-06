@@ -17,106 +17,33 @@ class CapillaryRise(object):
         self.var.CrTot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 
     def dynamic(self):
+        self.dynamic_fortran()
+        
+    def dynamic_fortran(self):
         """Function to calculate capillary rise from a shallow 
         groundwater table
         """
-        # layer_ix = self.var.layerIndex + 1
-        # aquacrop_fc.capillary_rise_w.update_cap_rise_w(
-        #     self.var.CrTot.T,
-        #     self.var.th.T,
-        #     self.var.th_wilt.T,
-        #     self.var.th_fc.T,
-        #     self.var.th_fc_adj.T,
-        #     self.var.k_sat.T,
-        #     self.var.aCR.T,
-        #     self.var.bCR.T,
-        #     self.var.fshape_cr.T,
-        #     self.var.FluxOut.T,
-        #     self.var.groundwater.WaterTable,
-        #     self.var.groundwater.zGW,
-        #     self.var.dz,
-        #     self.var.dz_layer,
-        #     layer_ix,
-        #     self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
-        #     )
-    def maximum_capillary_rise(self, k_sat, aCR, bCR, zGW, z):
-        """Function to compute maximum capillary rise for a given soil 
-        profile
-
-        Args:
-          k_sat : saturated hydraulic conductivity of the soil layer
-          aCR  : ... of the soil layer
-          bCR  : ... of the soil layer
-          zGW  : depth of groundwater table
-          z    : depth to midpoint of the soil layer
-
-        """
-        MaxCR = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        cond1 = ((k_sat > 0) & (zGW > 0) & ((zGW - z) < 4))
-        cond11 = (cond1 & (z >= zGW))
-        MaxCR[cond11] = 99            
-        cond12 = (cond1 & np.logical_not(cond11))
-        MaxCR_log = np.log(zGW - z, out=np.zeros((MaxCR.shape)), where=cond12)
-        MaxCR[cond12] = (np.exp(np.divide(MaxCR_log - bCR, aCR, out=np.zeros_like(aCR), where=aCR!=0)))[cond12]
-        MaxCR = np.clip(MaxCR, None, 99)
-        return MaxCR
-
-    def store_water_from_capillary_rise(self, th, th_fc, th_fc_adj, th_wilt, fshape_cr, MaxCR, flux_out, zGW, zBot, dz):
-        thnew = np.copy(th)
-        cond1 = ((np.round(MaxCR * 1000) > 0) & (np.round(flux_out * 1000) == 0))
-        
-        # calculate driving force
-        # Df = driving_force(th, th_fc_adj, th_wilt, fshape_cr)
-        Df = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        cond11 = cond1 & ((th >= th_wilt) & (fshape_cr > 0))
-        Df[cond11] = (1 - (((th - th_wilt) / (th_fc_adj - th_wilt)) ** fshape_cr))[cond11]
-        Df = np.clip(Df, 0, 1)                          
-        
-        # Calculate relative hydraulic conductivity
-        # Krel = relative_hydraulic_conductivity(th, th_fc, th_wilt)
-        thThr = (th_wilt + th_fc) / 2
-        cond12 = cond1 & (th < thThr)
-        Krel = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        cond121 = cond12 & np.logical_not(((th <= th_wilt) | (thThr <= th_wilt)))
-        Krel[cond121] = ((th - th_wilt) / (thThr - th_wilt))[cond121]
-        # % Calculate relative hydraulic conductivity
-        # thThr = (Soil.Layer.th_wilt(layeri)+Soil.Layer.th_fc(layeri))/2;
-        # if NewCond.th(compi) < thThr
-        #     if (NewCond.th(compi) <= Soil.Layer.th_wilt(layeri)) ||...
-        #             (thThr <= Soil.Layer.th_wilt(layeri))
-        #         Krel = 0;
-        #     else
-        #         Krel = (NewCond.th(compi)-Soil.Layer.th_wilt(layeri))/...
-        #             (thThr-Soil.Layer.th_wilt(layeri));
-        #     end
-        # else
-        #     Krel = 1;
-        # end
-
-        # Check if room is available to store water from capillary rise
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        dth = np.copy(arr_zeros)
-        dth[cond1] = (th_fc_adj - th)[cond1]                
-        dth = np.round((dth * 1000) / 1000)
-
-        # Store water if room is available
-        dthMax = np.copy(arr_zeros)
-        CRcomp = np.copy(arr_zeros)
-        cond15 = (cond1 & (dth > 0) & ((zBot - dz / 2) < zGW))
-
-        dthMax[cond15] = (Krel * Df * MaxCR / (1000 * dz))[cond15]
-        cond151 = (cond15 & (dth >= dthMax))
-        thnew[cond151] += dthMax[cond151]
-        CRcomp[cond151] = (dthMax * 1000 * dz)[cond151]
-        MaxCR[cond151] = 0
-
-        cond152 = (cond15 & np.logical_not(cond151))
-        thnew[cond152] = th_fc_adj[cond152]
-        CRcomp[cond152] = (dth * 1000 * dz)[cond152]
-        MaxCR[cond152] = ((Krel * MaxCR) - CRcomp)[cond152]    
-        return thnew, CRcomp, MaxCR
+        layer_ix = self.var.layerIndex + 1
+        aquacrop_fc.capillary_rise_w.update_cap_rise_w(
+            self.var.CrTot.T,
+            self.var.th.T,
+            self.var.th_wilt.T,
+            self.var.th_fc.T,
+            self.var.th_fc_adj.T,
+            self.var.k_sat.T,
+            self.var.aCR.T,
+            self.var.bCR.T,
+            self.var.fshape_cr.T,
+            self.var.FluxOut.T,
+            self.var.groundwater.WaterTable,
+            self.var.groundwater.zGW,
+            self.var.dz,
+            self.var.dz_layer,
+            layer_ix,
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
+            )
     
-    def dynamic(self):
+    def dynamic_numpy(self):
         """Function to calculate capillary rise from a shallow 
         groundwater table
         """
@@ -202,3 +129,81 @@ class CapillaryRise(object):
 
             self.var.th = np.copy(thnew)
             self.var.CrTot = CrTot
+
+    def maximum_capillary_rise(self, k_sat, aCR, bCR, zGW, z):
+        """Function to compute maximum capillary rise for a given soil 
+        profile
+
+        Args:
+          k_sat : saturated hydraulic conductivity of the soil layer
+          aCR  : ... of the soil layer
+          bCR  : ... of the soil layer
+          zGW  : depth of groundwater table
+          z    : depth to midpoint of the soil layer
+
+        """
+        MaxCR = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        cond1 = ((k_sat > 0) & (zGW > 0) & ((zGW - z) < 4))
+        cond11 = (cond1 & (z >= zGW))
+        MaxCR[cond11] = 99            
+        cond12 = (cond1 & np.logical_not(cond11))
+        MaxCR_log = np.log(zGW - z, out=np.zeros((MaxCR.shape)), where=cond12)
+        MaxCR[cond12] = (np.exp(np.divide(MaxCR_log - bCR, aCR, out=np.zeros_like(aCR), where=aCR!=0)))[cond12]
+        MaxCR = np.clip(MaxCR, None, 99)
+        return MaxCR
+
+    def store_water_from_capillary_rise(self, th, th_fc, th_fc_adj, th_wilt, fshape_cr, MaxCR, flux_out, zGW, zBot, dz):
+        thnew = np.copy(th)
+        cond1 = ((np.round(MaxCR * 1000) > 0) & (np.round(flux_out * 1000) == 0))
+        
+        # calculate driving force
+        # Df = driving_force(th, th_fc_adj, th_wilt, fshape_cr)
+        Df = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        cond11 = cond1 & ((th >= th_wilt) & (fshape_cr > 0))
+        Df[cond11] = (1 - (((th - th_wilt) / (th_fc_adj - th_wilt)) ** fshape_cr))[cond11]
+        Df = np.clip(Df, 0, 1)                          
+        
+        # Calculate relative hydraulic conductivity
+        # Krel = relative_hydraulic_conductivity(th, th_fc, th_wilt)
+        thThr = (th_wilt + th_fc) / 2
+        cond12 = cond1 & (th < thThr)
+        Krel = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        cond121 = cond12 & np.logical_not(((th <= th_wilt) | (thThr <= th_wilt)))
+        Krel[cond121] = ((th - th_wilt) / (thThr - th_wilt))[cond121]
+        # % Calculate relative hydraulic conductivity
+        # thThr = (Soil.Layer.th_wilt(layeri)+Soil.Layer.th_fc(layeri))/2;
+        # if NewCond.th(compi) < thThr
+        #     if (NewCond.th(compi) <= Soil.Layer.th_wilt(layeri)) ||...
+        #             (thThr <= Soil.Layer.th_wilt(layeri))
+        #         Krel = 0;
+        #     else
+        #         Krel = (NewCond.th(compi)-Soil.Layer.th_wilt(layeri))/...
+        #             (thThr-Soil.Layer.th_wilt(layeri));
+        #     end
+        # else
+        #     Krel = 1;
+        # end
+
+        # Check if room is available to store water from capillary rise
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        dth = np.copy(arr_zeros)
+        dth[cond1] = (th_fc_adj - th)[cond1]                
+        dth = np.round((dth * 1000) / 1000)
+
+        # Store water if room is available
+        dthMax = np.copy(arr_zeros)
+        CRcomp = np.copy(arr_zeros)
+        cond15 = (cond1 & (dth > 0) & ((zBot - dz / 2) < zGW))
+
+        dthMax[cond15] = (Krel * Df * MaxCR / (1000 * dz))[cond15]
+        cond151 = (cond15 & (dth >= dthMax))
+        thnew[cond151] += dthMax[cond151]
+        CRcomp[cond151] = (dthMax * 1000 * dz)[cond151]
+        MaxCR[cond151] = 0
+
+        cond152 = (cond15 & np.logical_not(cond151))
+        thnew[cond152] = th_fc_adj[cond152]
+        CRcomp[cond152] = (dth * 1000 * dz)[cond152]
+        MaxCR[cond152] = ((Krel * MaxCR) - CRcomp)[cond152]    
+        return thnew, CRcomp, MaxCR
+            

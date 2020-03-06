@@ -16,40 +16,28 @@ class Drainage(object):
         self.var.DeepPerc = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.Recharge = np.zeros((self.var.domain.nxy))
 
-    # def dynamic(self):
-    #     """Function to redistribute stored soil water"""
-    #     layer_ix = self.var.layerIndex + 1
-    #     aquacrop_fc.drainage_w.update_drainage_w(
-    #         self.var.th.T,
-    #         self.var.DeepPerc.T,
-    #         self.var.FluxOut.T,
-    #         self.var.th_sat.T,
-    #         self.var.th_fc.T,
-    #         self.var.k_sat.T,
-    #         self.var.tau.T,
-    #         self.var.th_fc_adj.T,
-    #         self.var.dz,
-    #         self.var.dz_sum,
-    #         layer_ix,
-    #         self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
-    #         )
-    @staticmethod
-    def compute_dthdt(th, th_sat, th_fc, th_fc_adj, tau):
-        cond1 = th <= th_fc_adj
-        dthdt1 = np.zeros_like(th, dtype=np.float64)
-        dthdt = (dthdt1 * cond1)
-        cond2 = np.logical_not(cond1) & (th >= th_sat)
-        dthdt2 = tau * (th_sat - th_fc)
-        dthdt += (dthdt2 * cond2)
-        cond3 = np.logical_not(cond1 | cond2)
-        dthdt3 = (tau * (th_sat - th_fc) * ((np.exp(th - th_fc) - 1) / (np.exp(th_sat - th_fc) - 1)))
-        dthdt += (dthdt3 * cond3)
-        cond4 = (cond2 | cond3) & ((th - dthdt) < th_fc_adj)
-        dthdt4 = (th - th_fc_adj)
-        dthdt += (dthdt4 * cond4)
-        return dthdt
-        
     def dynamic(self):
+        self.dynamic_fortran()
+        
+    def dynamic_fortran(self):
+        """Function to redistribute stored soil water"""
+        layer_ix = self.var.layerIndex + 1
+        aquacrop_fc.drainage_w.update_drainage_w(
+            self.var.th.T,
+            self.var.DeepPerc.T,
+            self.var.FluxOut.T,
+            self.var.th_sat.T,
+            self.var.th_fc.T,
+            self.var.k_sat.T,
+            self.var.tau.T,
+            self.var.th_fc_adj.T,
+            self.var.dz,
+            self.var.dz_sum,
+            layer_ix,
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
+            )
+        
+    def dynamic_numpy(self):
         """Function to redistribute stored soil water"""
         # dims = self.var.th.shape
         thnew = np.copy(self.var.th)
@@ -254,3 +242,21 @@ class Drainage(object):
                 self.var.CurrentCropArea),
             axis=(0,1))         # FIXME
         self.var.th = np.copy(thnew)
+
+    @staticmethod
+    def compute_dthdt(th, th_sat, th_fc, th_fc_adj, tau):
+        cond1 = th <= th_fc_adj
+        dthdt1 = np.zeros_like(th, dtype=np.float64)
+        dthdt = (dthdt1 * cond1)
+        cond2 = np.logical_not(cond1) & (th >= th_sat)
+        dthdt2 = tau * (th_sat - th_fc)
+        dthdt += (dthdt2 * cond2)
+        cond3 = np.logical_not(cond1 | cond2)
+        dthdt3 = (tau * (th_sat - th_fc) * ((np.exp(th - th_fc) - 1) / (np.exp(th_sat - th_fc) - 1)))
+        dthdt += (dthdt3 * cond3)
+        cond4 = (cond2 | cond3) & ((th - dthdt) < th_fc_adj)
+        dthdt4 = (th - th_fc_adj)
+        dthdt += (dthdt4 * cond4)
+        return dthdt
+        
+        

@@ -40,138 +40,85 @@ class Transpiration(object):
         self.var.TrRatio[cond] = 1
         # self.var.TrAct[cond] = 0  # TEMP - may not require?
         self.var.DaySubmerged[cond] = 0
-        
-    # def dynamic(self):
-    #     """Function to calculate crop transpiration on current day"""
 
-    #     # reset initial conditions
-    #     if np.any(self.var.GrowingSeasonDayOne):
-    #         self.reset_initial_conditions()
-
-    #     layer_ix = self.var.layerIndex + 1
-    #     aquacrop_fc.transpiration_w.update_transpiration_w(
-    #         self.var.TrPot0.T, 
-    #         self.var.TrPot_NS.T, 
-    #         self.var.TrAct.T,
-    #         self.var.TrAct0.T, 
-    #         self.var.Tpot.T, 
-    #         self.var.TrRatio.T,
-    #         np.int32(self.var.AerDays).T, 
-    #         np.int32(self.var.AerDaysComp).T, 
-    #         self.var.th.T, 
-    #         self.var.thRZ_Act.T, 
-    #         self.var.thRZ_Sat.T, 
-    #         self.var.thRZ_Fc.T,
-    #         self.var.thRZ_Wp.T, 
-    #         self.var.thRZ_Dry.T, 
-    #         self.var.thRZ_Aer.T, 
-    #         self.var.TAW.T, 
-    #         self.var.Dr.T,
-    #         np.int32(self.var.AgeDays).T,
-    #         np.int32(self.var.AgeDays_NS).T,
-    #         np.int32(self.var.DaySubmerged).T,
-    #         self.var.SurfaceStorage.T, 
-    #         self.var.IrrNet.T, 
-    #         self.var.IrrNetCum.T, 
-    #         self.var.CC.T, 
-    #         self.var.model.etref.values.T, 
-    #         # self.var.weather.referencePotET.T, 
-    #         self.var.th_sat.T, 
-    #         self.var.th_fc.T, 
-    #         self.var.th_wilt.T, 
-    #         self.var.th_dry.T, 
-    #         np.int32(self.var.MaxCanopyCD).T, 
-    #         self.var.Kcb.T, 
-    #         self.var.Ksw_StoLin.T, 
-    #         self.var.CCadj.T, 
-    #         self.var.CCadj_NS.T,
-    #         self.var.CCprev.T, 
-    #         self.var.CCxW.T,
-    #         self.var.CCxW_NS.T,
-    #         self.var.Zroot.T,
-    #         self.var.rCor.T,
-    #         self.var.Zmin.T,
-    #         self.var.a_Tr.T,
-    #         self.var.Aer.T,
-    #         self.var.fage.T, 
-    #         np.int32(self.var.LagAer).T, 
-    #         self.var.SxBot.T, 
-    #         self.var.SxTop.T, 
-    #         np.int32(self.var.ETadj).T,
-    #         self.var.p_lo2.T, 
-    #         self.var.p_up2.T, 
-    #         self.var.fshape_w2.T, 
-    #         np.int32(self.var.IrrMethod).T,
-    #         self.var.NetIrrSMT.T,
-    #         self.var.CurrentConc.T, 
-    #         refconc,
-    #         # refconc,
-    #         np.int32(self.var.DAP).T,
-    #         np.int32(self.var.DelayedCDs).T,
-    #         self.var.dz.T, 
-    #         self.var.dz_sum.T, 
-    #         np.int32(layer_ix).T, 
-    #         np.int32(self.var.GrowingSeasonIndex).T,
-    #         self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
-    #         )
-    def aeration_stress(self):
-        """Function to calculate aeration stress coefficient"""
-
-        # Determine aeration stress (root zone)
-        cond1 = (self.var.thRZ_Act > self.var.thRZ_Aer)
-
-        # Calculate aeration stress coefficient
-        self.var.Ksa_Aer = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        cond11 = (cond1 & (self.var.AerDays < self.var.LagAer))
-        x1 = (self.var.thRZ_Sat - self.var.thRZ_Act)
-        x2 = (self.var.thRZ_Sat - self.var.thRZ_Aer)
-        stress = (1 - np.divide(x1, x2, out=np.zeros_like(x1), where=x2!=0))
-        self.var.Ksa_Aer[cond11] = (1 - ((self.var.AerDays / 3) * stress))[cond11]
-        cond12 = (cond1 & np.logical_not(cond11))
-        self.var.Ksa_Aer[cond12] = np.divide(x1, x2, out=np.zeros_like(x2), where=x2!=0)[cond12]
-
-        # Increment aeration days counter, or set to zero if there is no stress
-        self.var.AerDays[cond1] += 1
-        self.var.AerDays[np.logical_not(cond1)] = 0
-        self.var.AerDays = np.clip(self.var.AerDays, None, self.var.LagAer)
-
-    def surface_transpiration(self, TrPot):
-        
-        cond10 = (self.var.GrowingSeasonIndex & (self.var.SurfaceStorage > 0) & (self.var.DaySubmerged < self.var.LagAer))
-        self.var.DaySubmerged[cond10] += 1
-
-        # Update anaerobic conditions counter for each compartment
-        cond10_comp = np.broadcast_to(cond10[:,:,None,:], self.var.AerDaysComp.shape)
-        self.var.AerDaysComp[cond10_comp] += 1 
-        self.var.LagAer_comp = np.broadcast_to(self.var.LagAer[:,:,None,:], self.var.AerDaysComp.shape)
-        self.var.AerDaysComp[cond10_comp] = np.clip(self.var.AerDaysComp, None, self.var.LagAer_comp)[cond10_comp]
-
-        # Reduce actual transpiration that is possible to account for aeration
-        # stress due to extended submergence
-        fSub = 1 - np.divide(self.var.DaySubmerged.astype(np.float64), self.var.LagAer.astype(np.float64), out=np.zeros_like(self.var.LagAer.astype(np.float64)), where=self.var.LagAer!=0)
-
-        # Transpiration occurs from surface storage
-        cond101 = (cond10 & (self.var.SurfaceStorage > (fSub * self.var.TrPot0)))
-        self.var.SurfaceStorage[cond101] -= (fSub * self.var.TrPot0)[cond101]
-        self.var.TrAct0[cond101] = (fSub * self.var.TrPot0)[cond101]
-
-        # Otherwise there is no transpiration from surface storage
-        cond102 = (cond10 & np.logical_not(cond101))
-        self.var.TrAct0[cond102] = 0
-
-        # More water can be extracted from soil profile for transpiration
-        cond103 = (cond10 & (self.var.TrAct0 < (fSub * self.var.TrPot0)))        
-        TrPot[cond103] = ((fSub * self.var.TrPot0) - self.var.TrAct0)[cond103]
-
-        # Otherwise no more transpiration possible on current day
-        cond104 = (cond10 & np.logical_not(cond103))
-        TrPot[cond104] = 0
-
-        cond11 = (self.var.GrowingSeasonIndex & np.logical_not(cond10))
-        TrPot[cond11] = self.var.TrPot0[cond11]
-        self.var.TrAct0[cond11] = 0
-        
     def dynamic(self):
+        self.dynamic_fortran()
+        
+    def dynamic_fortran(self):
+        """Function to calculate crop transpiration on current day"""
+
+        # reset initial conditions
+        if np.any(self.var.GrowingSeasonDayOne):
+            self.reset_initial_conditions()
+
+        layer_ix = self.var.layerIndex + 1
+        aquacrop_fc.transpiration_w.update_transpiration_w(
+            self.var.TrPot0.T, 
+            self.var.TrPot_NS.T, 
+            self.var.TrAct.T,
+            self.var.TrAct0.T, 
+            self.var.Tpot.T, 
+            self.var.TrRatio.T,
+            np.int32(self.var.AerDays).T, 
+            np.int32(self.var.AerDaysComp).T, 
+            self.var.th.T, 
+            self.var.thRZ_Act.T, 
+            self.var.thRZ_Sat.T, 
+            self.var.thRZ_Fc.T,
+            self.var.thRZ_Wp.T, 
+            self.var.thRZ_Dry.T, 
+            self.var.thRZ_Aer.T, 
+            self.var.TAW.T, 
+            self.var.Dr.T,
+            np.int32(self.var.AgeDays).T,
+            np.int32(self.var.AgeDays_NS).T,
+            np.int32(self.var.DaySubmerged).T,
+            self.var.SurfaceStorage.T, 
+            self.var.IrrNet.T, 
+            self.var.IrrNetCum.T, 
+            self.var.CC.T, 
+            self.var.model.etref.values.T, 
+            # self.var.weather.referencePotET.T, 
+            self.var.th_sat.T, 
+            self.var.th_fc.T, 
+            self.var.th_wilt.T, 
+            self.var.th_dry.T, 
+            np.int32(self.var.MaxCanopyCD).T, 
+            self.var.Kcb.T, 
+            self.var.Ksw_StoLin.T, 
+            self.var.CCadj.T, 
+            self.var.CCadj_NS.T,
+            self.var.CCprev.T, 
+            self.var.CCxW.T,
+            self.var.CCxW_NS.T,
+            self.var.Zroot.T,
+            self.var.rCor.T,
+            self.var.Zmin.T,
+            self.var.a_Tr.T,
+            self.var.Aer.T,
+            self.var.fage.T, 
+            np.int32(self.var.LagAer).T, 
+            self.var.SxBot.T, 
+            self.var.SxTop.T, 
+            np.int32(self.var.ETadj).T,
+            self.var.p_lo2.T, 
+            self.var.p_up2.T, 
+            self.var.fshape_w2.T, 
+            np.int32(self.var.IrrMethod).T,
+            self.var.NetIrrSMT.T,
+            self.var.CurrentConc.T, 
+            refconc,
+            # refconc,
+            np.int32(self.var.DAP).T,
+            np.int32(self.var.DelayedCDs).T,
+            self.var.dz.T, 
+            self.var.dz_sum.T, 
+            np.int32(layer_ix).T, 
+            np.int32(self.var.GrowingSeasonIndex).T,
+            self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.nLayer, self.var.domain.nxy
+            )
+
+    def dynamic_numpy(self):
         """Function to calculate crop transpiration on current day"""
 
         # reset initial conditions
@@ -441,3 +388,61 @@ class Transpiration(object):
 
         # Store potential transpiration for irrigation calculations on next day
         self.var.Tpot = np.copy(self.var.TrPot0)
+        
+    def aeration_stress(self):
+        """Function to calculate aeration stress coefficient"""
+
+        # Determine aeration stress (root zone)
+        cond1 = (self.var.thRZ_Act > self.var.thRZ_Aer)
+
+        # Calculate aeration stress coefficient
+        self.var.Ksa_Aer = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        cond11 = (cond1 & (self.var.AerDays < self.var.LagAer))
+        x1 = (self.var.thRZ_Sat - self.var.thRZ_Act)
+        x2 = (self.var.thRZ_Sat - self.var.thRZ_Aer)
+        stress = (1 - np.divide(x1, x2, out=np.zeros_like(x1), where=x2!=0))
+        self.var.Ksa_Aer[cond11] = (1 - ((self.var.AerDays / 3) * stress))[cond11]
+        cond12 = (cond1 & np.logical_not(cond11))
+        self.var.Ksa_Aer[cond12] = np.divide(x1, x2, out=np.zeros_like(x2), where=x2!=0)[cond12]
+
+        # Increment aeration days counter, or set to zero if there is no stress
+        self.var.AerDays[cond1] += 1
+        self.var.AerDays[np.logical_not(cond1)] = 0
+        self.var.AerDays = np.clip(self.var.AerDays, None, self.var.LagAer)
+
+    def surface_transpiration(self, TrPot):
+        
+        cond10 = (self.var.GrowingSeasonIndex & (self.var.SurfaceStorage > 0) & (self.var.DaySubmerged < self.var.LagAer))
+        self.var.DaySubmerged[cond10] += 1
+
+        # Update anaerobic conditions counter for each compartment
+        cond10_comp = np.broadcast_to(cond10[:,:,None,:], self.var.AerDaysComp.shape)
+        self.var.AerDaysComp[cond10_comp] += 1 
+        self.var.LagAer_comp = np.broadcast_to(self.var.LagAer[:,:,None,:], self.var.AerDaysComp.shape)
+        self.var.AerDaysComp[cond10_comp] = np.clip(self.var.AerDaysComp, None, self.var.LagAer_comp)[cond10_comp]
+
+        # Reduce actual transpiration that is possible to account for aeration
+        # stress due to extended submergence
+        fSub = 1 - np.divide(self.var.DaySubmerged.astype(np.float64), self.var.LagAer.astype(np.float64), out=np.zeros_like(self.var.LagAer.astype(np.float64)), where=self.var.LagAer!=0)
+
+        # Transpiration occurs from surface storage
+        cond101 = (cond10 & (self.var.SurfaceStorage > (fSub * self.var.TrPot0)))
+        self.var.SurfaceStorage[cond101] -= (fSub * self.var.TrPot0)[cond101]
+        self.var.TrAct0[cond101] = (fSub * self.var.TrPot0)[cond101]
+
+        # Otherwise there is no transpiration from surface storage
+        cond102 = (cond10 & np.logical_not(cond101))
+        self.var.TrAct0[cond102] = 0
+
+        # More water can be extracted from soil profile for transpiration
+        cond103 = (cond10 & (self.var.TrAct0 < (fSub * self.var.TrPot0)))        
+        TrPot[cond103] = ((fSub * self.var.TrPot0) - self.var.TrAct0)[cond103]
+
+        # Otherwise no more transpiration possible on current day
+        cond104 = (cond10 & np.logical_not(cond103))
+        TrPot[cond104] = 0
+
+        cond11 = (self.var.GrowingSeasonIndex & np.logical_not(cond10))
+        TrPot[cond11] = self.var.TrPot0[cond11]
+        self.var.TrAct0[cond11] = 0
+        

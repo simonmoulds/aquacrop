@@ -15,40 +15,53 @@ class RootDevelopment(object):
         self.var.rCor = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.Zroot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 
-    # def reset_initial_conditions(self):
-    #     self.var.rCor[self.var.GrowingSeasonDayOne] = 1
-    #     self.var.Zroot[self.var.GrowingSeasonDayOne] = self.var.Zmin[self.var.GrowingSeasonDayOne]
-            
-    # def dynamic(self):
-    #     if np.any(self.var.GrowingSeasonDayOne):
-    #         self.reset_initial_conditions()
+    def reset_initial_conditions(self):
+        self.var.rCor[self.var.GrowingSeasonDayOne] = 1
+        self.var.Zroot[self.var.GrowingSeasonDayOne] = self.var.Zmin[self.var.GrowingSeasonDayOne]
 
-    #     aquacrop_fc.root_dev_w.update_root_dev_w(
-    #         self.var.Zroot.T, 
-    #         self.var.rCor.T, 
-    #         self.var.Zmin.T, 
-    #         self.var.Zmax.T, 
-    #         self.var.PctZmin.T, 
-    #         self.var.Emergence.T, 
-    #         self.var.MaxRooting.T, 
-    #         self.var.fshape_r.T, 
-    #         self.var.fshape_ex.T, 
-    #         self.var.SxBot.T,
-    #         self.var.SxTop.T,
-    #         self.var.DAP.T,
-    #         self.var.GDD.T,
-    #         self.var.GDDcum.T,
-    #         self.var.DelayedCDs.T,
-    #         self.var.DelayedGDDs.T,
-    #         self.var.TrRatio.T,
-    #         self.var.Germination.T, 
-    #         self.var.zRes.T,
-    #         self.var.groundwater.WaterTable, 
-    #         self.var.groundwater.zGW, 
-    #         self.var.CalendarType, 
-    #         self.var.GrowingSeasonIndex.T,
-    #         self.var.nFarm, self.var.nCrop, self.var.domain.nxy
-    #     )
+    def dynamic(self):
+        self.dynamic_fortran()
+        
+    def dynamic_fortran(self):
+        if np.any(self.var.GrowingSeasonDayOne):
+            self.reset_initial_conditions()
+
+        aquacrop_fc.root_dev_w.update_root_dev_w(
+            self.var.Zroot.T, 
+            self.var.rCor.T, 
+            self.var.Zmin.T, 
+            self.var.Zmax.T, 
+            self.var.PctZmin.T, 
+            self.var.Emergence.T, 
+            self.var.MaxRooting.T, 
+            self.var.fshape_r.T, 
+            self.var.fshape_ex.T, 
+            self.var.SxBot.T,
+            self.var.SxTop.T,
+            self.var.DAP.T,
+            self.var.GDD.T,
+            self.var.GDDcum.T,
+            self.var.DelayedCDs.T,
+            self.var.DelayedGDDs.T,
+            self.var.TrRatio.T,
+            self.var.Germination.T, 
+            self.var.zRes.T,
+            self.var.groundwater.WaterTable, 
+            self.var.groundwater.zGW, 
+            self.var.CalendarType, 
+            self.var.GrowingSeasonIndex.T,
+            self.var.nFarm, self.var.nCrop, self.var.domain.nxy
+        )
+        
+    def dynamic_numpy(self):
+        """Function to calculate root zone expansion"""
+        if np.any(self.var.GrowingSeasonDayOne):
+            self.reset_initial_conditions()
+
+        self.compute_root_depth()
+        self.adjust_root_depth_for_restrictive_layer()
+        self.adjust_root_depth_for_groundwater()
+            
     def reset_initial_conditions(self):
         self.var.rCor[self.var.GrowingSeasonDayOne] = 1
         self.var.Zroot[self.var.GrowingSeasonDayOne] = self.var.Zmin[self.var.GrowingSeasonDayOne]
@@ -127,12 +140,3 @@ class RootDevelopment(object):
             cond12 = ((zGW > 0) & (self.var.Zroot > zGW))
             self.var.Zroot[cond12] = np.clip(zGW, self.var.Zmin, None)[cond12]
     
-    def dynamic(self):
-        """Function to calculate root zone expansion"""
-        if np.any(self.var.GrowingSeasonDayOne):
-            self.reset_initial_conditions()
-
-        self.compute_root_depth()
-        self.adjust_root_depth_for_restrictive_layer()
-        self.adjust_root_depth_for_groundwater()
-            

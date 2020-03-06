@@ -9,15 +9,9 @@ import aquacrop_fc
 
 class CanopyCover(object):
     def __init__(self, CanopyCover_variable):
-        """Create a CanopyCover object by providing an AquaCrop 
-        object.
-        """
         self.var = CanopyCover_variable
 
     def initial(self):
-        """Initialize the NumPy data structures modified by the class 
-        instance.
-        """
         arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         self.var.tEarlySen = np.copy(arr_zeros)
         self.var.CC = np.copy(arr_zeros)
@@ -35,7 +29,6 @@ class CanopyCover(object):
         self.var.CC0adj = np.copy(arr_zeros)
     
     def dynamic(self):
-        """Update CanopyCover object for the current time step."""
         aquacrop_fc.canopy_cover_w.update_canopy_cover_w(
             self.var.CC.T,
             self.var.CCprev.T,
@@ -49,7 +42,7 @@ class CanopyCover(object):
             self.var.CC0adj.T,
             self.var.CCxEarlySen.T,
             self.var.tEarlySen.T,
-            self.var.PrematSenes.T,
+            np.int32(self.var.PrematSenes).T,  # not required when all modules use Fortran
             self.var.CropDead.T,
             self.var.GDD.T,
             self.var.GDDcum.T,
@@ -64,7 +57,6 @@ class CanopyCover(object):
             self.var.Dr.T,
             self.var.TAW.T,
             self.var.model.etref.values.T,
-            # self.var.weather.referencePotET.T,
             self.var.ETadj.T,
             self.var.p_up1.T,
             self.var.p_up2.T,
@@ -88,6 +80,7 @@ class CanopyCover(object):
             int(self.var.nCrop),
             int(self.var.domain.nxy)
         )
+        
     # def reset_initial_conditions(self):
     #     """Reset the value of various variables at the beginning of 
     #     the growing season.

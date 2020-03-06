@@ -9,6 +9,7 @@ from .RootZoneWater import fraction_of_compartment_in_root_zone, water_storage_i
 import aquacrop_fc
 
 class Germination(object):
+    
     def __init__(self, Germination_variable):
         self.var = Germination_variable
 
@@ -17,8 +18,11 @@ class Germination(object):
         self.var.DelayedGDDs = np.copy(arr_zeros)
         self.var.DelayedCDs = np.copy(arr_zeros.astype(np.int32))
         self.var.Germination = np.copy(arr_zeros.astype(np.int32))
-            
-    # def dynamic(self):
+
+    def dynamic(self):
+        self.dynamic_numpy()
+        
+    # def dynamic_fortran(self):
     #     """Function to check if crop has germinated"""
     #     layer_ix = self.var.layerIndex + 1
     #     aquacrop_fc.germination_w.update_germ_w(
@@ -41,6 +45,27 @@ class Germination(object):
     #         self.var.nLayer,
     #         self.var.domain.nxy
     #     )
+        
+    def dynamic_numpy(self):
+        """Function to check if crop has germinated"""
+        if np.any(self.var.GrowingSeasonDayOne):
+            self.reset_initial_conditions()
+            
+        WcProp = self.compute_proportional_water_content_in_root_zone()
+        above_germination_threshold = (
+            self.var.GrowingSeasonIndex
+            & (WcProp >= self.var.GermThr)
+            & (np.logical_not(self.var.Germination))
+        )
+        self.var.Germination[above_germination_threshold] = True
+        self.increment_delayed_growth_time_counters()
+        self.update_ageing_days_counter()
+        # self.update_time_since_germination()
+        
+        self.var.Germination[np.logical_not(self.var.GrowingSeasonIndex)] = False
+        self.var.DelayedCDs[np.logical_not(self.var.GrowingSeasonIndex)] = 0
+        self.var.DelayedGDDs[np.logical_not(self.var.GrowingSeasonIndex)] = 0
+        
     def reset_initial_conditions(self):
         self.var.DelayedGDDs[self.var.GrowingSeasonDayOne] = 0
         self.var.DelayedCDs[self.var.GrowingSeasonDayOne] = 0
@@ -89,22 +114,3 @@ class Germination(object):
     #     elif self.var.CalendarType == 2:
     #         self.var.time_since_germination = self.var.GDDcum - self.var.DelayedGDDs
             
-    def dynamic(self):
-        """Function to check if crop has germinated"""
-        if np.any(self.var.GrowingSeasonDayOne):
-            self.reset_initial_conditions()
-            
-        WcProp = self.compute_proportional_water_content_in_root_zone()
-        above_germination_threshold = (
-            self.var.GrowingSeasonIndex
-            & (WcProp >= self.var.GermThr)
-            & (np.logical_not(self.var.Germination))
-        )
-        self.var.Germination[above_germination_threshold] = True
-        self.increment_delayed_growth_time_counters()
-        self.update_ageing_days_counter()
-        # self.update_time_since_germination()
-        
-        self.var.Germination[np.logical_not(self.var.GrowingSeasonIndex)] = False
-        self.var.DelayedCDs[np.logical_not(self.var.GrowingSeasonIndex)] = 0
-        self.var.DelayedGDDs[np.logical_not(self.var.GrowingSeasonIndex)] = 0

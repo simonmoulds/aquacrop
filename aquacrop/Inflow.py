@@ -17,8 +17,11 @@ class Inflow(object):
 
     def initial(self):
         self.GwIn = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        
+
     def dynamic(self):
+        self.dynamic_numpy()
+        
+    def dynamic_numpy(self):
         """Function to calculate capillary rise in the presence of a 
         shallow groundwater table
         """

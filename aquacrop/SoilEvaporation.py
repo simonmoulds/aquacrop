@@ -32,222 +32,80 @@ class SoilEvaporation(object):
     def reset_initial_conditions(self):
         pass
 
-    # def dynamic(self):
+    def dynamic(self):
+        self.dynamic_numpy()
         
-    #     # thh = np.asfortranarray(np.float64(self.var.th.T))
-    #     self.var.EsAct = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+    def dynamic_fortran(self):
 
-    #     prec = np.broadcast_to(self.var.model.prec.values, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-    #     etref = np.broadcast_to(self.var.model.etref.values, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))        
-    #     EvapTimeSteps = 20
-    #     aquacrop_fc.soil_evaporation_w.update_soil_evap_w(
-    #         np.float64(prec).T,
-    #         np.float64(etref).T,
-    #         # np.float64(self.var.model.prec.values).T,
-    #         # np.float64(self.var.model.etref.values).T,
-    #         # np.float64(self.var.weather.precipitation).T,
-    #         # np.float64(self.var.weather.referencePotET).T,
-    #         self.var.EsAct.T,
-    #         self.var.Epot.T,
-    #         self.var.Irr.T,
-    #         np.int32(self.var.IrrMethod).T,
-    #         self.var.Infl.T,
-    #         # thh,
-    #         self.var.th.T,
-    #         self.var.th_sat_comp.T,
-    #         self.var.th_fc_comp.T,
-    #         self.var.th_wilt_comp.T,
-    #         self.var.th_dry_comp.T,
-    #         self.var.SurfaceStorage.T,
-    #         self.var.WetSurf.T,
-    #         self.var.Wsurf.T,
-    #         self.var.Wstage2.T,
-    #         self.var.CC.T,
-    #         self.var.CCadj.T,
-    #         self.var.CCxAct.T,
-    #         self.var.EvapZ.T,
-    #         self.var.EvapZmin.T,
-    #         self.var.EvapZmax.T,
-    #         self.var.REW.T,
-    #         self.var.Kex.T,
-    #         self.var.CCxW.T,
-    #         self.var.fwcc.T,
-    #         self.var.fevap.T,
-    #         self.var.fWrelExp.T,
-    #         self.var.dz.T,
-    #         self.var.dz_sum.T,
-    #         np.int32(self.var.Mulches).T,
-    #         self.var.fMulch.T,
-    #         self.var.MulchPctGS.T,
-    #         self.var.MulchPctOS.T,
-    #         np.int32(self.var.GrowingSeasonIndex).T,
-    #         np.int32(self.var.Senescence).T,
-    #         np.int32(self.var.PrematSenes).T,
-    #         np.int32(self.var.CalendarType),
-    #         np.int32(self.var.DAP).T,
-    #         np.int32(self.var.DelayedCDs).T,
-    #         np.int32(self.var.DelayedGDDs).T,
-    #         self.var.model.time.timestep,
-    #         # self.var._modelTime.timeStepPCR,
-    #         EvapTimeSteps,
-    #         self.var.nFarm,
-    #         self.var.nCrop,
-    #         self.var.nComp,
-    #         self.var.domain.nxy
-    #     )
-    #     # self.var.th = np.ascontiguousarray(thh).copy()        
+        # ***CURRENTLY NOT WORKING - DO NOT USE***
+        
+        # thh = np.asfortranarray(np.float64(self.var.th.T))
+        self.var.EsAct = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+
+        prec = np.broadcast_to(self.var.model.prec.values, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        etref = np.broadcast_to(self.var.model.etref.values, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))        
+        EvapTimeSteps = 20
+        aquacrop_fc.soil_evaporation_w.update_soil_evap_w(
+            np.float64(prec).T,
+            np.float64(etref).T,
+            # np.float64(self.var.model.prec.values).T,
+            # np.float64(self.var.model.etref.values).T,
+            # np.float64(self.var.weather.precipitation).T,
+            # np.float64(self.var.weather.referencePotET).T,
+            self.var.EsAct.T,
+            self.var.Epot.T,
+            self.var.Irr.T,
+            np.int32(self.var.IrrMethod).T,
+            self.var.Infl.T,
+            # thh,
+            self.var.th.T,
+            self.var.th_sat_comp.T,
+            self.var.th_fc_comp.T,
+            self.var.th_wilt_comp.T,
+            self.var.th_dry_comp.T,
+            self.var.SurfaceStorage.T,
+            self.var.WetSurf.T,
+            self.var.Wsurf.T,
+            self.var.Wstage2.T,
+            self.var.CC.T,
+            self.var.CCadj.T,
+            self.var.CCxAct.T,
+            self.var.EvapZ.T,
+            self.var.EvapZmin.T,
+            self.var.EvapZmax.T,
+            self.var.REW.T,
+            self.var.Kex.T,
+            self.var.CCxW.T,
+            self.var.fwcc.T,
+            self.var.fevap.T,
+            self.var.fWrelExp.T,
+            self.var.dz.T,
+            self.var.dz_sum.T,
+            np.int32(self.var.Mulches).T,
+            self.var.fMulch.T,
+            self.var.MulchPctGS.T,
+            self.var.MulchPctOS.T,
+            np.int32(self.var.GrowingSeasonIndex).T,
+            np.int32(self.var.Senescence).T,
+            np.int32(self.var.PrematSenes).T,
+            np.int32(self.var.CalendarType),
+            np.int32(self.var.DAP).T,
+            np.int32(self.var.DelayedCDs).T,
+            np.int32(self.var.DelayedGDDs).T,
+            self.var.model.time.timestep,
+            # self.var._modelTime.timeStepPCR,
+            EvapTimeSteps,
+            self.var.nFarm,
+            self.var.nCrop,
+            self.var.nComp,
+            self.var.domain.nxy
+        )
+        # self.var.th = np.ascontiguousarray(thh).copy()
+        
     # def reset_initial_conditions(self):
     #     pass
 
-    def evap_layer_water_content(self):
-        """Function to get water contents in the evaporation layer"""
-        if np.any(self.var.GrowingSeasonDayOne):
-            self.reset_initial_conditions()
-        
-        # Find compartments covered by evaporation layer
-        evapz_comp = self.var.EvapZ[:,:,None,:] * np.ones((self.var.nComp))[None,None,:,None]
-        comp_sto = (np.round((self.var.dz_sum_xy - self.var.dz_xy) * 1000) < np.round(evapz_comp * 1000))
-        factor = 1 - ((self.var.dz_sum_xy - evapz_comp) / self.var.dz_xy)
-        factor = np.clip(factor, 0, 1) * comp_sto
-
-        # Water storages in evaporation layer (mm)
-        Wevap_Act = np.sum((factor * 1000 * self.var.th * self.var.dz_xy), axis=2)  # sum along comp dim
-        self.var.Wevap_Act = np.clip(Wevap_Act, 0, None)
-        self.var.Wevap_Sat = np.sum((factor * 1000 * self.var.th_sat_comp * self.var.dz_xy), axis=2)
-        self.var.Wevap_Fc = np.sum((factor * 1000 * self.var.th_fc_comp * self.var.dz_xy), axis=2)
-        self.var.Wevap_Wp = np.sum((factor * 1000 * self.var.th_wilt_comp * self.var.dz_xy), axis=2)
-        self.var.Wevap_Dry = np.sum((factor * 1000 * self.var.th_dry_comp * self.var.dz_xy), axis=2)
-
-    def prepare_stage_two_evaporation(self):
-        self.evap_layer_water_content()
-        Wstage2 = (
-            (self.var.Wevap_Act - (self.var.Wevap_Fc - self.var.REW))
-            / (self.var.Wevap_Sat - (self.var.Wevap_Fc - self.var.REW)))
-        Wstage2 = (np.round((Wstage2 * 100)) / 100)
-        Wstage2 = np.clip(Wstage2, 0, None)
-        return Wstage2
-
-    def potential_soil_evaporation_rate(self, tAdj):
-
-        # No canopy cover outside of growing season so potential soil
-        # evaporation only depends on reference evapotranspiration
-        # et0 = np.broadcast_to(self.var.referencePotET[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        et0 = self.var.model.etref.values.copy()
-        # et0 = self.var.referencePotET[None,:] * np.ones((self.var.nCrop))[:,None]        
-        EsPot = (self.var.Kex * et0)
-
-        # Calculate maximum potential soil evaporation and potential soil
-        # evaporation given current canopy size
-        EsPotMax = (self.var.Kex * et0 * (1 - self.var.CCxW * (self.var.fwcc / 100)))
-        EsPot[self.var.GrowingSeasonIndex] = (self.var.Kex * (1 - self.var.CCadj) * et0)[self.var.GrowingSeasonIndex]
-
-        # Adjust potential soil evaporation for effects of withered canopy
-        cond3 = (self.var.GrowingSeasonIndex & (tAdj > self.var.Senescence) & (self.var.CCxAct > 0))
-        mult = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        cond31 = (cond3 & (self.var.CC > (self.var.CCxAct / 2)))
-        cond311 = (cond31 & (self.var.CC > self.var.CCxAct))
-        mult[cond311] = 0
-        cond312 = (cond31 & np.logical_not(cond311))
-        mult_divd = (self.var.CCxAct - self.var.CC)
-        mult_divs = (self.var.CCxAct / 2)
-        mult[cond312] = np.divide(mult_divd, mult_divs, out=np.zeros_like(mult_divs), where=mult_divs!=0)[cond312]
-
-        EsPot[cond3] = (EsPot * (1 - self.var.CCxAct * (self.var.fwcc / 100) * mult))[cond3]
-        CCxActAdj = ((1.72 * self.var.CCxAct) + (self.var.CCxAct ** 2) - 0.3 * (self.var.CCxAct ** 3))
-        EsPotMin = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-        EsPotMin[cond3] = (self.var.Kex * (1 - CCxActAdj) * et0)[cond3]
-        EsPotMin = np.clip(EsPotMin, 0, None)
-
-        # Line 85-89 of AOS_SoilEvaporation.m
-        EsPot[cond3] = np.clip(EsPot, EsPotMin, EsPotMax)[cond3]
-
-        cond4 = (self.var.GrowingSeasonIndex & self.var.PrematSenes)
-        # print(EsPot)
-        # print(EsPotMax)
-        # print(cond4)
-        # print(self.var.GrowingSeasonIndex)
-        # print(self.var.PrematSenes)
-        EsPot[cond4] = np.clip(EsPot, None, EsPotMax)[cond4]
-        return EsPot
-
-    def adjust_potential_soil_evaporation_for_irrigation(self, EsPot):
-        EsPotIrr = np.copy(EsPot)
-        cond1 = ((irr_depth > 0) & (irr_method != 4))
-        cond11 = (cond1 & ((prec > 0) | (surface_storage > 0)))
-        EsPotIrr[cond11] = EsPot[cond11]
-        cond12 = (cond1 & np.logical_not(cond11))
-        EsPotIrr[cond12] = (EsPot * (wet_surf / 100))[cond12]  # TODO: more informative name for wet_surf
-        return EsPotIrr
-
-    def adjust_potential_soil_evaporation_for_mulches(self, EsPot):
-
-        # NB if surface is flooded then there is no adjustment of potential soil
-        # evaporation, regardless of mulches    
-        EsPotMul = np.copy(EsPot)
-        cond1 = (self.var.SurfaceStorage < 0.000001)
-        cond11 = (cond1 & (self.var.Mulches == 1))
-        cond111 = (cond11 & self.var.GrowingSeasonIndex)
-        EsPotMul[cond111] = (EsPot * (1 - self.var.fMulch * (self.var.MulchPctGS / 100)))[cond111]
-        cond112 = (cond11 & np.logical_not(self.var.GrowingSeasonIndex))
-        EsPotMul[cond112] = (EsPot * (1 - self.var.fMulch * (self.var.MulchPctOS / 100)))[cond112]
-        return EsPotMul
-
-    def extract_water(self, ToExtract, ToExtractStg):
-
-        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-
-        # Determine fraction of compartments covered by evaporation layer
-        evapzmin_comp = self.var.EvapZmin[:,:,None,:] * np.ones((self.var.nComp))[None,None,:,None]  # metres
-        comp_sto = (np.round((self.var.dz_sum_xy - self.var.dz_xy) * 1000) < np.round(evapzmin_comp * 1000))  # fraction
-        factor = 1 - ((self.var.dz_sum_xy - evapzmin_comp) / self.var.dz_xy)  # fraction
-        factor = np.clip(factor, 0, 1) * comp_sto
-
-        comp_sto = np.sum(comp_sto, axis=2)  # sum along comp dim
-        comp = 0
-        while np.any((comp < comp_sto) & (ToExtractStg > 0) & (ToExtract > 0)):
-
-            cond101 = ((comp < comp_sto) & (ToExtractStg > 0) & (ToExtract > 0))
-
-            # Water available in compartment for extraction (mm)
-            Wdry = 1000 * self.var.th_dry_comp[:,:,comp,:] * self.var.dz_xy[:,:,comp,:]
-            W = 1000 * self.var.th[:,:,comp,:] * self.var.dz_xy[:,:,comp,:]
-            AvW = np.copy(arr_zeros)
-            AvW[cond101] = ((W - Wdry) * factor[:,:,comp,:])[cond101]
-            AvW = np.clip(AvW, 0, None)
-
-            # Determine amount by which to adjust variables
-            cond1011 = (cond101 & (AvW >= ToExtractStg))
-            self.var.EsAct[cond1011] += ToExtractStg[cond1011]  # EsAct should be in m
-            W[cond1011] -= ToExtractStg[cond1011]               # W should be in mm
-            ToExtract[cond1011] -= ToExtractStg[cond1011]       # ToExtract is in m
-            ToExtractStg[cond1011] = 0
-
-            cond1012 = (cond101 & np.logical_not(cond1011))
-            self.var.EsAct[cond1012] += AvW[cond1012]           # EsAct should be in m
-            W[cond1012] -= AvW[cond1012]                        # AvW is in mm
-            ToExtract[cond1012] -= AvW[cond1012]                # ToExtract is in m
-            ToExtractStg[cond1012] -= AvW[cond1012]             # ToExtractStg in m
-
-            # Update water content
-            self.var.th[:,:,comp,:][cond101] = (W / (1000 * self.var.dz_xy[:,:,comp,:]))[cond101]
-            comp += 1
-
-    def relative_depletion(self):
-
-        # Get current water storage
-        self.evap_layer_water_content()
-
-        # Get water storage (mm) at start of stage 2 evaporation
-        Wupper = (self.var.Wstage2 * (self.var.Wevap_Sat - (self.var.Wevap_Fc - self.var.REW)) + (self.var.Wevap_Fc - self.var.REW))
-        # Get water storage (mm) when there is no evaporation
-        Wlower = np.copy(self.var.Wevap_Dry)
-        # Get relative depletion of evaporation storage in stage 2
-        Wrel_divd = (self.var.Wevap_Act - Wlower)
-        Wrel_divs = (Wupper - Wlower)
-        Wrel = np.divide(Wrel_divd, Wrel_divs, out=np.zeros_like(Wrel_divs), where=Wrel_divs!=0)
-        return Wrel, Wlower, Wupper    
-            
-    def dynamic(self):
+    def dynamic_numpy(self):
         
         # Add crop dimension to self.var.vars
         # et0 = np.broadcast_to(self.var.referencePotET[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
@@ -384,6 +242,157 @@ class SoilEvaporation(object):
 
         # Store potential evaporation for irrigation calculations on next day
         self.var.Epot = np.copy(EsPot)
+    
+    def evap_layer_water_content(self):
+        """Function to get water contents in the evaporation layer"""
+        if np.any(self.var.GrowingSeasonDayOne):
+            self.reset_initial_conditions()
+        
+        # Find compartments covered by evaporation layer
+        evapz_comp = self.var.EvapZ[:,:,None,:] * np.ones((self.var.nComp))[None,None,:,None]
+        comp_sto = (np.round((self.var.dz_sum_xy - self.var.dz_xy) * 1000) < np.round(evapz_comp * 1000))
+        factor = 1 - ((self.var.dz_sum_xy - evapz_comp) / self.var.dz_xy)
+        factor = np.clip(factor, 0, 1) * comp_sto
+
+        # Water storages in evaporation layer (mm)
+        Wevap_Act = np.sum((factor * 1000 * self.var.th * self.var.dz_xy), axis=2)  # sum along comp dim
+        self.var.Wevap_Act = np.clip(Wevap_Act, 0, None)
+        self.var.Wevap_Sat = np.sum((factor * 1000 * self.var.th_sat_comp * self.var.dz_xy), axis=2)
+        self.var.Wevap_Fc = np.sum((factor * 1000 * self.var.th_fc_comp * self.var.dz_xy), axis=2)
+        self.var.Wevap_Wp = np.sum((factor * 1000 * self.var.th_wilt_comp * self.var.dz_xy), axis=2)
+        self.var.Wevap_Dry = np.sum((factor * 1000 * self.var.th_dry_comp * self.var.dz_xy), axis=2)
+
+    def prepare_stage_two_evaporation(self):
+        self.evap_layer_water_content()
+        Wstage2 = (
+            (self.var.Wevap_Act - (self.var.Wevap_Fc - self.var.REW))
+            / (self.var.Wevap_Sat - (self.var.Wevap_Fc - self.var.REW)))
+        Wstage2 = (np.round((Wstage2 * 100)) / 100)
+        Wstage2 = np.clip(Wstage2, 0, None)
+        return Wstage2
+
+    def potential_soil_evaporation_rate(self, tAdj):
+
+        # No canopy cover outside of growing season so potential soil
+        # evaporation only depends on reference evapotranspiration
+        # et0 = np.broadcast_to(self.var.referencePotET[None,None,:], (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        et0 = self.var.model.etref.values.copy()
+        # et0 = self.var.referencePotET[None,:] * np.ones((self.var.nCrop))[:,None]        
+        EsPot = (self.var.Kex * et0)
+
+        # Calculate maximum potential soil evaporation and potential soil
+        # evaporation given current canopy size
+        EsPotMax = (self.var.Kex * et0 * (1 - self.var.CCxW * (self.var.fwcc / 100)))
+        EsPot[self.var.GrowingSeasonIndex] = (self.var.Kex * (1 - self.var.CCadj) * et0)[self.var.GrowingSeasonIndex]
+
+        # Adjust potential soil evaporation for effects of withered canopy
+        cond3 = (self.var.GrowingSeasonIndex & (tAdj > self.var.Senescence) & (self.var.CCxAct > 0))
+        # print(cond3)
+        mult = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        cond31 = (cond3 & (self.var.CC > (self.var.CCxAct / 2)))
+        cond311 = (cond31 & (self.var.CC > self.var.CCxAct))
+        mult[cond311] = 0
+        cond312 = (cond31 & np.logical_not(cond311))
+        mult_divd = (self.var.CCxAct - self.var.CC)
+        mult_divs = (self.var.CCxAct / 2)
+        mult[cond312] = np.divide(mult_divd, mult_divs, out=np.zeros_like(mult_divs), where=mult_divs!=0)[cond312]
+
+        EsPot[cond3] = (EsPot * (1 - self.var.CCxAct * (self.var.fwcc / 100) * mult))[cond3]
+        CCxActAdj = ((1.72 * self.var.CCxAct) + (self.var.CCxAct ** 2) - 0.3 * (self.var.CCxAct ** 3))
+        EsPotMin = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        EsPotMin[cond3] = (self.var.Kex * (1 - CCxActAdj) * et0)[cond3]
+        EsPotMin = np.clip(EsPotMin, 0, None)
+
+        # Line 85-89 of AOS_SoilEvaporation.m
+        EsPot[cond3] = np.clip(EsPot, EsPotMin, EsPotMax)[cond3]
+
+        self.var.PrematSenes = self.var.PrematSenes.astype(np.bool)
+        cond4 = (self.var.GrowingSeasonIndex & self.var.PrematSenes)
+        # print(EsPot)
+        # print(EsPotMax.shape)
+        # print(cond4)
+        # print(self.var.GrowingSeasonIndex)
+        # print(self.var.PrematSenes)
+        # print(EsPot.shape)
+        EsPot[cond4] = np.clip(EsPot, None, EsPotMax)[cond4]
+        return EsPot
+
+    def adjust_potential_soil_evaporation_for_irrigation(self, EsPot):
+        EsPotIrr = np.copy(EsPot)
+        cond1 = ((irr_depth > 0) & (irr_method != 4))
+        cond11 = (cond1 & ((prec > 0) | (surface_storage > 0)))
+        EsPotIrr[cond11] = EsPot[cond11]
+        cond12 = (cond1 & np.logical_not(cond11))
+        EsPotIrr[cond12] = (EsPot * (wet_surf / 100))[cond12]  # TODO: more informative name for wet_surf
+        return EsPotIrr
+
+    def adjust_potential_soil_evaporation_for_mulches(self, EsPot):
+
+        # NB if surface is flooded then there is no adjustment of potential soil
+        # evaporation, regardless of mulches    
+        EsPotMul = np.copy(EsPot)
+        cond1 = (self.var.SurfaceStorage < 0.000001)
+        cond11 = (cond1 & (self.var.Mulches == 1))
+        cond111 = (cond11 & self.var.GrowingSeasonIndex)
+        EsPotMul[cond111] = (EsPot * (1 - self.var.fMulch * (self.var.MulchPctGS / 100)))[cond111]
+        cond112 = (cond11 & np.logical_not(self.var.GrowingSeasonIndex))
+        EsPotMul[cond112] = (EsPot * (1 - self.var.fMulch * (self.var.MulchPctOS / 100)))[cond112]
+        return EsPotMul
+
+    def extract_water(self, ToExtract, ToExtractStg):
+
+        arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+
+        # Determine fraction of compartments covered by evaporation layer
+        evapzmin_comp = self.var.EvapZmin[:,:,None,:] * np.ones((self.var.nComp))[None,None,:,None]  # metres
+        comp_sto = (np.round((self.var.dz_sum_xy - self.var.dz_xy) * 1000) < np.round(evapzmin_comp * 1000))  # fraction
+        factor = 1 - ((self.var.dz_sum_xy - evapzmin_comp) / self.var.dz_xy)  # fraction
+        factor = np.clip(factor, 0, 1) * comp_sto
+
+        comp_sto = np.sum(comp_sto, axis=2)  # sum along comp dim
+        comp = 0
+        while np.any((comp < comp_sto) & (ToExtractStg > 0) & (ToExtract > 0)):
+
+            cond101 = ((comp < comp_sto) & (ToExtractStg > 0) & (ToExtract > 0))
+
+            # Water available in compartment for extraction (mm)
+            Wdry = 1000 * self.var.th_dry_comp[:,:,comp,:] * self.var.dz_xy[:,:,comp,:]
+            W = 1000 * self.var.th[:,:,comp,:] * self.var.dz_xy[:,:,comp,:]
+            AvW = np.copy(arr_zeros)
+            AvW[cond101] = ((W - Wdry) * factor[:,:,comp,:])[cond101]
+            AvW = np.clip(AvW, 0, None)
+
+            # Determine amount by which to adjust variables
+            cond1011 = (cond101 & (AvW >= ToExtractStg))
+            self.var.EsAct[cond1011] += ToExtractStg[cond1011]  # EsAct should be in m
+            W[cond1011] -= ToExtractStg[cond1011]               # W should be in mm
+            ToExtract[cond1011] -= ToExtractStg[cond1011]       # ToExtract is in m
+            ToExtractStg[cond1011] = 0
+
+            cond1012 = (cond101 & np.logical_not(cond1011))
+            self.var.EsAct[cond1012] += AvW[cond1012]           # EsAct should be in m
+            W[cond1012] -= AvW[cond1012]                        # AvW is in mm
+            ToExtract[cond1012] -= AvW[cond1012]                # ToExtract is in m
+            ToExtractStg[cond1012] -= AvW[cond1012]             # ToExtractStg in m
+
+            # Update water content
+            self.var.th[:,:,comp,:][cond101] = (W / (1000 * self.var.dz_xy[:,:,comp,:]))[cond101]
+            comp += 1
+
+    def relative_depletion(self):
+
+        # Get current water storage
+        self.evap_layer_water_content()
+
+        # Get water storage (mm) at start of stage 2 evaporation
+        Wupper = (self.var.Wstage2 * (self.var.Wevap_Sat - (self.var.Wevap_Fc - self.var.REW)) + (self.var.Wevap_Fc - self.var.REW))
+        # Get water storage (mm) when there is no evaporation
+        Wlower = np.copy(self.var.Wevap_Dry)
+        # Get relative depletion of evaporation storage in stage 2
+        Wrel_divd = (self.var.Wevap_Act - Wlower)
+        Wrel_divs = (Wupper - Wlower)
+        Wrel = np.divide(Wrel_divd, Wrel_divs, out=np.zeros_like(Wrel_divs), where=Wrel_divs!=0)
+        return Wrel, Wlower, Wupper                
 
 # class SoilEvaporation(object):
 #     """Class to represent daily soil evaporation"""

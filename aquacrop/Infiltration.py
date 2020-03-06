@@ -23,43 +23,39 @@ class Infiltration(object):
 
     # def reset_initial_conditions(self):
     #     pass
-        
-    # def dynamic(self):
-    #     if np.any(self.var.GrowingSeasonDayOne):
-    #         self.reset_initial_conditions()
-            
-    #     layer_ix = self.var.layerIndex + 1
-    #     aquacrop_fc.infiltration_w.update_infl_w(
-    #         self.var.Infl.T,
-    #         self.var.SurfaceStorage.T,
-    #         self.var.FluxOut.T,
-    #         self.var.DeepPerc.T,
-    #         self.var.Runoff.T,
-    #         self.var.th.T,
-    #         self.var.Irr.T,
-    #         self.var.AppEff.T,
-    #         self.var.Bunds.T,
-    #         self.var.zBund.T,
-    #         self.var.th_sat.T,
-    #         self.var.th_fc.T,
-    #         self.var.th_fc_adj.T,
-    #         self.var.k_sat.T,
-    #         self.var.tau.T,
-    #         self.var.dz,
-    #         layer_ix,
-    #         self.var.nFarm,
-    #         self.var.nCrop,
-    #         self.var.nComp,
-    #         self.var.nLayer,
-    #         self.var.domain.nxy
-    #         )
-    def reset_initial_conditions(self):
-        pass
-        
     def dynamic(self):
-        if np.any(self.var.GrowingSeasonDayOne):
-            self.reset_initial_conditions()
-            
+        self.dynamic_fortran()
+        
+    def dynamic_fortran(self):
+        layer_ix = self.var.layerIndex + 1
+        aquacrop_fc.infiltration_w.update_infl_w(
+            self.var.Infl.T,
+            self.var.SurfaceStorage.T,
+            self.var.FluxOut.T,
+            self.var.DeepPerc.T,
+            self.var.Runoff.T,
+            self.var.th.T,
+            self.var.Irr.T,
+            self.var.AppEff.T,
+            self.var.Bunds.T,
+            self.var.zBund.T,
+            self.var.th_sat.T,
+            self.var.th_fc.T,
+            self.var.th_fc_adj.T,
+            self.var.k_sat.T,
+            self.var.tau.T,
+            self.var.dz,
+            layer_ix,
+            self.var.nFarm,
+            self.var.nCrop,
+            self.var.nComp,
+            self.var.nLayer,
+            self.var.domain.nxy
+            )
+        
+    def dynamic_numpy(self):
+        # if np.any(self.var.GrowingSeasonDayOne):
+        #     self.reset_initial_conditions()            
         # Update infiltration rate for irrigation
         self.var.Infl += self.var.Irr * (self.var.AppEff / 100.)
 

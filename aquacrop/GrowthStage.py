@@ -29,8 +29,10 @@ class GrowthStage(object):
     #         self.var.DelayedGDDs.T,
     #         int(self.var.CalendarType),
     #         self.var.GrowingSeasonIndex.T,
-    #         self.var.nFarm, self.var.nCrop, self.var.domain.nxy
-    #     )
+    #         self.var.nFarm,
+    #         self.var.nCrop,
+    #         self.var.domain.nxy
+    #     )        
     def reset_initial_conditions(self):
         self.var.GrowthStage[self.var.GrowingSeasonDayOne] = 0
         self.var.time_since_germination[self.var.GrowingSeasonDayOne] = 0

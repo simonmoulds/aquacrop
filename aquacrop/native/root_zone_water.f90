@@ -59,7 +59,7 @@ contains
     real(real64) :: factor
     
     root_depth = max(z_root, z_min)
-    root_depth = real(nint(root_depth * 1000.)) / 1000.
+    root_depth = real(nint(root_depth * 100.)) / 100.
     max_comp_idx = get_max_comp_idx(root_depth, dz, dz_sum)
     wr = 0.
     wr_sat = 0.
@@ -104,5 +104,6 @@ contains
     dr = max(dr, 0.)
 
   end subroutine update_root_zone_water
+  
 end module root_zone_water
 
