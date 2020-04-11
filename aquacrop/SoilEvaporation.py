@@ -33,31 +33,24 @@ class SoilEvaporation(object):
         pass
 
     def dynamic(self):
-        self.dynamic_numpy()
+
+        self.dynamic_fortran()
+        # self.dynamic_numpy()
         
     def dynamic_fortran(self):
 
-        # ***CURRENTLY NOT WORKING - DO NOT USE***
-        
-        # thh = np.asfortranarray(np.float64(self.var.th.T))
         self.var.EsAct = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-
         prec = np.broadcast_to(self.var.model.prec.values, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         etref = np.broadcast_to(self.var.model.etref.values, (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))        
         EvapTimeSteps = 20
         aquacrop_fc.soil_evaporation_w.update_soil_evap_w(
             np.float64(prec).T,
             np.float64(etref).T,
-            # np.float64(self.var.model.prec.values).T,
-            # np.float64(self.var.model.etref.values).T,
-            # np.float64(self.var.weather.precipitation).T,
-            # np.float64(self.var.weather.referencePotET).T,
             self.var.EsAct.T,
             self.var.Epot.T,
             self.var.Irr.T,
             np.int32(self.var.IrrMethod).T,
             self.var.Infl.T,
-            # thh,
             self.var.th.T,
             self.var.th_sat_comp.T,
             self.var.th_fc_comp.T,
@@ -90,17 +83,16 @@ class SoilEvaporation(object):
             np.int32(self.var.PrematSenes).T,
             np.int32(self.var.CalendarType),
             np.int32(self.var.DAP).T,
+            np.int32(self.var.GDDcum).T,
             np.int32(self.var.DelayedCDs).T,
             np.int32(self.var.DelayedGDDs).T,
             self.var.model.time.timestep,
-            # self.var._modelTime.timeStepPCR,
             EvapTimeSteps,
             self.var.nFarm,
             self.var.nCrop,
             self.var.nComp,
             self.var.domain.nxy
-        )
-        # self.var.th = np.ascontiguousarray(thh).copy()
+        )        
         
     # def reset_initial_conditions(self):
     #     pass
@@ -183,7 +175,7 @@ class SoilEvaporation(object):
         self.var.Wsurf[cond] = self.var.REW[cond]
         self.var.Wstage2[cond] = 0
         self.var.EvapZ[cond] = self.var.EvapZmin[cond]
-
+        
         # Determine total water to be extracted
         ToExtract = EsPot - self.var.EsAct
 
@@ -209,7 +201,8 @@ class SoilEvaporation(object):
 
         # Extract water
         EvapTimeSteps = 20
-        cond11 = (ToExtract > 0)        
+        cond11 = (ToExtract > 0)
+
         if np.any(cond11):
             Edt = ToExtract / EvapTimeSteps
             # Loop sub-daily time steps
@@ -217,7 +210,7 @@ class SoilEvaporation(object):
 
                 # Get water storage (mm) at start of stage 2 evaporation
                 Wrel, Wlower, Wupper = self.relative_depletion()
-
+                
                 # Check if need to expand evaporative layer
                 cond111 = (cond11 & (self.var.EvapZmax > self.var.EvapZmin))
                 Wcheck = (self.var.fWrelExp * ((self.var.EvapZmax - self.var.EvapZ) / (self.var.EvapZmax - self.var.EvapZmin)))
@@ -287,7 +280,6 @@ class SoilEvaporation(object):
 
         # Adjust potential soil evaporation for effects of withered canopy
         cond3 = (self.var.GrowingSeasonIndex & (tAdj > self.var.Senescence) & (self.var.CCxAct > 0))
-        # print(cond3)
         mult = np.ones((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         cond31 = (cond3 & (self.var.CC > (self.var.CCxAct / 2)))
         cond311 = (cond31 & (self.var.CC > self.var.CCxAct))
@@ -308,12 +300,6 @@ class SoilEvaporation(object):
 
         self.var.PrematSenes = self.var.PrematSenes.astype(np.bool)
         cond4 = (self.var.GrowingSeasonIndex & self.var.PrematSenes)
-        # print(EsPot)
-        # print(EsPotMax.shape)
-        # print(cond4)
-        # print(self.var.GrowingSeasonIndex)
-        # print(self.var.PrematSenes)
-        # print(EsPot.shape)
         EsPot[cond4] = np.clip(EsPot, None, EsPotMax)[cond4]
         return EsPot
 
@@ -327,7 +313,6 @@ class SoilEvaporation(object):
         return EsPotIrr
 
     def adjust_potential_soil_evaporation_for_mulches(self, EsPot):
-
         # NB if surface is flooded then there is no adjustment of potential soil
         # evaporation, regardless of mulches    
         EsPotMul = np.copy(EsPot)
@@ -380,10 +365,8 @@ class SoilEvaporation(object):
             comp += 1
 
     def relative_depletion(self):
-
         # Get current water storage
-        self.evap_layer_water_content()
-
+        self.evap_layer_water_content()        
         # Get water storage (mm) at start of stage 2 evaporation
         Wupper = (self.var.Wstage2 * (self.var.Wevap_Sat - (self.var.Wevap_Fc - self.var.REW)) + (self.var.Wevap_Fc - self.var.REW))
         # Get water storage (mm) when there is no evaporation
@@ -393,84 +376,3 @@ class SoilEvaporation(object):
         Wrel_divs = (Wupper - Wlower)
         Wrel = np.divide(Wrel_divd, Wrel_divs, out=np.zeros_like(Wrel_divs), where=Wrel_divs!=0)
         return Wrel, Wlower, Wupper                
-
-# class SoilEvaporation(object):
-#     """Class to represent daily soil evaporation"""
-#     def __init__(self, SoilEvaporation_variable):
-#         self.var = SoilEvaporation_variable
-
-#     def initial(self):
-#         arr_zeros = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-#         self.var.Epot = np.copy(arr_zeros)
-#         self.var.Stage2 = np.copy(arr_zeros.astype(bool))
-#         self.var.EvapZ = np.copy(arr_zeros)
-#         self.var.Wstage2 = np.copy(arr_zeros)
-#         self.var.Wsurf = np.copy(arr_zeros)
-#         self.var.Wevap_Act = np.copy(arr_zeros)
-#         self.var.Wevap_Sat = np.copy(arr_zeros)
-#         self.var.Wevap_Fc = np.copy(arr_zeros)
-#         self.var.Wevap_Wp = np.copy(arr_zeros)
-#         self.var.Wevap_Dry = np.copy(arr_zeros)
-
-#     def reset_initial_conditions(self):
-#         pass
-
-#     def dynamic(self):
-        
-#         thh = np.asfortranarray(np.float64(self.var.th))
-#         print("---")
-#         print(thh[...,0,1])
-#         self.var.EsAct = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
-#         EvapTimeSteps = 20
-#         aquacrop_fc.soil_evaporation_w.update_soil_evap_w(
-#             np.asfortranarray(np.float64(self.var.weather.precipitation)),
-#             np.asfortranarray(np.float64(self.var.weather.referencePotET)),
-#             np.asfortranarray(self.var.EsAct),
-#             np.asfortranarray(self.var.Epot),
-#             np.asfortranarray(self.var.Irr),
-#             np.asfortranarray(np.int32(self.var.IrrMethod)),
-#             np.asfortranarray(self.var.Infl),
-#             # np.asfortranarray(self.var.th),
-#             thh,
-#             np.asfortranarray(self.var.th_sat_comp),
-#             np.asfortranarray(self.var.th_fc_comp),
-#             np.asfortranarray(self.var.th_wilt_comp),
-#             np.asfortranarray(self.var.th_dry_comp),
-#             np.asfortranarray(self.var.SurfaceStorage),
-#             np.asfortranarray(self.var.WetSurf),
-#             np.asfortranarray(self.var.Wsurf),
-#             np.asfortranarray(self.var.Wstage2),
-#             np.asfortranarray(self.var.CC),
-#             np.asfortranarray(self.var.CCadj),
-#             np.asfortranarray(self.var.CCxAct),
-#             np.asfortranarray(self.var.EvapZ),
-#             np.asfortranarray(self.var.EvapZmin),
-#             np.asfortranarray(self.var.EvapZmax),
-#             np.asfortranarray(self.var.REW),
-#             np.asfortranarray(self.var.Kex),
-#             np.asfortranarray(self.var.CCxW),
-#             np.asfortranarray(self.var.fwcc),
-#             np.asfortranarray(self.var.fevap),
-#             np.asfortranarray(self.var.fWrelExp),
-#             np.asfortranarray(self.var.dz),
-#             np.asfortranarray(self.var.dz_sum),
-#             np.asfortranarray(np.int32(self.var.Mulches)),
-#             np.asfortranarray(self.var.fMulch),
-#             np.asfortranarray(self.var.MulchPctGS),
-#             np.asfortranarray(self.var.MulchPctOS),
-#             np.asfortranarray(np.int32(self.var.GrowingSeasonIndex)),
-#             np.asfortranarray(np.int32(self.var.Senescence)),
-#             np.asfortranarray(np.int32(self.var.PrematSenes)),
-#             np.int32(self.var.CalendarType),
-#             np.asfortranarray(np.int32(self.var.DAP)),
-#             np.asfortranarray(np.int32(self.var.DelayedCDs)),
-#             np.asfortranarray(np.int32(self.var.DelayedGDDs)),
-#             self.var._modelTime.timeStepPCR,
-#             EvapTimeSteps,
-#             self.var.nFarm,
-#             self.var.nCrop,
-#             self.var.nComp,
-#             self.var.domain.nxy)
-#         print(thh[...,0,1])
-#         print("---")
-#         self.var.th = np.ascontiguousarray(thh).copy()

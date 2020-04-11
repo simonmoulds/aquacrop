@@ -4,7 +4,6 @@
 import os
 import numpy as np
 
-from hm.model import Model
 from .LandCover import LandCover, Cropland
 
 class LandSurface(object):

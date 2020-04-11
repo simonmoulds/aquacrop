@@ -20,31 +20,31 @@ class Germination(object):
         self.var.Germination = np.copy(arr_zeros.astype(np.int32))
 
     def dynamic(self):
-        self.dynamic_numpy()
+        self.dynamic_fortran()
         
-    # def dynamic_fortran(self):
-    #     """Function to check if crop has germinated"""
-    #     layer_ix = self.var.layerIndex + 1
-    #     aquacrop_fc.germination_w.update_germ_w(
-    #         self.var.Germination.T,
-    #         self.var.DelayedCDs.T,
-    #         self.var.DelayedGDDs.T,
-    #         self.var.GDD.T,
-    #         self.var.th.T,
-    #         self.var.th_fc.T,
-    #         self.var.th_wilt.T,
-    #         self.var.zGerm.T,
-    #         self.var.GermThr.T,
-    #         self.var.dz,
-    #         self.var.dz_sum,
-    #         layer_ix,
-    #         self.var.GrowingSeasonIndex.T,
-    #         self.var.nFarm,
-    #         self.var.nCrop,
-    #         self.var.nComp,
-    #         self.var.nLayer,
-    #         self.var.domain.nxy
-    #     )
+    def dynamic_fortran(self):
+        """Function to check if crop has germinated"""
+        layer_ix = self.var.layerIndex + 1
+        aquacrop_fc.germination_w.update_germ_w(
+            self.var.Germination.T,
+            self.var.DelayedCDs.T,
+            self.var.DelayedGDDs.T,
+            self.var.GDD.T,
+            self.var.th.T,
+            self.var.th_fc.T,
+            self.var.th_wilt.T,
+            self.var.zGerm.T,
+            self.var.GermThr.T,
+            self.var.dz,
+            self.var.dz_sum,
+            layer_ix,
+            self.var.GrowingSeasonIndex.T,
+            self.var.nFarm,
+            self.var.nCrop,
+            self.var.nComp,
+            self.var.nLayer,
+            self.var.domain.nxy
+        )
         
     def dynamic_numpy(self):
         """Function to check if crop has germinated"""

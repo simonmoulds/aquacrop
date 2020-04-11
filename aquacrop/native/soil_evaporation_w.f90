@@ -19,7 +19,7 @@ contains
        dz, dz_sum, &
        mulches, f_mulch, mulch_pct_gs, mulch_pct_os, &
        growing_season, senescence, premat_senes, &
-       calendar_type, dap, delayed_cds, delayed_gdds, &
+       calendar_type, dap, gdd_cum, delayed_cds, delayed_gdds, &
        time_step, evap_time_steps, &
        n_farm, n_crop, n_comp, n_cell)
 
@@ -42,6 +42,7 @@ contains
     
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: irr_method
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: dap
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: gdd_cum
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_cds
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_gdds
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: mulches
@@ -72,7 +73,7 @@ contains
                   dz, dz_sum, &
                   mulches(k,j,i), f_mulch(k,j,i), mulch_pct_gs(k,j,i), mulch_pct_os(k,j,i), &
                   growing_season(k,j,i), senescence(k,j,i), premat_senes(k,j,i), &
-                  calendar_type, dap(k,j,i), delayed_cds(k,j,i), delayed_gdds(k,j,i), &
+                  calendar_type, dap(k,j,i), gdd_cum(k,j,i), delayed_cds(k,j,i), delayed_gdds(k,j,i), &
                   time_step, evap_time_steps)
           end do
        end do

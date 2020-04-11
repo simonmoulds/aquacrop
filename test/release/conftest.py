@@ -10,9 +10,10 @@ import shutil
 import subprocess
 import netCDF4 as nc
 import glob
-import test_utils
+# from .test_utils import
 
 from aquacrop import run
+
 
 @pytest.fixture
 def context(tmpdir, request):
@@ -46,4 +47,4 @@ def context(tmpdir, request):
             #     raise
             os.chdir(cwd)
         else:
-            shutil.rmtree(os.path.join(str(tmpdir), str(yr)))            
+            shutil.rmtree(os.path.join(str(tmpdir), str(yr)))

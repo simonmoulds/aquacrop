@@ -18,7 +18,7 @@ class PreIrrigation(object):
         self.var.IrrNet = np.copy(arr_zeros)
 
     def dynamic(self):
-        self.dynamic_numpy()
+        self.dynamic_fortran()
         
     def dynamic_fortran(self):
         layer_ix = self.var.layerIndex + 1

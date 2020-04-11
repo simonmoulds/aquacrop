@@ -341,30 +341,32 @@ contains
     comp = 0
     do while ( to_extract_stage > 0. .and. comp < max_comp_idx )
        comp = comp + 1
-
-       if ( dz_sum(comp) > evap_z_min ) then
+       ! if ( dz_sum(comp) > evap_z_min ) then
+       if ( dz_sum(comp) > evap_z ) then
           factor = 1. - (dz_sum(comp) - evap_z) / dz(comp)
-          factor = min(factor, 1.)
-          factor = max(factor, 0.)
-          w_dry = 1000. * th_dry(comp) * dz(comp)
-          w = 1000. * th(comp) * dz(comp)
-          av_w = (w - w_dry) * factor
-          av_w = max(av_w, 0.)
+       else
+          factor = 1
+       end if       
+       factor = min(factor, 1.)
+       factor = max(factor, 0.)
+       w_dry = 1000. * th_dry(comp) * dz(comp)
+       w = 1000. * th(comp) * dz(comp)
+       av_w = (w - w_dry) * factor
+       av_w = max(av_w, 0.)
 
-          if (av_w > to_extract_stage) then
-             es_act = es_act + to_extract_stage
-             w = w - to_extract_stage                
-             to_extract = to_extract - to_extract_stage
-             to_extract_stage = 0.
-          else
-             es_act = es_act + av_w
-             to_extract_stage = to_extract_stage - av_w
-             to_extract = to_extract - av_w
-             w = w - av_w
-          end if
-          th(comp) = w / (1000. * dz(comp))
-          
+       if (av_w > to_extract_stage) then
+          es_act = es_act + to_extract_stage
+          w = w - to_extract_stage                
+          to_extract = to_extract - to_extract_stage
+          to_extract_stage = 0.
+       else
+          es_act = es_act + av_w
+          to_extract_stage = to_extract_stage - av_w
+          to_extract = to_extract - av_w
+          w = w - av_w
        end if
+       th(comp) = w / (1000. * dz(comp))          
+       ! end if
     end do
     
   end subroutine extract_water
@@ -418,6 +420,7 @@ contains
        premat_senes, &
        calendar_type, &
        dap, &
+       gdd_cum, &
        delayed_cds, &
        delayed_gdds, &
        time_step, &
@@ -441,6 +444,7 @@ contains
     
     integer(int32), intent(in) :: irr_method
     integer(int32), intent(in) :: dap
+    integer(int32), intent(in) :: gdd_cum
     integer(int32), intent(in) :: delayed_cds
     real(real64), intent(in) :: delayed_gdds
     integer(int32), intent(in) :: mulches
@@ -459,6 +463,7 @@ contains
     real(real64) :: edt
     real(real64) :: kr
     real(real64) :: t_adj
+    real(real64) :: evap_z_mm
     integer(int32) :: i
     
     ! prepare soil evaporation stage two
@@ -471,6 +476,7 @@ contains
             evap_z, dz, dz_sum)
 
        w_stage_two = (w_evap_act - (w_evap_fc - rew)) / (w_evap_sat - (w_evap_fc - rew))
+       w_stage_two = anint(w_stage_two * 100.) / 100.
        w_stage_two = max(w_stage_two, 0.0)
        
     end if
@@ -490,17 +496,17 @@ contains
     if (calendar_type == one) then
        t_adj = dap - delayed_cds       
     else if (calendar_type == two) then
-       t_adj = dap - delayed_gdds       
+       t_adj = gdd_cum - delayed_gdds
     end if
-    
+
     es_pot = pot_soil_evap(et_ref, cc, cc_adj, ccx_act, &
          growing_season, senescence, premat_senes, t_adj, &
          kex, ccxw, fwcc)
-
+    
     ! adjust potential soil evaporation for mulches
     es_pot_mul = pot_soil_evap_w_mul(es_pot, growing_season, &
          surface_storage, mulches, f_mulch, mulch_pct_gs, mulch_pct_os)
-
+    
     ! adjust potential soil evaporation for irrigation
     es_pot_irr = pot_soil_evap_w_irr(es_pot, prec, irr, irr_method, &
        surface_storage, wet_surf)
@@ -518,7 +524,6 @@ contains
     to_extract_stage_one = min(to_extract, w_surf)
 
     if ( to_extract_stage_one > zero ) then
-
        call extract_water(to_extract, to_extract_stage_one, es_act, th, th_dry, &
           dz, dz_sum, evap_z, evap_z_min)
        
@@ -535,12 +540,16 @@ contains
                evap_z, dz, dz_sum)
 
           w_stage_two = (w_evap_act - (w_evap_fc - rew)) / (w_evap_sat - (w_evap_fc - rew))
+          w_stage_two = anint(w_stage_two * 100.) / 100.
           w_stage_two = max(w_stage_two, 0.0)
           
        end if
     end if
 
     ! stage two evaporation
+    ! problem seems to lie in this block
+    evap_z_mm = anint(evap_z * 1000.)
+    
     if ( to_extract > zero ) then
        edt = to_extract / evap_time_steps
 
@@ -555,17 +564,25 @@ contains
           w_rel = (w_evap_act - w_lower) / (w_upper - w_lower)
           
           if ( evap_z_max > evap_z_min ) then
-             
              w_check = f_wrel_exp * ((evap_z_max - evap_z) / (evap_z_max - evap_z_min))
              
              do while ( w_rel < w_check .and. evap_z < evap_z_max )
                 
-                evap_z = evap_z + 0.001
+                ! evap_z = evap_z + 0.001
+                evap_z_mm = evap_z_mm + 1.
+                evap_z = evap_z_mm / 1000.
                 
                 call get_evap_lyr_wc(th, th_sat, th_fc, th_wilt, th_dry, &
                      w_evap_act, w_evap_sat, w_evap_fc, w_evap_wp, w_evap_dry, &
                      evap_z, dz, dz_sum)
 
+                ! print*,'w_stage_two :',w_stage_two
+                ! print*,'w_evap_act  :',w_evap_act
+                ! print*,'w_evap_sat  :',w_evap_sat
+                ! print*,'w_evap_dry  :',w_evap_dry
+                ! print*,'w_evap_fc   :',w_evap_fc
+                ! print*,'rew         :',rew
+                
                 w_upper = w_stage_two * (w_evap_sat - (w_evap_fc - rew)) + (w_evap_fc - rew)
                 w_lower = w_evap_dry
                 w_rel = (w_evap_act - w_lower) / (w_upper - w_lower)
@@ -575,17 +592,20 @@ contains
           end if
           
           ! get stage 2 evaporation reduction coefficient
-          kr = ( exp(f_evap * w_rel) - 1 ) / ( exp(f_evap) - 1 )
-          kr = min(kr, 1.0)
+          kr = ( exp(f_evap * w_rel) - 1. ) / ( exp(f_evap) - 1. )
+          kr = min(kr, 1.)
           
+          ! print*,'w_rel  :', w_rel
+          ! print*,'w_lower:', w_lower
+          ! print*,'w_upper:', w_upper         
+          ! print*,'kr     :', kr
+
           to_extract_stage_two = kr * edt
-          
+          ! print*,'to_extract:', to_extract
           call extract_water(to_extract, to_extract_stage_two, es_act, th, th_dry, &
              dz, dz_sum, evap_z, evap_z_min)
-          
        end do
     end if
-    ! print *, th(2)
     
   end subroutine update_soil_evap
   

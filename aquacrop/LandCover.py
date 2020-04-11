@@ -116,8 +116,8 @@ class Cropland(LandCover):
         self.reporting_module.initial()
         
     def dynamic(self):
-        # print('--------------------')
-        # print(self.model.time._timestep)
+        print('--------------------')
+        print(self.model.time._timestep)
         # print(self.th[0,0,:,0])
         self.carbon_dioxide_module.dynamic(method='pad')
         self.lc_parameters_module.dynamic()
