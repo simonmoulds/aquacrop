@@ -27,6 +27,7 @@ class CropYield(object):
         # print('B    :',self.var.B[0,0,0])
         # print('HIadj:',self.var.HIadj[0,0,0])
         print('Yield : ', self.var.Y[0,0,0])
+        print(self.var.model.prec._has_data)
         
         cond11 = (self.var.GrowingSeasonIndex & (((self.var.CalendarType == 1) & ((self.var.DAP - self.var.DelayedCDs) >= self.var.Maturity)) | ((self.var.CalendarType == 2) & ((self.var.GDDcum - self.var.DelayedGDDs) >= self.var.Maturity))))
         self.var.CropMature[cond11] = True
