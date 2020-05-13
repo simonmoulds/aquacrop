@@ -17,7 +17,7 @@ class BiomassAccumulation(object):
         self.var.B_NS = np.copy(arr_zeros)
 
     def dynamic(self):
-        self.dynamic_fortran()
+        self.dynamic_numpy()
         
     def dynamic_fortran(self):
         aquacrop_fc.biomass_accumulation_w.update_biomass_accum_w(

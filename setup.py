@@ -98,6 +98,13 @@ numpy.distutils.core.setup(
     author_email='sim.moulds@gmail.com',
     license='GPL',
     packages=['aquacrop'],
+    install_requires=[
+        'click'
+    ],
+    entry_points='''
+        [console_scripts]
+        aquacrop=aquacrop.cli.aquacrop:cli
+    ''',
     ext_modules = [ext1],
     python_requires = '>=3.7.*',
     zip_safe=False)

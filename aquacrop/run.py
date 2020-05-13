@@ -3,6 +3,7 @@
 
 import os
 import sys
+import pandas as pd
 
 from hm import disclaimer
 from hm.dynamicmodel import HmDynamicModel
@@ -19,12 +20,13 @@ from .io import variable_list
 import logging
 logger = logging.getLogger(__name__)
 
+
 def main(argv):
     disclaimer.print_disclaimer()
 
     # get the full path of the config file provided as system argument
     config_filename = os.path.abspath(argv[0])
-    
+
     # determine whether to run the model in debug mode
     debug_mode = False
     if len(argv) > 2:
@@ -42,7 +44,7 @@ def main(argv):
         pd.Timestamp(configuration.CLOCK['endTime']),
         pd.Timedelta(configuration.CLOCK['timeDelta'])
     )
-    
+
     # retrieve z coordinate information from config
     dz_lyr = configuration.SOIL_PROFILE['dzLayer']
     z_lyr_bot = np.cumsum(dz_lyr)
@@ -51,12 +53,12 @@ def main(argv):
     dz_comp = configuration.SOIL_PROFILE['dzComp']
     z_comp_bot = np.cumsum(dz_comp)
     z_comp_top = z_comp_bot - dz_comp
-    z_comp_mid = (z_comp_top + z_comp_bot) / 2    
+    z_comp_mid = (z_comp_top + z_comp_bot) / 2
     z_coords = {
-        'layer' : z_lyr_mid,
-        'depth' : z_comp_mid
+        'layer': z_lyr_mid,
+        'depth': z_comp_mid
     }
-    
+
     # set model domain
     domain = set_domain(
         configuration.MODEL_GRID['mask'],
@@ -68,7 +70,7 @@ def main(argv):
         z_coords,
         configuration.PSEUDO_COORDS
     )
-    
+
     # create dynamic model object
     initial_state = None
     dynamic_model = HmDynamicModel(
@@ -82,8 +84,9 @@ def main(argv):
     # run model
     dynamic_framework = HmDynamicFramework(dynamic_model, len(modeltime) + 1)
     dynamic_framework.setQuiet(True)
-    dynamic_framework.run()    
+    dynamic_framework.run()
+
 
 if __name__ == '__main__':
-    disclaimer.print_disclaimer(with_logger = True)
+    disclaimer.print_disclaimer(with_logger=True)
     sys.exit(main(sys.argv[1:]))

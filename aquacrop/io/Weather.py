@@ -14,31 +14,40 @@
 from hm.api import open_hmdataarray
 from hm.input import HmInputData
 
+
 class MaxTemperature(HmInputData):
     def __init__(self, model):
         self.model = model
         self.filename = \
-            model.config.WEATHER['maxDailyTemperatureNC']
+            model.config.TMAX['filename']
         self.nc_varname = \
-            model.config.WEATHER['maxDailyTemperatureVarName']
+            model.config.TMAX['varname']
+        self.is_1d = model.config.TMAX['is_1d']
+        self.xy_dimname = model.config.TMAX['xy_dimname']
         self.model_varname = 'tmax'
+
 
 class MinTemperature(HmInputData):
     def __init__(self, model):
         self.model = model
         self.filename = \
-            model.config.WEATHER['minDailyTemperatureNC']
+            model.config.TMIN['filename']
         self.nc_varname = \
-            model.config.WEATHER['minDailyTemperatureVarName']
+            model.config.TMIN['varname']
+        self.is_1d = model.config.TMIN['is_1d']
+        self.xy_dimname = model.config.TMIN['xy_dimname']
         self.model_varname = 'tmin'
+
 
 class MeanTemperature(HmInputData):
     def __init__(self, model):
         self.model = model
         self.filename = \
-            model.config.WEATHER['meanDailyTemperatureNC']
+            model.config.TAVG['filename']
         self.nc_varname = \
-            model.config.WEATHER['meanDailyTemperatureVarName']
+            model.config.TAVG['varname']
+        self.is_1d = model.config.TAVG['is_1d']
+        self.xy_dimname = model.config.TAVG['xy_dimname']
         self.model_varname = 'tmean'
 
 # class Temperature(object):
@@ -55,25 +64,32 @@ class MeanTemperature(HmInputData):
 #     def dynamic(self):
 #         self.max_temperature_module.dynamic()
 #         self.min_temperature_module.dynamic()
-#         self.mean_temperature_module.dynamic()    
+#         self.mean_temperature_module.dynamic()
+
 
 class Precipitation(HmInputData):
     def __init__(self, model):
         self.model = model
         self.filename = \
-            model.config.WEATHER['precipitationNC']
+            model.config.PRECIPITATION['filename']
         self.nc_varname = \
-            model.config.WEATHER['precipitationVarName']
+            model.config.PRECIPITATION['varname']
+        self.is_1d = model.config.PRECIPITATION['is_1d']
+        self.xy_dimname = model.config.PRECIPITATION['xy_dimname']
         self.model_varname = 'prec'
+
 
 class ETref(HmInputData):
     def __init__(self, model):
         self.model = model
         self.filename = \
-            model.config.WEATHER['ETrefNC']
+            model.config.ETREF['filename']
         self.nc_varname = \
-            model.config.WEATHER['ETrefVarName']
+            model.config.ETREF['varname']
+        self.is_1d = model.config.ETREF['is_1d']
+        self.xy_dimname = model.config.ETREF['xy_dimname']
         self.model_varname = 'etref'
+
 
 class Weather(object):
     def __init__(self, model):
@@ -89,16 +105,15 @@ class Weather(object):
         # self.mean_temperature_module.initial()
         self.prec.initial()
         self.etref.initial()
-        
+
     def dynamic(self):
         self.max_temperature_module.dynamic()
         self.min_temperature_module.dynamic()
-        # self.mean_temperature_module.dynamic()    
+        # self.mean_temperature_module.dynamic()
         self.prec.dynamic()
         self.etref.dynamic()
-        
-# TODO: class for open water evaporation
 
+# TODO: class for open water evaporation
 
 
 # class Weather(object):
@@ -120,7 +135,7 @@ class Weather(object):
 #         self.preFileNC = self._configuration.WEATHER['precipitationNC']
 #         self.minDailyTemperatureNC = self._configuration.WEATHER['minDailyTemperatureNC']
 #         self.maxDailyTemperatureNC = self._configuration.WEATHER['maxDailyTemperatureNC']
-#         self.etpFileNC = self._configuration.WEATHER['refEvapotranspirationNC']        
+#         self.etpFileNC = self._configuration.WEATHER['refEvapotranspirationNC']
 #         self.check_input_filenames()
 
 #     def check_input_filenames(self):
@@ -130,7 +145,7 @@ class Weather(object):
 #             self.maxDailyTemperatureNC,
 #             self.etpFileNC
 #             ])
-        
+
 #     def check_format_args(self, filenames):
 #         for filename in filenames:
 #             format_args = file_handling.get_format_args(filename)
@@ -139,18 +154,18 @@ class Weather(object):
 #                 if not format_args_ok:
 #                     msg = 'Filename ' + filename + ' contains invalid format arguments: only day, month and year are allowable'
 #                     raise ModelError(msg)
-                
+
 #     def set_nc_variable_names(self):
 #         self.preVarName = self._configuration.WEATHER['precipitationVarName']
 #         self.tminVarName = self._configuration.WEATHER['minDailyTemperatureVarName']
 #         self.tmaxVarName = self._configuration.WEATHER['maxDailyTemperatureVarName']
 #         self.refEvapotranspirationVarName = self._configuration.WEATHER['refEvapotranspirationVarName']
 #         self.check_nc_variable_names()
-        
+
 #     def check_nc_variable_names(self):
 #         filenames = [self.preFileNC, self.minDailyTemperatureNC, self.maxDailyTemperatureNC, self.etpFileNC]
 #         variable_names = [self.preVarName, self.tminVarName, self.tmaxVarName, self.refEvapotranspirationVarName]
-#         day, month, year = (self._modelTime.startTime.day, self._modelTime.startTime.month, self._modelTime.year)        
+#         day, month, year = (self._modelTime.startTime.day, self._modelTime.startTime.month, self._modelTime.year)
 #         result = []
 #         msg = []
 #         for filename,variable in zip(filenames,variable_names):
@@ -162,7 +177,7 @@ class Weather(object):
 #         if not all(result):
 #             msg = '\n'.join(msg)
 #             raise ModelError(msg)
-        
+
 #     def set_weather_conversion_factors(self):
 #         self.preConst = 0.0
 #         self.preFactor = 1.0
@@ -194,7 +209,7 @@ class Weather(object):
 #         # fn = self.preFileNC.format(day=self._modelTime.currTime.day, month=self._modelTime.currTime.month, year=self._modelTime.currTime.year)
 #         # self.precipitation_ds = xr.open_dataset(fn)
 #         pass
-    
+
 #     def adjust_precipitation_input_data(self):
 #         self.precipitation = self.preConst + self.preFactor * self.precipitation
 #         self.precipitation = np.maximum(0.0, self.precipitation)
@@ -202,7 +217,7 @@ class Weather(object):
 #         self.precipitation = np.floor(self.precipitation * 100000.)/100000.
 
 #     def read_precipitation_data(self):
-#         method_for_time_index = None        
+#         method_for_time_index = None
 #         # fn = self.preFileNC.format(day=self._modelTime.currTime.day, month=self._modelTime.currTime.month, year=self._modelTime.currTime.year)
 #         # ds = xr.open_dataset(fn)
 #         # ar = ds['precipitation'].sel(time=self._modelTime.fulldate)
@@ -227,7 +242,7 @@ class Weather(object):
 #         self.tmax = self.tmaxConst + self.tmaxFactor * self.tmax
 #         self.tmin = np.round(self.tmin * 1000.) / 1000.
 #         self.tmax = np.round(self.tmax * 1000.) / 1000.
-        
+
 #     def read_temperature_data(self):
 #         method_for_time_index = None
 #         self.tmin = file_handling.netcdf_to_array(
@@ -265,19 +280,18 @@ class Weather(object):
 #                 month=self._modelTime.currTime.month,
 #                 year=self._modelTime.currTime.year),
 #             self.refEvapotranspirationVarName,
-#             str(self._modelTime.fulldate), 
+#             str(self._modelTime.fulldate),
 #             useDoy = method_for_time_index,
 #             cloneMapFileName=self.cloneMapFileName,
 #             LatitudeLongitude = True)[self.landmask][None,None,:]
 #         self.adjust_reference_ET_data()
-        
+
 #     def read_reference_EW_data(self):
 #         # **TODO**
 #         self.EWref = self.referencePotET.copy()
-        
+
 #     def dynamic(self):
 #         self.read_precipitation_data()
 #         self.read_temperature_data()
 #         self.read_reference_ET_data()
 #         self.read_reference_EW_data()  # for open water evaporation
-

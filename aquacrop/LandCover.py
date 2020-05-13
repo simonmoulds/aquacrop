@@ -37,6 +37,7 @@ from .CropYield import CropYield
 
 from .io import variable_list_crop
 
+
 class LandCover(object):
     def __init__(self, model):
         self.model = model
@@ -48,9 +49,10 @@ class LandCover(object):
 
     def initial(self):
         pass
-    
+
     def dynamic(self):
         pass
+
 
 class Cropland(LandCover):
     def __init__(self, model):
@@ -58,7 +60,7 @@ class Cropland(LandCover):
         self.carbon_dioxide_module = CarbonDioxide(self)
         self.lc_parameters_module = AquaCropParameters(self)
         self.initial_condition_module = InitialCondition(self)
-        self.gdd_module = GrowingDegreeDay(self)        
+        self.gdd_module = GrowingDegreeDay(self)
         self.check_groundwater_table_module = CheckGroundwaterTable(self)
         self.pre_irrigation_module = PreIrrigation(self)
         self.drainage_module = Drainage(self)
@@ -83,7 +85,7 @@ class Cropland(LandCover):
         self.harvest_index_module = HarvestIndexAdjusted(self)
         self.crop_yield_module = CropYield(self)
 #         self.grid_cell_mean_module = GridCellMean(self)
-    
+
     def initial(self):
         self.carbon_dioxide_module.initial()
         self.lc_parameters_module.initial()
@@ -112,12 +114,13 @@ class Cropland(LandCover):
         self.harvest_index_module.initial()
         self.crop_yield_module.initial()
 #         self.grid_cell_mean_module.initial()
-        self.reporting_module = Reporting(self, variable_list_crop, 'CROP_PARAMETERS')
+        self.reporting_module = Reporting(
+            self, variable_list_crop, 'CROP_PARAMETERS')
         self.reporting_module.initial()
-        
+
     def dynamic(self):
-        print('--------------------')
-        print(self.model.time._timestep)
+        # print('--------------------')
+        # print(self.model.time._timestep)
         # print(self.th[0,0,:,0])
         self.carbon_dioxide_module.dynamic(method='pad')
         self.lc_parameters_module.dynamic()
@@ -175,4 +178,3 @@ class Cropland(LandCover):
         # print(self.Y[0,0,0])
         self.root_zone_water_module.dynamic()
         self.reporting_module.dynamic()
-        

@@ -175,7 +175,10 @@ class HarvestIndexAdjusted(object):
         self.var.HIadj = np.copy(arr_zeros)
         self.var.PreAdj = np.copy(arr_zeros).astype(np.int32)
         
-    def dynamic(self):        
+    def dynamic(self):
+        print(self.var.model.time.timestamp)
+        print(self.var.GrowingSeasonIndex)
+        print(self.var.HarvestDate)
         aquacrop_fc.harvest_index_w.adjust_harvest_index_w(
             self.var.HIadj.T,
             self.var.PreAdj.T,

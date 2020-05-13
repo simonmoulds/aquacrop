@@ -6,11 +6,11 @@ module biomass_accumulation
 contains
 
   subroutine update_biomass_accum( &
-       et_ref, &                ! reference evapotranspiration
-       tr, &                    ! transpiration
-       tr_pot, &                ! potential transpiration
-       b, &                     ! biomass
-       b_ns, &                  ! biomass (no water stress)
+       et_ref, &
+       tr, &
+       tr_pot, &
+       b, &
+       b_ns, &
        bio_temp_stress, &
        gdd, &
        gdd_up, &

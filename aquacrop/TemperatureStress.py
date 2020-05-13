@@ -34,10 +34,10 @@ class TemperatureStress(object):
         GDDrel_divs = (self.var.GDD_up - self.var.GDD_lo)
         GDDrel = np.divide(GDDrel_divd, GDDrel_divs, out=np.zeros_like(GDDrel_divs), where=GDDrel_divs!=0)
         Kst_Bio_divd = (KsBio_up * KsBio_lo)
-        Kst_Bio_divs = (KsBio_lo + (KsBio_up - KsBio_lo) * np.exp(-fshapeb * GDDrel))
+        Kst_Bio_divs = (KsBio_lo + (KsBio_up - KsBio_lo) * np.exp(-fshapeb * GDDrel))        
         self.var.Kst_Bio[cond23] = np.divide(Kst_Bio_divd, Kst_Bio_divs, out=np.zeros_like(Kst_Bio_divs), where=Kst_Bio_divs!=0)[cond23]
         self.var.Kst_Bio[cond23] = (self.var.Kst_Bio - KsBio_lo * (1 - GDDrel))[cond23]
-
+        
     def temperature_stress_heat(self, KsPol_up, KsPol_lo):
         """Function to calculate effects of heat stress on 
         pollination
