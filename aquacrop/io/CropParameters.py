@@ -22,12 +22,12 @@ import aquacrop_fc
 class CropParameters(object):
     def __init__(self, model):
         self.model = model
-        print(self.model.domain._coords.keys())
+        self.config = self.model.config.CROP_PARAMETERS
         self.model.nCrop = len(self.model.domain._coords['crop'])
-        self.model.CropID = self.model.config.CROP_PARAMETERS['cropID']
-        self.model.CalendarType = self.model.config.CROP_PARAMETERS['CalendarType']
-        self.model.SwitchGDD = self.model.config.CROP_PARAMETERS['SwitchGDD']
-        self.model.GDDmethod = self.model.config.CROP_PARAMETERS['GDDmethod']
+        self.model.CropID = self.config['cropID']
+        self.model.CalendarType = self.config['CalendarType']
+        self.model.SwitchGDD = self.config['SwitchGDD']
+        self.model.GDDmethod = self.config['GDDmethod']
         self.load_crop_parameter_database()
 
     def load_crop_parameter_database(self):
@@ -43,9 +43,11 @@ class CropParameters(object):
         self.model.PlantingDateAdj = np.copy(self.model.PlantingDate)
         self.model.HarvestDateAdj = np.copy(self.model.HarvestDate)
         arr_zeros = np.zeros(
-            (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+            (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
+        )
         self.model.GrowingSeasonIndex = np.copy(arr_zeros.astype(bool))
         self.model.GrowingSeasonDayOne = np.copy(arr_zeros.astype(bool))
+
         # divide into int/float parameters because this makes it
         # easier when passing as arguments to Fortran extension
         # (where the data type has to be specified)
@@ -61,59 +63,88 @@ class CropParameters(object):
         ]
         for param in int_params_to_compute:
             vars(self.model)[param] = np.copy(arr_zeros.astype(np.int32))
+            
         for param in flt_params_to_compute:
             vars(self.model)[param] = np.copy(arr_zeros.astype(np.float64))
+            
         self.compute_crop_parameters()
 
     def read(self):
         self.get_crop_parameter_names()
+        
         if len(self.model.crop_parameters_to_read) > 0:
             for param in self.model.crop_parameters_to_read:
-                # try to read from netCDF file, otherwise read from database
-                # N.B. some parameters must be specified in netCDF
-                # (e.g. (Planting|Harvest)Date)
-                try:
-                    arr = open_hmdataarray(
-                        self.model.config.CROP_PARAMETERS['cropParametersNC'],
-                        param,
-                        self.model.domain
-                    )
-                    vars(self.model)[param] = np.broadcast_to(
-                        arr.values,
-                        (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
-                    )
-                except:
-                    try:
-                        parameter_values = np.zeros((self.model.nCrop))
-                        for index, crop_id in enumerate(self.model.CropID):
-                            parameter_values[index] = read_crop_parameter_from_sqlite(
-                                self.model.CropParameterDatabase,
-                                crop_id,
-                                param
-                            )[0]
+                
+                # 1 - Try to read from configuration file:
+                if param in self.config.keys():
+                    parameter_values = np.array(self.config[param])
+                    if (len(parameter_values) == 1) | (len(parameter_values) == self.model.nCrop):                        
                         vars(self.model)[param] = np.broadcast_to(
                             parameter_values[:, None, None],
                             (self.model.nFarm, self.model.nCrop,
                              self.model.domain.nxy)
                         )
+                        
+                    else:
+                        raise ValueError(
+                            "Error reading parameter " + param
+                            + " from configuration file: length"
+                            + " of parameter list must equal number"
+                            + " of crops in simulation"
+                        )
+                        
+                else:        
+                    # 2 - Try to read from netCDF file
+                    try:
+                        arr = open_hmdataarray(
+                            self.model.config.CROP_PARAMETERS['cropParametersNC'],
+                            param,
+                            self.model.domain
+                        )
+                        vars(self.model)[param] = np.broadcast_to(
+                            arr.values,
+                            (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
+                        )
+                        
+                    # 3 - Read from default parameter database
+                    except:                        
+                        try:
+                            parameter_values = np.zeros((self.model.nCrop))
+                            for index, crop_id in enumerate(self.model.CropID):
+                                parameter_values[index] = read_crop_parameter_from_sqlite(
+                                    self.model.CropParameterDatabase,
+                                    crop_id,
+                                    param
+                                )[0]
+                            vars(self.model)[param] = np.broadcast_to(
+                                parameter_values[:, None, None],
+                                (self.model.nFarm, self.model.nCrop,
+                                 self.model.domain.nxy)
+                            )
 
-                    except:
-                        raise KeyError("Error reading parameter " +
-                                       param + " from crop parameter database")
+                        except:
+                            
+                            raise KeyError(
+                                "Error reading parameter "
+                                + param + " from crop parameter database"
+                            )
 
     def get_crop_parameter_names(self):
         self.model.crop_parameters_to_read = [
-            'CropType', 'PlantingDate', 'HarvestDate', 'Emergence', 'MaxRooting',
+            'CropType', 'PlantingDate', 'HarvestDate', 'Emergence',
+            'MaxRooting',
             'Senescence', 'Maturity', 'HIstart', 'Flowering', 'YldForm',
             'PolHeatStress', 'PolColdStress', 'BioTempStress', 'PlantPop',
-            'Determinant', 'ETadj', 'LagAer', 'Tbase', 'Tupp', 'Tmax_up', 'Tmax_lo',
-            'Tmin_up', 'Tmin_lo', 'GDD_up', 'GDD_lo', 'fshape_b', 'PctZmin', 'Zmin',
-            'Zmax', 'fshape_r', 'fshape_ex', 'SxTopQ', 'SxBotQ', 'a_Tr', 'SeedSize',
-            'CCmin', 'CCx', 'CDC', 'CGC', 'Kcb', 'fage', 'WP', 'WPy', 'fsink', 'bsted',
-            'bface', 'HI0', 'HIini', 'dHI_pre', 'a_HI', 'b_HI', 'dHI0', 'exc',
-            'MaxFlowPct', 'p_up1', 'p_up2', 'p_up3', 'p_up4', 'p_lo1', 'p_lo2', 'p_lo3',
-            'p_lo4', 'fshape_w1', 'fshape_w2', 'fshape_w3', 'fshape_w4', 'Aer', 'beta',
-            'GermThr']
+            'Determinant', 'ETadj', 'LagAer', 'Tbase', 'Tupp', 'Tmax_up',
+            'Tmax_lo', 'Tmin_up', 'Tmin_lo', 'GDD_up', 'GDD_lo', 'fshape_b',
+            'PctZmin', 'Zmin', 'Zmax', 'fshape_r', 'fshape_ex', 'SxTopQ',
+            'SxBotQ', 'a_Tr', 'SeedSize', 'CCmin', 'CCx', 'CDC', 'CGC',
+            'Kcb', 'fage', 'WP', 'WPy', 'fsink', 'bsted', 'bface', 'HI0',
+            'HIini', 'dHI_pre', 'a_HI', 'b_HI', 'dHI0', 'exc', 'MaxFlowPct',
+            'p_up1', 'p_up2', 'p_up3', 'p_up4', 'p_lo1', 'p_lo2', 'p_lo3',
+            'p_lo4', 'fshape_w1', 'fshape_w2', 'fshape_w3', 'fshape_w4',
+            'Aer', 'beta', 'GermThr'
+        ]
 
     def compute_crop_parameters(self):
         self.compute_initial_canopy_cover()
@@ -533,141 +564,3 @@ class CropParameters(object):
         )
         self.model.GrowingSeasonIndex = gs.astype(bool)
         self.model.GrowingSeasonDayOne = gsd.astype(bool)
-
-
-# class CropParametersGrid(CropParameters):
-#     def __init__(self, CropParameters_variable):
-#         super(CropParametersGrid, self).__init__(CropParameters_variable)
-#         self.model.CalendarType = int(self.model._configuration.CROP_PARAMETERS['CalendarType'])
-#         self.model.SwitchGDD = bool(int(self.model._configuration.CROP_PARAMETERS['SwitchGDD']))
-#         self.model.GDDmethod = int(self.model._configuration.CROP_PARAMETERS['GDDmethod'])
-
-#     def get_num_crop(self):
-#         self.model.nCrop = file_handling.get_dimension_variable(
-#             self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
-#             'crop'
-#         ).size
-
-#     def read(self):
-#         self.get_crop_parameter_names()
-#         if len(self.model.crop_parameters_to_read) > 0:
-#             for param in self.model.crop_parameters_to_read:
-#                 read_from_netcdf = file_handling.check_if_nc_has_variable(
-#                     self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
-#                     param
-#                     )
-#                 if read_from_netcdf:
-#                     d = file_handling.netcdf_to_arrayWithoutTime(
-#                         self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
-#                         param,
-#                         cloneMapFileName=self.model.cloneMapFileName)
-#                     d = d[self.model.landmask_crop].reshape(self.model.nCrop,self.model.domain.nxy)
-#                     vars(self.model)[param] = np.broadcast_to(d, (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-#                 else:
-#                     try:
-#                         parameter_values = np.zeros((self.model.nCrop))
-#                         for index,crop_id in enumerate(self.model.CropID):
-#                             parameter_values[index] = file_handling.read_crop_parameter_from_sqlite(
-#                                 self.model.CropParameterDatabase,
-#                                 crop_id,
-#                                 param
-#                             )[0]
-#                         vars(self.model)[param] = np.broadcast_to(
-#                             parameter_values[:,None,None],
-#                             (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
-#                         )
-
-#                     except:
-#                         raise ModelError("Error reading parameter " + param + " from crop parameter database")
-
-# def read_params(fn):
-#     with open(fn) as f:
-#         content = f.read().splitlines()
-
-#     # remove commented lines
-#     content = [x for x in content if re.search('^(?!%%).*', x)]
-#     content = [re.split('\s*:\s*', x) for x in content]
-#     params = {}
-#     for x in content:
-#         if len(x) > 1:
-#             nm = x[0]
-#             val = x[1]
-#             params[nm] = val
-#     return params
-
-# class CropParametersPoint(CropParameters):
-#     def __init__(self, CropParameters_variable):
-#         super(CropParametersPoint, self).__init__(CropParameters_variable)
-
-#     def get_num_crop(self):
-#         self.model.nCrop = 1
-
-#     def read(self):
-#         self.get_crop_parameter_names()
-#         crop_parameter_values = read_params(self.model._configuration.CROP_PARAMETERS['cropParametersFile'])
-#         for param in self.model.crop_parameters_to_read:
-#             read_from_file = (param in crop_parameter_values.keys())
-#             if read_from_file:
-#                 d = crop_parameter_values[param]
-#                 d = np.broadcast_to(d[None,None,:], (self.model.nFarm,self.model.nCrop, self.model.domain.nxy))
-#                 vars(self.model)[param] = d.copy()
-#             else:
-#                 try:
-#                     parameter_values = np.zeros((self.model.nCrop))
-#                     for index,crop_id in enumerate(self.model.CropID):
-#                         parameter_values[index] = file_handling.read_crop_parameter_from_sqlite(
-#                             self.model.CropParameterDatabase,
-#                             crop_id,
-#                             param
-#                         )[0]
-#                     vars(self.model)[param] = np.broadcast_to(
-#                         parameter_values[:,None,None],
-#                         (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
-#                     )
-#                 except:
-#                     raise ModelError("Error reading parameter " + param + " from crop parameter database")
-
-# class CropParametersGrid(CropParameters):
-#     def __init__(self, CropParameters_variable):
-#         super(CropParametersGrid, self).__init__(CropParameters_variable)
-#         self.model.CalendarType = int(self.model._configuration.CROP_PARAMETERS['CalendarType'])
-#         self.model.SwitchGDD = bool(int(self.model._configuration.CROP_PARAMETERS['SwitchGDD']))
-#         self.model.GDDmethod = int(self.model._configuration.CROP_PARAMETERS['GDDmethod'])
-
-#     def get_num_crop(self):
-#         self.model.nCrop = file_handling.get_dimension_variable(
-#             self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
-#             'crop'
-#         ).size
-
-#     def read(self):
-#         self.get_crop_parameter_names()
-#         if len(self.model.crop_parameters_to_read) > 0:
-#             for param in self.model.crop_parameters_to_read:
-#                 read_from_netcdf = file_handling.check_if_nc_has_variable(
-#                     self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
-#                     param
-#                     )
-#                 if read_from_netcdf:
-#                     d = file_handling.netcdf_to_arrayWithoutTime(
-#                         self.model._configuration.CROP_PARAMETERS['cropParametersNC'],
-#                         param,
-#                         cloneMapFileName=self.model.cloneMapFileName)
-#                     d = d[self.model.landmask_crop].reshape(self.model.nCrop,self.model.domain.nxy)
-#                     vars(self.model)[param] = np.broadcast_to(d, (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-#                 else:
-#                     try:
-#                         parameter_values = np.zeros((self.model.nCrop))
-#                         for index,crop_id in enumerate(self.model.CropID):
-#                             parameter_values[index] = file_handling.read_crop_parameter_from_sqlite(
-#                                 self.model.CropParameterDatabase,
-#                                 crop_id,
-#                                 param
-#                             )[0]
-#                         vars(self.model)[param] = np.broadcast_to(
-#                             parameter_values[:,None,None],
-#                             (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
-#                         )
-
-#                     except:
-#                         raise ModelError("Error reading parameter " + param + " from crop parameter database")

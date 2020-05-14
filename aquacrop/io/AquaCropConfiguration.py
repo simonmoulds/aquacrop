@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import warnings
-
 from hm.config import Configuration
 
 import logging
@@ -93,6 +90,7 @@ class AquaCropConfiguration(Configuration):
             'initialConditionType'
         )
         init_type = self.INITIAL_WATER_CONTENT['initialConditionType'].upper()
+        print(self.INITIAL_WATER_CONTENT)
         if init_type == 'FILE':
             if 'initialConditionNC' not in list(self.INITIAL_WATER_CONTENT.keys()):
                 raise KeyError(

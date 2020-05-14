@@ -7,11 +7,10 @@ import netCDF4 as nc
 import datetime as datetime
 import calendar as calendar
 
-# from hm import file_handling
-
 class FieldManagementParameters(object):
     def __init__(self, model):
         self.model = model
+        self.config = self.model.config.FIELD_MANAGEMENT
 
     def initial(self):
         self.read_field_mgmt_parameters()
@@ -21,60 +20,49 @@ class FieldManagementParameters(object):
             'Mulches','MulchPctGS','MulchPctOS',
             'fMulch','Bunds','zBund','BundWater'
         ]
-        for param in field_mgmt_parameter_names:
-            if self.model.config.FIELD_MANAGEMENT['fieldManagementNC'] is not None:
+        for param in field_mgmt_parameter_names:            
+            if param in self.config.keys():
+                # should have length equal to number of farms
+                parameter_values = np.array(self.config[param]) 
+                if (len(parameter_values) == 1) | (len(parameter_values) == self.model.nFarm):                        
+                    vars(self.model)[param] = np.broadcast_to(
+                        parameter_values,
+                        (self.model.nFarm,
+                         self.model.nCrop,
+                         self.model.domain.nxy)
+                    )
+
+                else:
+                    raise ValueError(
+                        "Error reading parameter " + param
+                        + " from configuration file: length"
+                        + " of parameter list must equal number"
+                        + " of farms in simulation"
+                    )
+
+            else:        
+                # 2 - Try to read from netCDF file
                 try:
-                    d = hm.open_hmdatarray(
-                        self.model.config.FIELD_MANAGEMENT['fieldManagementNC'],
+                    arr = open_hmdataarray(
+                        self.config['fieldManagementNC'],
                         param,
                         self.model.domain
                     )
-                    # d = file_handling.netcdf_to_arrayWithoutTime(
-                    #     self.model.config.FIELD_MANAGEMENT['fieldManagementNC'],
-                    #     param,
-                    #     cloneMapFileName=self.model.cloneMapFileName
-                    # )
-                    # d = d[self.model.landmask_crop].reshape(self.model.nCrop,self.model.domain.nxy)
+                    vars(self.model)[param] = np.broadcast_to(
+                        arr.values,
+                        (self.model.nFarm,
+                         self.model.nCrop,
+                         self.model.domain.nxy)
+                    )
+                    
+                # 3 - Set to zero
                 except:
-                    d = np.zeros((self.model.nCrop, self.model.domain.nxy))
-            else:
-                d = np.zeros((self.model.nCrop, self.model.domain.nxy))                
-            vars(self.model)[param] = np.broadcast_to(d, (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-
+                    vars(self.model)[param] = np.zeros((
+                        self.model.nFarm,
+                        self.model.nCrop,
+                        self.model.domain.nxy
+                    ))                         
+                        
     def dynamic(self):
         pass
 
-# def read_params(fn):
-#     with open(fn) as f:
-#         content = f.read().splitlines()
-#     # remove commented lines
-#     content = [x for x in content if re.search('^(?!%).*', x)]
-#     content = [re.split('\s*:\s*', x) for x in content]
-#     params = {}
-#     for x in content:
-#         if len(x) > 1:
-#             nm = x[0]
-#             val = x[1]
-#             params[nm] = val
-#     return params
-    
-# def FieldManagementParametersPoint(FieldManagementParameters):
-    
-#     def read_field_mgmt_parameters(self):
-#         field_mgmt_parameter_names = [
-#             'Mulches','MulchPctGS','MulchPctOS',
-#             'fMulch','Bunds','zBund','BundWater'
-#         ]
-#         field_mgmt_parameter_values = read_params(self.model._configuration.FIELD_MANAGEMENT['soilParameterFile'])
-        
-#         for param in field_mgmt_parameters:
-#             read_from_file = (param in field_mgmt_parameter_values.keys())
-#             if read_from_file:
-#                 d = field_mgmt_parameter_values[param]
-#                 d = np.broadcast_to(d[None,None,:], (self.model.nFarm,self.model.nCrop, self.model.domain.nxy))
-#                 vars(self.model)[param] = d.copy()                
-#             else:
-#                 vars(self.model)[param] = np.full(
-#                     (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
-#                     0
-#                 )

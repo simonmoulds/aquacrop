@@ -38,6 +38,9 @@ class SoilHydraulicParameters(object):
         self.compute_capillary_rise_parameters()
 
     def read_soil_hydraulic_parameters(self):
+
+        # TODO: optionally read directly from config file
+        
         soil_hydraulic_parameters = {
             'k_sat': self.model.config.SOIL_HYDRAULIC_PARAMETERS['saturatedHydraulicConductivityVarName'],
             'th_sat': self.model.config.SOIL_HYDRAULIC_PARAMETERS['saturatedVolumetricWaterContentVarName'],
