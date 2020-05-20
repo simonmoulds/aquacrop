@@ -16,17 +16,24 @@ class GrowingDegreeDay(object):
         self.var.GDD = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 
     def dynamic(self):
-        self.dynamic_fortran()
+        # self.dynamic_fortran()
+        self.dynamic_numpy()
         
     def dynamic_fortran(self):
+        # print(self.var.GDD.shape)
+        # print(self.var.GDDcum.shape)
+        # print(self.var.GDDmethod)
+        # print(self.var.model.tmax.values.shape)
+        # print(self.var.model.tmin.values.shape)
+        # print(self.var.Tbase.shape)
+        # print(self.var.Tupp.shape)
+        # print(self.var.GrowingSeasonIndex.shape)
         aquacrop_fc.gdd_w.update_gdd_w(
             self.var.GDD.T, 
             self.var.GDDcum.T, 
             self.var.GDDmethod, 
             self.var.model.tmax.values.T, 
             self.var.model.tmin.values.T,
-            # self.var.weather.tmax.T, 
-            # self.var.weather.tmin.T,
             self.var.Tbase.T,
             self.var.Tupp.T,
             self.var.GrowingSeasonIndex.T, 

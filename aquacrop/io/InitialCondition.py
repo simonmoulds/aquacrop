@@ -25,81 +25,58 @@ class InitialCondition(object):
         
     def set_initial_condition_interp_method(self):
         self.var.initial_condition_interp_method = \
-            self.var.config.INITIAL_WATER_CONTENT['initialConditionInterpMethod'].upper()
+            self.var.config.INITIAL_WATER_CONTENT['interp_method'].upper()
         
     def set_initial_condition_type(self):
         self.var.initial_condition_type = \
-            self.var.config.INITIAL_WATER_CONTENT['initialConditionType'].upper()
-        self.var.initialConditionNC = None
-        self.var.initialConditionPercent = None
-        self.var.initialConditionProperty = None
+            self.var.config.INITIAL_WATER_CONTENT['type'].upper()
+        # self.var.initialConditionNC = None
+        # self.var.initialConditionPercent = None
+        # self.var.initialConditionProperty = None
         if self.var.initial_condition_type == 'FILE':
             self.var.initialConditionNC = \
-                str(self.var.config.INITIAL_WATER_CONTENT['initialConditionNC'])
+                str(self.var.config.INITIAL_WATER_CONTENT['filename'])
         elif self.var.initial_condition_type == 'PERCENT':
             self.var.initialConditionPercent = \
-                float(self.var.config.INITIAL_WATER_CONTENT['initialConditionPercent'])
+                float(self.var.config.INITIAL_WATER_CONTENT['percent'])
         elif self.var.initial_condition_type == 'PROPERTY':
             self.var.initialConditionProperty = \
-                str(self.var.config.INITIAL_WATER_CONTENT['initialConditionProperty'])
+                str(self.var.config.INITIAL_WATER_CONTENT['property'])
             
     def interpolate_initial_condition_to_compartments_by_depth(self):
-        # depths = file_handling.get_dimension_variable(
-        #     self.var.initialConditionNC, 'depth'
-        # )
-        # depths = self.var.th_init.coords['z']
         zBot = np.cumsum(self.var.dz)
         zTop = zBot - self.var.dz
         zMid = (zTop + zBot) / 2
-        # self.var.th_init.interp(depth=zMid, method='linear', kwargs={'fill_value' : 'extrapolate'})
-        self.var.th_init.interp(depth=zMid, method='linear', kwargs={'fill_value' : (self.var.th_init._data[0,...], self.var.th_init._data[-1,...])})
-        # # add zero point
-        # if depths[0] > 0:
-        #     depths = np.concatenate([[0.], depths])
-        #     th = np.concatenate([self.var.th_init.values[0,...][None,:], th], axis=0)
-
-        # if depths[-1] < zBot[-1]:
-        #     depths = np.concatenate([depths, [zBot[-1]]])
-        #     th = np.concatenate([th, th[-1,...][None,:]], axis=0)
-
-        # # now interpolate to compartments
-        # f_thini = interpolate.interp1d(depths, th, axis=0, bounds_error=False, fill_value=(th[0,...], th[-1,...]))
-        # th = f_thini(zMid)
-        # return th
+        self.var.th_init.interp(
+            depth=zMid,
+            method='linear',
+            kwargs={'fill_value' : (self.var.th_init._data[0,...], self.var.th_init._data[-1,...])}
+        )
     
     def interpolate_initial_condition_to_compartments_by_layer(self):
         zBot = np.cumsum(self.var.dz)
         zTop = zBot - self.var.dz
         zMid = (zTop + zBot) / 2
-        self.var.th_init.select(depth=zMid, method='nearest')  # is this the same???
-        # th = th[self.var.layerIndex,:,:]
-        # return th
+        self.var.th_init.select(depth=zMid, method='nearest')
     
     def interpolate_initial_condition_to_compartments(self):
         if self.var.initial_condition_interp_method == 'DEPTH':
             self.interpolate_initial_condition_to_compartments_by_depth()
         else:
             self.interpolate_initial_condition_to_compartments_by_layer()
-        # return th
 
     def set_initial_condition_from_file(self):
-        # TODO: use config to set initialConditionVarName, initialConditionDepthVarName
         self.var.th_init = open_hmdataarray(
-            self.var.initialConditionNC,
+            self.var.config.INITIAL_WATER_CONTENT['filename'],
             'th',
             self.var.domain,
+            self.var.config.INITIAL_WATER_CONTENT['is_1d'],
+            self.var.config.INITIAL_WATER_CONTENT['xy_dimname'],
             skip=['depth']
         )
         self.interpolate_initial_condition_to_compartments()
-        # th = file_handling.netcdf_to_arrayWithoutTime(
-        #     self.var.initialConditionNC,
-        #     'th',
-        #     cloneMapFileName=self.var.cloneMapFileName)
-        # th = self.interpolate_initial_condition_to_compartments(th)
-        # th = th[self.var.landmask_comp].reshape(self.var.nComp, self.var.domain.nxy)
         self.var.th = np.broadcast_to(
             self.var.th_init.values[None,None,...],
-            # th[None,None,...],
             (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy)
         ).copy()
         
@@ -107,7 +84,6 @@ class InitialCondition(object):
         self.var.th = (self.var.th_wilt_comp + ((self.var.initialConditionPercent / 100.) * (self.var.th_fc_comp - self.var.th_wilt_comp)))
 
     def set_initial_condition_from_property(self):
-        # comp_index = np.unique(self.var.layerIndex, return_index=True)[1]                
         if self.var.initialConditionProperty == 'FC':
             self.var.th = self.var.th_fc_comp.copy()
         elif self.var.initialConditionProperty == 'WP':
@@ -125,51 +101,6 @@ class InitialCondition(object):
         else:
             pass
         
-        # # # Define initial water contents
-        # # self.var.initialConditionNC = self.var._configuration.INITIAL_WATER_CONTENT['initialConditionNC']
-        # # th = file_handling.netcdf_to_arrayWithoutTime(
-        # #     self.var.initialConditionNC,
-        # #     'th',
-        # #     cloneMapFileName=self.var.cloneMapFileName)
-        
-        # # init_cond_interp_method = self.var._configuration.INITIAL_WATER_CONTENT['InterpMethod']
-        # # init_cond_type = self.var._configuration.globalOptions['initialConditionType']
-
-        # if self.var.initial_condition_interp_method.lower() == 'depth':
-        #     depths = file_handling.get_dimension_variable(
-        #         self.var.initialConditionNC,'depth')
-        #     # depths = file_handling.netcdfDim2NumPy(
-        #     #     self.var.initialConditionNC,'depth')
-        #     zBot = np.cumsum(self.var.dz)
-        #     zTop = zBot - self.var.dz
-        #     zMid = (zTop + zBot) / 2
-
-        #     # add zero point
-        #     if depths[0] > 0:
-        #         depths = np.concatenate([[0.], depths])
-        #         th = np.concatenate([th[0,...][None,:], th], axis=0)
-
-        #     if depths[-1] < zBot[-1]:
-        #         depths = np.concatenate([depths, [zBot[-1]]])
-        #         th = np.concatenate([th, th[-1,...][None,:]], axis=0)
-
-        #     # now interpolate to compartments
-        #     f_thini = interpolate.interp1d(depths, th, axis=0, bounds_error=False, fill_value=(th[0,...], th[-1,...]))
-        #     th = f_thini(zMid)
-        # else:
-        #     th = th[self.var.layerIndex,:,:]
-       
-        # # NB original Matlab code also allows users to supply initial condition
-        # # as field capacity, wilting point or saturation. We do not explicitly
-        # # include this option but of course it is possible to do this by
-        # # supplying a netCDF file containing the values. However, note that in
-        # # the original version if field capacity is specified and groundwater
-        # # table is present the initial water content is set to th_fc_adj once
-        # # this variable has been computed.
-
-        # th = th[self.var.landmask_comp].reshape(self.var.nComp, self.var.domain.nxy)
-        # self.var.th = np.broadcast_to(th[None,None,...], (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy)).copy()
-
     def dynamic(self):
         # Condition to identify crops which are not being grown or crops which
         # have only just finished being grown. The water content of crops

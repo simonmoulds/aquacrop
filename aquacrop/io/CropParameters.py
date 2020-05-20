@@ -24,10 +24,10 @@ class CropParameters(object):
         self.model = model
         self.config = self.model.config.CROP_PARAMETERS
         self.model.nCrop = len(self.model.domain._coords['crop'])
-        self.model.CropID = self.config['cropID']
-        self.model.CalendarType = self.config['CalendarType']
-        self.model.SwitchGDD = self.config['SwitchGDD']
-        self.model.GDDmethod = self.config['GDDmethod']
+        self.model.CropID = self.config['crop_id']
+        self.model.CalendarType = self.config['calendar_type']
+        self.model.SwitchGDD = self.config['switch_gdd']
+        self.model.GDDmethod = self.config['gdd_method']
         self.load_crop_parameter_database()
 
     def load_crop_parameter_database(self):
@@ -97,9 +97,11 @@ class CropParameters(object):
                     # 2 - Try to read from netCDF file
                     try:
                         arr = open_hmdataarray(
-                            self.model.config.CROP_PARAMETERS['cropParametersNC'],
+                            self.model.config.CROP_PARAMETERS['filename'],
                             param,
-                            self.model.domain
+                            self.model.domain,
+                            self.model.config.CROP_PARAMETERS['is_1d'],
+                            self.model.config.CROP_PARAMETERS['xy_dimname'],
                         )
                         vars(self.model)[param] = np.broadcast_to(
                             arr.values,
@@ -411,7 +413,7 @@ class CropParameters(object):
                                                                   ((1 - self.model.CCi / self.model.CCx) / 0.05))
 
                 # Set calendar type to GDD mode
-                self.model._configuration.CROP_PARAMETERS['CalendarType'] = "2"
+                self.model._configuration.CROP_PARAMETERS['calendar_type'] = "2"
 
     def compute_crop_calendar_type_2(self, update=False):
         pd, hd = self.compute_pd_hd()

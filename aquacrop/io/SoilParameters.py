@@ -100,9 +100,6 @@ class SoilParameters(object):
                     arr.values,
                     (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
                 )
-                print(self.model.config.SOIL_PARAMETERS['soilParametersNC'])
-                print(arr.values)
-                print(param)
             except TypeError:
                 try:
                     parameter_value = read_parameter_from_sqlite(

@@ -12,7 +12,7 @@ class FarmParameters(object):
     def __init__(self, model):
         self.model = model
         self.config = self.model.config.FARM_PARAMETERS
-        self.model.nFarm = self.config['nFarm']
+        self.model.nFarm = len(self.model.domain._coords['farm'])
         self.model.AnnualChangeInFarmArea = self.config['AnnualChangeInFarmArea']
 
     def initial(self):

@@ -1021,10 +1021,6 @@ def run():
             # config.optionxform = str
             import toml
             config = {
-                'FILE_PATHS' : {
-                    'PathIn' : 'Input',
-                    'PathOut': 'Output'
-                },
                 'MODEL_GRID' : {
                     'mask'   : 'Input/test.landmask.tif'
                 },
@@ -1033,15 +1029,16 @@ def run():
                     'farm'   : [1]
                 },
                 'CLOCK' : {
-                    'startTime' : start_time,
-                    'endTime'   : end_time,
-                    'timeDelta' : '1 day'
+                    'start_time' : start_time,
+                    'end_time'   : end_time
                 },
                 'INITIAL_WATER_CONTENT' : {
-                    'initialConditionType' : 'FILE',
-                    'initialConditionNC'   : os.path.join('Input', 'initial_conditions_' + nc_prefix + '.nc'),
-                    'initialConditionInterpMethod' : init_cond_interp,
-                    'initialConditionDepthVarName' : 'depth'
+                    'type' : 'FILE',
+                    'filename'   : os.path.join('Input', 'initial_conditions_' + nc_prefix + '.nc'),
+                    # 'is_1d'      : False,
+                    # 'xy_dimname' : '',
+                    'interp_method' : init_cond_interp# ,
+                    # 'depth_varname' : 'depth'
                 },
                 'NETCDF_ATTRIBUTES' : {
                     'institution' : 'Imperial College London, UK',
@@ -1076,19 +1073,15 @@ def run():
                     'varname'  : 'co2'
                 },
                 'WATER_TABLE' : {
-                    'WaterTable'          : False,
-                    'VariableWaterTable'  : False,
-                    'groundwaterVarName'  : '',
-                    'groundwaterInputDir' : '',
-                    'DailyGroundwaterNC'  : False,
-                    'groundwaterInputFile': ''
+                    'water_table'          : False,
+                    'dynamic'              : False,
                 },
                 'LAND_COVER' : {},
                 'CROP_PARAMETERS' : {
-                    'cropParametersNC' : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
-                    'CalendarType'     : int(calendar_type),
-                    'SwitchGDD'        : bool(int(switch_gdd)),
-                    'GDDmethod'        : int(gdd_method),
+                    'filename'         : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
+                    'calendar_type'    : int(calendar_type),
+                    'switch_gdd'       : bool(int(switch_gdd)),
+                    'gdd_method'       : int(gdd_method),
                     'daily_total'      : ['th', 'Y', 'Irr', 'B', 'IrrCum', 'IrrNetCum'],
                     'year_max'         : ['Y']
                 },

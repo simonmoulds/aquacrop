@@ -21,21 +21,24 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option('--debug/--no-debug', default=False)
+@click.option('-o', '--outputdir', 'outputdir', default='.', type=click.Path())
 @click.argument('config', type=click.Path(exists=True))
-def cli(debug, config):
+def cli(debug, outputdir, config):
     """Example script"""
 
     # load configuration
     configuration = AquaCropConfiguration(
         config,
+        outputdir,
         debug
     )
 
     # create modeltime object
+    print(type(configuration.CLOCK['start_time']))
     modeltime = set_modeltime(
-        pd.Timestamp(configuration.CLOCK['startTime']),
-        pd.Timestamp(configuration.CLOCK['endTime']),
-        pd.Timedelta(configuration.CLOCK['timeDelta'])
+        pd.Timestamp(configuration.CLOCK['start_time']),
+        pd.Timestamp(configuration.CLOCK['end_time']),
+        pd.Timedelta('1 day')
     )
 
     # retrieve z coordinate information from config
