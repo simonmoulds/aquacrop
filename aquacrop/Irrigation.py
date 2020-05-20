@@ -17,10 +17,10 @@ class Irrigation(object):
         self.var.Irr = np.copy(arr_zeros)
         self.var.IrrCum = np.copy(arr_zeros)
         self.var.IrrNetCum = np.copy(arr_zeros)
-        self.irrigate_soil_moisture_threshold = (self.var.IrrMethod == 1)
-        self.irrigate_fixed_interval = (self.var.IrrMethod == 2)
-        self.irrigate_from_schedule = (self.var.IrrMethod == 3)
-        self.irrigate_net = (self.var.IrrMethod == 4)
+        self.var.irrigate_soil_moisture_threshold = (self.var.IrrMethod == 1)
+        self.var.irrigate_fixed_interval = (self.var.IrrMethod == 2)
+        self.var.irrigate_from_schedule = (self.var.IrrMethod == 3)
+        self.var.irrigate_net = (self.var.IrrMethod == 4)
         
     def reset_initial_conditions(self):
         self.var.IrrCum[self.var.GrowingSeasonDayOne] = 0
@@ -50,7 +50,7 @@ class Irrigation(object):
         IrrReq = self.adjust_root_zone_depletion()
         EffAdj = ((100. - self.var.AppEff) + 100.) / 100.  # ???
         IrrReq *= EffAdj
-        irrigate = self.var.GrowingSeasonIndex & self.irrigate_soil_moisture_threshold & (Dr > IrrThr)
+        irrigate = self.var.GrowingSeasonIndex & self.var.irrigate_soil_moisture_threshold & (Dr > IrrThr)
         self.var.Irr[irrigate] = np.clip(IrrReq, 0, self.var.MaxIrr)[irrigate]
 
     def compute_irrigation_depth_fixed_interval(self):
@@ -60,7 +60,7 @@ class Irrigation(object):
         IrrReq *= EffAdj
         IrrReq = np.clip(IrrReq, 0., self.var.MaxIrr)
         nDays = self.var.DAP - 1
-        irrigate = self.var.GrowingSeasonIndex & self.irrigate_fixed_interval & ((nDays % self.var.IrrInterval) == 0)
+        irrigate = self.var.GrowingSeasonIndex & self.var.irrigate_fixed_interval & ((nDays % self.var.IrrInterval) == 0)
         self.var.Irr[irrigate] = IrrReq[irrigate]
 
     def compute_irrigation_depth_schedule(self):
@@ -78,7 +78,7 @@ class Irrigation(object):
             )
             IrrReq = IrrReq[self.var.landmask_crop].reshape(self.var.nCrop,self.var.domain.nxy)
             
-        irrigate = self.var.GrowingSeasonIndex & self.irrigate_from_schedule
+        irrigate = self.var.GrowingSeasonIndex & self.var.irrigate_from_schedule
         self.var.Irr[irrigate] = IrrReq[irrigate]
 
     def compute_irrigation_depth_net(self):        
@@ -90,13 +90,13 @@ class Irrigation(object):
     def compute_irrigation_depth(self):
         self.var.Irr[:] = 0.
         if np.any(self.var.GrowingSeasonIndex):
-            if np.any(self.irrigate_soil_moisture_threshold):
+            if np.any(self.var.irrigate_soil_moisture_threshold):
                 self.compute_irrigation_depth_soil_moisture_threshold()
-            if np.any(self.irrigate_fixed_interval):
+            if np.any(self.var.irrigate_fixed_interval):
                 self.compute_irrigation_depth_fixed_interval()                    
-            if np.any(self.irrigate_from_schedule):
+            if np.any(self.var.irrigate_from_schedule):
                 self.compute_irrigation_depth_schedule()
-            if np.any(self.irrigate_net):
+            if np.any(self.var.irrigate_net):
                 self.compute_irrigation_depth_net()
         self.var.IrrCum += self.var.Irr
         self.var.IrrCum[np.logical_not(self.var.GrowingSeasonIndex)] = 0

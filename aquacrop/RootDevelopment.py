@@ -24,7 +24,8 @@ class RootDevelopment(object):
         
     def dynamic_fortran(self):
         if np.any(self.var.GrowingSeasonDayOne):
-            self.reset_initial_conditions()
+            self.var.rCor[self.var.GrowingSeasonDayOne] = 1
+            self.var.Zroot[self.var.GrowingSeasonDayOne] = self.var.Zmin[self.var.GrowingSeasonDayOne]
 
         aquacrop_fc.root_dev_w.update_root_dev_w(
             self.var.Zroot.T, 

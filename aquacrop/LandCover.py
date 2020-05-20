@@ -35,6 +35,8 @@ from .TemperatureStress import TemperatureStress
 from .HarvestIndex import HarvestIndex, HarvestIndexAdjusted
 from .CropYield import CropYield
 
+from .CallFortran import CallFortran
+
 from .io import variable_list_crop
 
 
@@ -58,6 +60,8 @@ class Cropland(LandCover):
     def __init__(self, model):
         super(Cropland, self).__init__(model)
         self.carbon_dioxide_module = CarbonDioxide(self)
+        # TEMPORARY:
+        self.call_fortran_module = CallFortran(self)
         self.lc_parameters_module = AquaCropParameters(self)
         self.initial_condition_module = InitialCondition(self)
         self.gdd_module = GrowingDegreeDay(self)
@@ -89,6 +93,9 @@ class Cropland(LandCover):
     def initial(self):
         self.carbon_dioxide_module.initial()
         self.lc_parameters_module.initial()
+        
+        self.call_fortran_module.initial()
+        
         self.gdd_module.initial()
         self.initial_condition_module.initial()
         self.check_groundwater_table_module.initial()
@@ -120,35 +127,37 @@ class Cropland(LandCover):
     def dynamic(self):
         self.carbon_dioxide_module.dynamic(method='pad')
         self.lc_parameters_module.dynamic()
-        self.gdd_module.dynamic()
-        self.growth_stage_module.dynamic()
-        self.initial_condition_module.dynamic()
-        self.check_groundwater_table_module.dynamic()
-        self.pre_irrigation_module.dynamic()
-        self.drainage_module.dynamic()
-        self.rainfall_partition_module.dynamic()
-        self.root_zone_water_module.dynamic()
-        self.irrigation_module.dynamic()
-        self.infiltration_module.dynamic()
-        self.capillary_rise_module.dynamic()
-        self.germination_module.dynamic()
-        self.root_development_module.dynamic()
-        self.root_zone_water_module.dynamic()
-        self.water_stress_module.dynamic(beta=True)
-        self.canopy_cover_module.dynamic()
-        self.soil_evaporation_module.dynamic()
-        self.root_zone_water_module.dynamic()
-        self.water_stress_module.dynamic(beta=True)
-        self.transpiration_module.dynamic()
-        self.evapotranspiration_module.dynamic()
-        self.inflow_module.dynamic()
-        self.HI_ref_current_day_module.dynamic()
-        self.temperature_stress_module.dynamic()
-        self.biomass_accumulation_module.dynamic()
-        self.root_zone_water_module.dynamic()
-        self.water_stress_module.dynamic(beta=True)
-        self.temperature_stress_module.dynamic()
-        self.harvest_index_module.dynamic()
-        self.crop_yield_module.dynamic()
-        self.root_zone_water_module.dynamic()
+
+        self.call_fortran_module.dynamic()        
+        # self.gdd_module.dynamic()
+        # self.growth_stage_module.dynamic()
+        # self.initial_condition_module.dynamic()
+        # self.check_groundwater_table_module.dynamic()
+        # self.pre_irrigation_module.dynamic()
+        # self.drainage_module.dynamic()
+        # self.rainfall_partition_module.dynamic()
+        # self.root_zone_water_module.dynamic()
+        # self.irrigation_module.dynamic()  # TODO - Fortran module
+        # self.infiltration_module.dynamic()
+        # self.capillary_rise_module.dynamic()
+        # self.germination_module.dynamic()
+        # self.root_development_module.dynamic()  # TODO - reset_initial_conditions()
+        # self.root_zone_water_module.dynamic()
+        # self.water_stress_module.dynamic(beta=True)
+        # self.canopy_cover_module.dynamic()
+        # self.soil_evaporation_module.dynamic()
+        # self.root_zone_water_module.dynamic()
+        # self.water_stress_module.dynamic(beta=True)
+        # self.transpiration_module.dynamic()
+        # self.evapotranspiration_module.dynamic()
+        # self.inflow_module.dynamic()
+        # self.HI_ref_current_day_module.dynamic()
+        # self.temperature_stress_module.dynamic()
+        # self.biomass_accumulation_module.dynamic()
+        # self.root_zone_water_module.dynamic()
+        # self.water_stress_module.dynamic(beta=True)
+        # self.temperature_stress_module.dynamic()
+        # self.harvest_index_module.dynamic()
+        # self.crop_yield_module.dynamic()
+        # self.root_zone_water_module.dynamic()
         self.reporting_module.dynamic()

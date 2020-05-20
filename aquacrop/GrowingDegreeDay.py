@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 import aquacrop_fc
 
+
 class GrowingDegreeDay(object):
     def __init__(self, GrowingDegreeDay_variable):
         self.var = GrowingDegreeDay_variable
