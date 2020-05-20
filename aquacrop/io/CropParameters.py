@@ -314,6 +314,7 @@ class CropParameters(object):
             self.model.time.curr_time +
             datetime.timedelta(int(max_harvest_date - sd))
         )
+        print(self.model.model.tmin)
         self.model.model.tmin.select(time_slc)
         self.model.model.tmax.select(time_slc)
         tmin = (

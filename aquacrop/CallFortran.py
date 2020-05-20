@@ -140,174 +140,6 @@ class CallFortran(object):
         
         pass
 
-    def adjust_root_zone_depletion(self):
-        rootdepth = np.maximum(self.model.Zmin, self.model.Zroot)
-        AbvFc = ((self.model.thRZ_Act - self.model.thRZ_Fc) * 1000 * rootdepth)
-        AbvFc = np.clip(AbvFc, 0., None)
-        WCadj = self.model.ETpot - self.model.weather.precipitation + self.model.Runoff - AbvFc
-        Dr = self.model.Dr + WCadj
-        Dr = np.clip(Dr, 0., None)
-        return Dr
-    
-    def compute_irrigation_depth_soil_moisture_threshold(self, WCadj):
-        # If irrigation is based on soil moisture, get the soil moisture
-        # target for the current growth stage and determine threshold to
-        # initiate irrigation
-        I,J,K = np.ogrid[:self.model.nFarm,:self.model.nCrop,:self.model.domain.nxy]
-        growth_stage_index = self.model.GrowthStage.astype(int) - 1
-        SMT = np.concatenate((self.model.SMT1[None,:],
-                              self.model.SMT2[None,:],
-                              self.model.SMT3[None,:],
-                              self.model.SMT4[None,:]), axis=0)
-        SMT = SMT[growth_stage_index,I,J,K]
-        IrrThr = np.round(((1. - SMT / 100.) * self.model.TAW), 3)
-        IrrReq = self.adjust_root_zone_depletion()
-        EffAdj = ((100. - self.model.AppEff) + 100.) / 100.  # ???
-        IrrReq *= EffAdj
-        irrigate = self.model.GrowingSeasonIndex & self.model.irrigate_soil_moisture_threshold & (Dr > IrrThr)
-        self.model.Irr[irrigate] = np.clip(IrrReq, 0, self.model.MaxIrr)[irrigate]
-
-    def compute_irrigation_depth_fixed_interval(self):
-        """Irrigation depth using fixed interval method."""
-        IrrReq = self.adjust_root_zone_depletion()
-        EffAdj = ((100. - self.model.AppEff) + 100.) / 100.
-        IrrReq *= EffAdj
-        IrrReq = np.clip(IrrReq, 0., self.model.MaxIrr)
-        nDays = self.model.DAP - 1
-        irrigate = self.model.GrowingSeasonIndex & self.model.irrigate_fixed_interval & ((nDays % self.model.IrrInterval) == 0)
-        self.model.Irr[irrigate] = IrrReq[irrigate]
-
-    def compute_irrigation_depth_schedule(self):
-        # If irrigation is based on a pre-defined schedule then the irrigation
-        # requirement for each crop is read from a netCDF file. Note that if
-        # the option 'irrScheduleFileNC' is None, then nothing will be imported
-        # and the irrigation requirement will be zero
-        IrrReq = np.zeros((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-        if self.model.irrScheduleFileNC != None:            
-            IrrReq = file_handling.netcdf_to_array(
-                self.model.irrScheduleFileNC,
-                "irrigation_depth",
-                str(self.model._modelTime.fulldate), 
-                cloneMapFileName = self.model.cloneMapFileName
-            )
-            IrrReq = IrrReq[self.model.landmask_crop].reshape(self.model.nCrop,self.model.domain.nxy)
-            
-        irrigate = self.model.GrowingSeasonIndex & self.model.irrigate_from_schedule
-        self.model.Irr[irrigate] = IrrReq[irrigate]
-
-    def compute_irrigation_depth_net(self):        
-        # Note that if irrigation is based on net irrigation then it is
-        # performed after calculation of transpiration. A dummy method is
-        # included here in order to provide this explanation.
-        pass
-    
-    def compute_irrigation_depth(self):
-        self.model.Irr[:] = 0.
-        if np.any(self.model.GrowingSeasonIndex):
-            if np.any(self.model.irrigate_soil_moisture_threshold):
-                self.compute_irrigation_depth_soil_moisture_threshold()
-            if np.any(self.model.irrigate_fixed_interval):
-                self.compute_irrigation_depth_fixed_interval()                    
-            if np.any(self.model.irrigate_from_schedule):
-                self.compute_irrigation_depth_schedule()
-            if np.any(self.model.irrigate_net):
-                self.compute_irrigation_depth_net()
-        self.model.IrrCum += self.model.Irr
-        self.model.IrrCum[np.logical_not(self.model.GrowingSeasonIndex)] = 0
-    
-    def dynamic_irrigation(self):
-        """Function to get irrigation depth for the current day"""
-        if np.any(self.model.GrowingSeasonDayOne):
-            self.model.IrrCum[self.model.GrowingSeasonDayOne] = 0
-            self.model.IrrNetCum[self.model.GrowingSeasonDayOne] = 0
-        self.compute_irrigation_depth()
-
-    def dynamic_water_stress(self, beta):
-        """Function to calculate water stress coefficients"""
-        p_up = np.concatenate(
-            (self.model.p_up1[None, ...],
-             self.model.p_up2[None, ...],
-             self.model.p_up3[None, ...],
-             self.model.p_up4[None, ...]), axis=0)
-
-        p_lo = np.concatenate(
-            (self.model.p_lo1[None, ...],
-             self.model.p_lo2[None, ...],
-             self.model.p_lo3[None, ...],
-             self.model.p_lo4[None, ...]), axis=0)
-
-        fshape_w = np.concatenate(
-            (self.model.fshape_w1[None, ...],
-             self.model.fshape_w2[None, ...],
-             self.model.fshape_w3[None, ...],
-             self.model.fshape_w4[None, ...]), axis=0)
-
-        # et0 = np.broadcast_to(self.model.referencePotET[None,None,:], (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-        et0 = self.model.model.etref.values.copy()
-        # et0 = self.model.weather.referencePotET.copy()
-        # et0 = (self.model.referencePotET[None,:] * np.ones((self.model.nCrop))[:,None])
-
-        # Adjust stress thresholds for Et0 on current day (don't do this for
-        # pollination water stress coefficient)
-        cond1 = (self.model.ETadj == 1.)
-        for stress in range(3):
-            p_up[stress, ...][cond1] = (
-                p_up[stress, ...] + (0.04 * (5. - et0)) * (np.log10(10. - 9. * p_up[stress, ...])))[cond1]
-            p_lo[stress, ...][cond1] = (
-                p_lo[stress, ...] + (0.04 * (5. - et0)) * (np.log10(10. - 9. * p_lo[stress, ...])))[cond1]
-
-        # Adjust senescence threshold if early senescence triggered
-        if beta:
-            cond2 = (self.model.tEarlySen > 0.)
-            p_up[2, ...][cond2] = (
-                p_up[2, ...] * (1. - (self.model.beta / 100.)))[cond2]
-
-        # Limit adjusted values
-        p_up = np.clip(p_up, 0, 1)
-        p_lo = np.clip(p_lo, 0, 1)
-
-        # Calculate relative depletion
-        Drel = np.zeros(
-            (4, self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-
-        # 1 - No water stress
-        cond1 = (self.model.Dr <= (p_up * self.model.TAW))
-        # print(self.model.Dr)
-        # print(p_up)
-        # print('p_up:', p_up)
-        Drel[cond1] = 0
-
-        # 2 - Partial water stress
-        cond2 = (self.model.Dr > (p_up * self.model.TAW)) & (self.model.Dr <
-                                                         (p_lo * self.model.TAW)) & np.logical_not(cond1)
-        x1 = p_lo - np.divide(self.model.Dr, self.model.TAW,
-                              out=np.zeros_like(Drel), where=self.model.TAW != 0)
-        x2 = p_lo - p_up
-        Drel[cond2] = (
-            1. - np.divide(x1, x2, out=np.zeros_like(Drel), where=x2 != 0))[cond2]
-
-        # 3 - Full water stress
-        cond3 = (self.model.Dr >= (p_lo * self.model.TAW)
-                 ) & np.logical_not(cond1 | cond2)
-        Drel[cond3] = 1.
-
-        # Calculate root zone stress coefficients
-        idx = np.arange(0, 3)
-        x1 = np.exp(Drel[idx, ...] * fshape_w[idx, ...]) - 1.
-        x2 = np.exp(fshape_w[idx, ...]) - 1.
-        Ks = (1. - np.divide(x1, x2, out=np.zeros_like(x2), where=x2 != 0))
-
-        # Water stress coefficients (leaf expansion, stomatal closure,
-        # senescence, pollination failure)
-        self.model.Ksw_Exp = np.copy(Ks[0, ...])
-        self.model.Ksw_Sto = np.copy(Ks[1, ...])
-        self.model.Ksw_Sen = np.copy(Ks[2, ...])
-        self.model.Ksw_Pol = 1. - Drel[3, ...]
-
-        # Mean water stress coefficient for stomatal closure
-        self.model.Ksw_StoLin = 1. - Drel[1, ...]
-
-
     def temperature_stress_biomass(self):
         """Function to calculate temperature stress coefficient 
         affecting biomass growth
@@ -605,8 +437,43 @@ class CallFortran(object):
         # Irrigation
         # ############################# #
 
-        # TODO
-        self.dynamic_irrigation()
+        SMT = np.concatenate((self.model.SMT1[None,:],
+                              self.model.SMT2[None,:],
+                              self.model.SMT3[None,:],
+                              self.model.SMT4[None,:]), axis=0)
+        
+        prec = np.broadcast_to(self.model.model.prec.values,
+                               (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+        etref = np.broadcast_to(self.model.model.etref.values,
+                                (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+
+        aquacrop_fc.irrigation_w.update_irrigation_w(
+            self.model.IrrMethod.T,
+            self.model.Irr.T,      
+            self.model.IrrCum.T,   
+            self.model.IrrNetCum.T,
+            SMT.T,
+            self.model.IrrScheduled.T,  # TODO
+            self.model.AppEff.T,
+            self.model.Zroot.T,
+            self.model.Zmin.T,
+            self.model.TAW.T,
+            self.model.Dr.T,
+            self.model.thRZ_Fc.T,
+            self.model.thRZ_Act.T,
+            prec.T,
+            self.model.Runoff.T,
+            etref.T,
+            self.model.MaxIrr.T,
+            self.model.IrrInterval.T,
+            self.model.DAP.T,
+            self.model.GrowthStage.T,
+            self.model.GrowingSeasonDayOne.T,
+            self.model.GrowingSeasonIndex.T,
+            int(self.model.nFarm),
+            int(self.model.nCrop),
+            int(self.model.domain.nxy)
+        )            
         
         # ############################# #
         # Infiltration
@@ -754,8 +621,39 @@ class CallFortran(object):
         # WaterStress
         # ############################# #
 
-        # TODO - convert to Fortran
-        self.dynamic_water_stress(beta=True)
+        # # TODO - convert to Fortran
+        # self.dynamic_water_stress(beta=True)
+
+        aquacrop_fc.water_stress_w.update_water_stress_w(
+            self.model.Ksw_Exp.T,
+            self.model.Ksw_Sto.T,
+            self.model.Ksw_Sen.T,
+            self.model.Ksw_Pol.T,
+            self.model.Ksw_StoLin.T,
+            self.model.Dr.T,
+            self.model.TAW.T,
+            self.model.model.etref.values.T,
+            # self.model.weather.referencePotET.T,
+            self.model.ETadj.T,
+            self.model.tEarlySen.T,
+            self.model.p_up1.T,
+            self.model.p_up2.T,
+            self.model.p_up3.T,
+            self.model.p_up4.T,
+            self.model.p_lo1.T,
+            self.model.p_lo2.T,
+            self.model.p_lo3.T,
+            self.model.p_lo4.T,
+            self.model.fshape_w1.T,
+            self.model.fshape_w2.T,
+            self.model.fshape_w3.T,
+            self.model.fshape_w4.T,
+            int(True),
+            self.model.nFarm,
+            self.model.nCrop,
+            self.model.domain.nxy
+        )
+        
 
         # ############################# #        
         # CanopyCover
@@ -905,9 +803,39 @@ class CallFortran(object):
         # WaterStress
         # ############################# #
 
-        # TODO - convert to Fortran
-        self.dynamic_water_stress(beta=True)
+        # # TODO - convert to Fortran
+        # self.dynamic_water_stress(beta=True)
 
+        aquacrop_fc.water_stress_w.update_water_stress_w(
+            self.model.Ksw_Exp.T,
+            self.model.Ksw_Sto.T,
+            self.model.Ksw_Sen.T,
+            self.model.Ksw_Pol.T,
+            self.model.Ksw_StoLin.T,
+            self.model.Dr.T,
+            self.model.TAW.T,
+            self.model.model.etref.values.T,
+            # self.model.weather.referencePotET.T,
+            self.model.ETadj.T,
+            self.model.tEarlySen.T,
+            self.model.p_up1.T,
+            self.model.p_up2.T,
+            self.model.p_up3.T,
+            self.model.p_up4.T,
+            self.model.p_lo1.T,
+            self.model.p_lo2.T,
+            self.model.p_lo3.T,
+            self.model.p_lo4.T,
+            self.model.fshape_w1.T,
+            self.model.fshape_w2.T,
+            self.model.fshape_w3.T,
+            self.model.fshape_w4.T,
+            int(True),
+            self.model.nFarm,
+            self.model.nCrop,
+            self.model.domain.nxy
+        )
+        
         # ############################# #
         # Transpiration
         # ############################# #
@@ -1050,7 +978,7 @@ class CallFortran(object):
         # ############################# #
         # TemperatureStress
         # ############################# #
-        self.dynamic_temperature_stress()
+        # self.dynamic_temperature_stress()
 
         # ############################# #
         # BiomassAccumulation
@@ -1123,13 +1051,43 @@ class CallFortran(object):
         # WaterStress
         # ############################# #
 
-        # TODO - convert to Fortran
-        self.dynamic_water_stress(beta=True)
+        # # TODO - convert to Fortran
+        # self.dynamic_water_stress(beta=True)
 
-        # ############################# #
-        # TemperatureStress
-        # ############################# #
-        self.dynamic_temperature_stress()
+        aquacrop_fc.water_stress_w.update_water_stress_w(
+            self.model.Ksw_Exp.T,
+            self.model.Ksw_Sto.T,
+            self.model.Ksw_Sen.T,
+            self.model.Ksw_Pol.T,
+            self.model.Ksw_StoLin.T,
+            self.model.Dr.T,
+            self.model.TAW.T,
+            self.model.model.etref.values.T,
+            # self.model.weather.referencePotET.T,
+            self.model.ETadj.T,
+            self.model.tEarlySen.T,
+            self.model.p_up1.T,
+            self.model.p_up2.T,
+            self.model.p_up3.T,
+            self.model.p_up4.T,
+            self.model.p_lo1.T,
+            self.model.p_lo2.T,
+            self.model.p_lo3.T,
+            self.model.p_lo4.T,
+            self.model.fshape_w1.T,
+            self.model.fshape_w2.T,
+            self.model.fshape_w3.T,
+            self.model.fshape_w4.T,
+            int(True),
+            self.model.nFarm,
+            self.model.nCrop,
+            self.model.domain.nxy
+        )
+        
+        # # ############################# #
+        # # TemperatureStress
+        # # ############################# #
+        # self.dynamic_temperature_stress()
 
         # ############################# #
         # HarvestIndexAdjusted
@@ -1155,9 +1113,22 @@ class CallFortran(object):
             self.model.CCmin.T, 
             self.model.Ksw_Exp.T, 
             self.model.Ksw_Sto.T, 
-            self.model.Ksw_Pol.T, 
-            self.model.Kst_PolC.T, 
-            self.model.Kst_PolH.T, 
+            self.model.Ksw_Pol.T,
+            self.model.BioTempStress.T,
+            self.model.GDD.T,
+            self.model.GDD_up.T,
+            self.model.GDD_lo.T,
+            self.model.PolHeatStress.T,
+            self.model.model.tmax.values.T,
+            self.model.Tmax_up.T,
+            self.model.Tmax_lo.T,
+            self.model.fshape_b.T,
+            self.model.PolColdStress.T,
+            self.model.model.tmin.values.T,
+            self.model.Tmin_up.T,
+            self.model.Tmin_lo.T,
+            # self.model.Kst_PolC.T, 
+            # self.model.Kst_PolH.T, 
             self.model.CanopyDevEndCD.T, 
             self.model.HIstartCD.T, 
             self.model.HIendCD.T, 
@@ -1176,7 +1147,26 @@ class CallFortran(object):
         # ############################# #
         # CropYield
         # ############################# #
-        self.dynamic_yield()
+        # self.dynamic_yield()
+        mature = np.int32(self.model.CropMature).copy()        
+        aquacrop_fc.crop_yield_w.update_crop_yield_w(
+            self.model.Y.T,
+            mature.T,
+            self.model.Maturity.T,
+            self.model.B.T,
+            self.model.HIadj.T,
+            self.model.GDDcum.T,
+            np.int32(self.model.GrowingSeasonIndex).T,
+            np.int32(self.model.GrowingSeasonDayOne).T,
+            int(self.model.CalendarType),
+            np.int32(self.model.DAP).T,
+            self.model.DelayedCDs.T,
+            self.model.DelayedGDDs.T,
+            int(self.model.nCrop),
+            int(self.model.nFarm),
+            int(self.model.domain.nxy)
+        )
+        self.model.CropMature = mature.astype(bool).copy()
 
         # ############################# #
         # RootZoneWater

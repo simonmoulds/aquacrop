@@ -1,5 +1,6 @@
 module harvest_index
   use types
+  use temperature_stress, only: update_temp_stress
   implicit none
 
   real(real64), parameter :: pi = 3.14159265359
@@ -359,8 +360,19 @@ contains
        ksw_exp, &
        ksw_sto, &
        ksw_pol, &
-       kst_polc, &
-       kst_polh, &
+       bio_temp_stress, &  ! NEW
+       gdd, &              ! NEW
+       gdd_up, &           ! NEW
+       gdd_lo, &           ! NEW
+       pol_heat_stress, &  ! NEW
+       t_max, &            ! NEW
+       t_max_up, &         ! NEW
+       t_max_lo, &         ! NEW
+       f_shp_b, &          ! NEW
+       pol_cold_stress, &  ! NEW 
+       t_min, &            ! NEW 
+       t_min_up, &         ! NEW
+       t_min_lo, &         ! NEW
        canopy_dev_end_cd, &
        hi_start_cd, &
        hi_end_cd, &
@@ -396,8 +408,8 @@ contains
     real(real64), intent(in) :: ksw_exp
     real(real64), intent(in) :: ksw_sto
     real(real64), intent(in) :: ksw_pol
-    real(real64), intent(in) :: kst_polc
-    real(real64), intent(in) :: kst_polh
+    ! real(real64), intent(in) :: kst_polc
+    ! real(real64), intent(in) :: kst_polh
     integer(int32), intent(in) :: canopy_dev_end_cd
     integer(int32), intent(in) :: hi_start_cd
     integer(int32), intent(in) :: hi_end_cd
@@ -411,12 +423,43 @@ contains
     integer(int32), intent(in) :: crop_type
     integer(int32), intent(in) :: growing_season
 
+    integer(int32), intent(in) :: bio_temp_stress    
+    real(real64), intent(in) :: gdd, gdd_up, gdd_lo
+    integer(int32), intent(in) :: pol_heat_stress
+    real(real64), intent(in) :: t_max, t_max_up, t_max_lo
+    integer(int32), intent(in) :: pol_cold_stress
+    real(real64), intent(in) :: t_min, t_min_up, t_min_lo
+    real(real64), intent(in) :: f_shp_b
+    
+    real(real64) :: kst_bio, kst_polh, kst_polc
+    
     integer(int32) :: hi_t
     real(real64) :: hi_i
     real(real64) :: hi_max
     real(real64) :: hi_mult
     
     if ( growing_season == 1 ) then
+
+       ! NEW
+       call update_temp_stress( &
+            bio_temp_stress, &
+            kst_bio, &
+            gdd, &
+            gdd_up, &
+            gdd_lo, &
+            pol_heat_stress, &
+            kst_polh, &
+            t_max, &
+            t_max_up, &
+            t_max_lo, &
+            f_shp_b, &
+            pol_cold_stress, &
+            kst_polc, &
+            t_min, &
+            t_min_up, &
+            t_min_lo &
+            )
+       
        hi_i = hi_ref
        hi_t = dap - delayed_cds - hi_start_cd - 1
        if ( yield_form == 1 .and. hi_t >= 0 ) then

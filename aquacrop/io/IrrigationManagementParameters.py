@@ -9,10 +9,29 @@ import calendar as calendar
 
 # from hm import file_handling
 
+from hm.input import HmInputData
+
+import logging
+logger = logging.getLogger(__name__)
+
+
+# class IrrigationSchedule(HmInputData):
+#     def __init__(self, model):
+#         self.model = model
+#         self.filename = \
+#             model.config.IRRIGATION_SCHEDULE['filename']
+#         self.nc_varname = \
+#             model.config.IRRIGATION_SCHEDULE['varname']
+#         self.is_1d = model.config.IRRIGATION_SCHEDULE['is_1d']
+#         self.xy_dimname = model.config.IRRIGATION_SCHEDULE['xy_dimname']
+#         self.model_varname = 'IrrigationSchedule'
+
+
 class IrrigationManagementParameters(object):
 
     def __init__(self, model):
         self.model = model
+        # self.irrigation_schedule = IrrigationSchedule(model)
 
     def initial(self):
         self.model.irrMgmtParameterFileNC = self.model.config.IRRIGATION_MANAGEMENT['irrigationManagementNC']
@@ -46,5 +65,11 @@ class IrrigationManagementParameters(object):
         else:
             self.model.irrScheduleFileNC = None
 
+        # TODO: put this somewhere more appropriate
+        
+        # self.irrigation_schedule.initial()
+        self.model.IrrScheduled = np.zeros((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+            
     def dynamic(self):
         pass
+        # self.irrigation_schedule.dynamic()

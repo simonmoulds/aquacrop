@@ -38,6 +38,8 @@ contains
     integer(int32) :: lyri
     real(real64) :: root_depth
     real(real64) :: th_crit
+
+    ! TODO: update irr_net_cum here, not in irrigation
     
     if ( irr_method /= 4 .or. dap /= 0 ) then
        pre_irr = 0.

@@ -247,8 +247,19 @@ contains
        ksw_exp, &
        ksw_sto, &
        ksw_pol, &
-       kst_polc, &
-       kst_polh, &
+       bio_temp_stress, &
+       gdd, &
+       gdd_up, &
+       gdd_lo, &
+       pol_heat_stress, &
+       t_max, &
+       t_max_up, &
+       t_max_lo, &
+       f_shp_b, &
+       pol_cold_stress, &
+       t_min, &
+       t_min_up, &
+       t_min_lo, &       
        canopy_dev_end_cd, &
        hi_start_cd, &
        hi_end_cd, &
@@ -286,8 +297,18 @@ contains
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: ksw_exp
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: ksw_sto
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: ksw_pol
-    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: kst_polc
-    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: kst_polh
+
+    ! NEW:
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: bio_temp_stress    
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: gdd, gdd_up, gdd_lo
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: pol_heat_stress
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: t_max, t_max_up, t_max_lo
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: pol_cold_stress
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: t_min, t_min_up, t_min_lo
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: f_shp_b    
+    ! real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: kst_polc
+    ! real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: kst_polh
+    
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: canopy_dev_end_cd
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: hi_start_cd
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: hi_end_cd
@@ -327,8 +348,19 @@ contains
                   ksw_exp(k,j,i), &
                   ksw_sto(k,j,i), &
                   ksw_pol(k,j,i), &
-                  kst_polc(k,j,i), &
-                  kst_polh(k,j,i), &
+                  bio_temp_stress(k,j,i), &
+                  gdd(k,j,i), &
+                  gdd_up(k,j,i), &
+                  gdd_lo(k,j,i), &
+                  pol_heat_stress(k,j,i), &
+                  t_max(k,j,i), &
+                  t_max_up(k,j,i), &
+                  t_max_lo(k,j,i), &
+                  f_shp_b(k,j,i), &
+                  pol_cold_stress(k,j,i), &
+                  t_min(k,j,i), &
+                  t_min_up(k,j,i), &
+                  t_min_lo(k,j,i), &       
                   canopy_dev_end_cd(k,j,i), &
                   hi_start_cd(k,j,i), &
                   hi_end_cd(k,j,i), &
