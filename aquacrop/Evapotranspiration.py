@@ -8,7 +8,7 @@ class Evapotranspiration(object):
         self.var = Evapotranspiration_variable
         
     def initial(self):        
-        self.var.ETpot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.nCell))
+        self.var.ETpot = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
         
     def dynamic(self):
         self.var.ETpot = self.var.Epot + self.var.Tpot

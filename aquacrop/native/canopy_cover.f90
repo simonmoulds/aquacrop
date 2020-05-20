@@ -156,19 +156,21 @@ contains
     real(real64), intent(in) :: senescence
     real(real64), intent(in) :: canopy_dev_end
     real(real64) :: tmp_tcc
-    
+
     ! potential canopy development
     if ( tcc < emergence .or. nint(tcc) > maturity ) then
        ! no canopy dev before emergence or after maturity
        cc_ns = 0.
-
+       ! print *, 'cc_ns a', cc_ns
     else if ( tcc < canopy_dev_end ) then
        ! canopy growth can occur
        if ( cc_ns <= cc0 ) then
           cc_ns = cc0 * exp(cgc * dtcc)
+          ! print *, 'cc_ns 1', cc_ns
        else
           tmp_tcc = tcc - emergence
           cc_ns = cc_grow(cc0, ccx, cgc, tmp_tcc)
+          ! print *, 'cc_ns 2', cc_ns
        end if
        ! update maximum canopy cover size in growing season
        ccx_act_ns = cc_ns
@@ -179,12 +181,15 @@ contains
        if ( tcc < senescence ) then
           cc_ns = cc_ns
           ccx_act_ns = cc_ns
+          ! print *, 'cc_ns 3', cc_ns
        else
           tmp_tcc = tcc - senescence
           cc_ns = cc_decl(ccx, cdc, tmp_tcc)
+          ! print *, 'cc_ns 4', cc_ns
        end if
        
     end if
+    ! print *, 'cc_ns', cc_ns
     
   end subroutine update_potential_cc
 
@@ -236,33 +241,47 @@ contains
 
        if ( cc_prev <= cc0_adj ) then
           cc = cc0_adj * exp(cgc * dtcc)
+          ! print *, 'cc0', cc
        else
           if ( cc_prev >= ( 0.9799 * ccx ) ) then
              tmp_tcc = tcc - emergence 
              cc = cc_grow(cc0, ccx, cgc, tmp_tcc)
              cc0_adj = cc0
+             ! print *, 'cc2', cc
           else
+             ! print *, 'cgc', cgc
+             ! print *, 'ksw_exp', ksw_exp
              cgc_adj = cgc * ksw_exp
              if ( cgc_adj > 0 ) then
+                ! print *, 'cgc_adj', cgc_adj
                 ccx_adj = adj_ccx(cc_prev, cc0_adj, ccx, cgc_adj, canopy_dev_end, dtcc, tcc_adj)
                 if ( ccx_adj > 0 ) then
                    if ( abs(cc_prev - ccx) < 0.00001 ) then
                       tmp_tcc = tcc - emergence
                       cc = cc_grow(cc0, ccx, cgc, tmp_tcc)
+                      ! print *, 'cc3', cc
                    else
                       treq = cc_reqd_time_cgc(cc_prev, cc0_adj, ccx_adj, cgc_adj, dtcc, tcc_adj)
                       tmp_tcc = treq + dtcc
                       if ( tmp_tcc > 0 ) then
+                         ! print *, 'cc0_adj', cc0_adj
+                         ! print *, 'ccx_adj', ccx_adj
+                         ! print *, 'cgc_adj', cgc_adj
+                         ! print *, 'tmp_tcc', tmp_tcc
                          cc = cc_grow(cc0_adj, ccx_adj, cgc_adj, tmp_tcc)
+                         ! print *, 'cc4', cc
+                         
                       else
                          cc = cc_prev
                       end if
                    end if
                 else
                    cc = cc_prev
+                   ! print *, 'cc5', cc
                 end if
              else
                 cc = cc_prev
+                ! print *, 'cc6', cc
                 if ( cc < cc0_adj ) then
                    cc0_adj = cc
                 end if
@@ -305,18 +324,21 @@ contains
        cc0_adj, &
        ccx_early_sen, &       
        t_early_sen, &
+       ksw_exp, &
+       ksw_sto, &
+       ksw_sen, &
+       ksw_pol, &
+       ksw_stolin, &       
        premat_senes, &
-       crop_dead, &       
+       crop_dead, &
        cc_prev, &
        tcc_adj, &
        dtcc, &
        cc0, &
        ccx, &
-       cgc, &
        cdc, &
        emergence, &
        senescence, &
-       canopy_dev_end, &
        dr, &
        taw, &
        et_ref, &
@@ -341,18 +363,23 @@ contains
     real(real64), intent(inout) :: cc0_adj
     real(real64), intent(inout) :: ccx_early_sen
     real(real64), intent(inout) :: t_early_sen
+    real(real64), intent(inout) :: ksw_exp
+    real(real64), intent(inout) :: ksw_sto
+    real(real64), intent(inout) :: ksw_sen
+    real(real64), intent(inout) :: ksw_pol
+    real(real64), intent(inout) :: ksw_stolin    
     integer(int32), intent(inout) :: premat_senes
-    integer(int32), intent(inout) :: crop_dead    
+    integer(int32), intent(inout) :: crop_dead
     real(real64), intent(in) :: cc_prev
     real(real64), intent(in) :: tcc_adj
     real(real64), intent(in) :: dtcc
     real(real64), intent(in) :: cc0
     real(real64), intent(in) :: ccx
-    real(real64), intent(in) :: cgc
+    ! real(real64), intent(in) :: cgc
     real(real64), intent(in) :: cdc
     real(real64), intent(in) :: emergence
     real(real64), intent(in) :: senescence
-    real(real64), intent(in) :: canopy_dev_end    
+    ! real(real64), intent(in) :: canopy_dev_end    
     real(real64), intent(in) :: dr
     real(real64), intent(in) :: taw
     real(real64), intent(in) :: et_ref
@@ -373,7 +400,7 @@ contains
     real(real64) :: cc_sen
     real(real64) :: cdc_adj, ccx_adj
     real(real64) :: tmp_tcc, treq
-    real(real64) :: ksw_exp, ksw_sto, ksw_sen, ksw_pol, ksw_stolin
+    ! real(real64) :: ksw_exp, ksw_sto, ksw_sen, ksw_pol, ksw_stolin
     integer(int32) :: beta
     
     if ( tcc_adj >= emergence ) then
@@ -589,9 +616,10 @@ contains
     real(real64), intent(in) :: delayed_gdds
     
     ! real(real64) :: cc_prev
-    real(real64) :: cc_sen
-    real(real64) :: cgc_adj, cdc_adj, ccx_adj
-    real(real64) :: tcc, tmp_tcc, dtcc, tcc_adj, treq
+    ! real(real64) :: cc_sen
+    ! real(real64) :: cgc_adj, cdc_adj, ccx_adj
+    ! real(real64) :: tcc, tmp_tcc, dtcc, tcc_adj, treq
+    real(real64) :: tcc, dtcc, tcc_adj
     real(real64) :: ksw_exp, ksw_sto, ksw_sen, ksw_pol, ksw_stolin
     integer(int32) :: beta
 
@@ -660,6 +688,7 @@ contains
             canopy_dev_end &
             )
 
+       ! small bug in this subroutine
        call update_actual_cc( &
             cc, &
             ccx_act, &
@@ -681,6 +710,11 @@ contains
             )       
 
        ! adjust for canopy senescence due to water stress
+            ! ksw_exp, &
+            ! ksw_sto, &
+            ! ksw_sen, &
+            ! ksw_pol, &
+            ! ksw_stolin, &
        call update_cc_sen_ws( &
             cc, &
             ccx_w, &
@@ -688,6 +722,11 @@ contains
             cc0_adj, &
             ccx_early_sen, &       
             t_early_sen, &
+            ksw_exp, &
+            ksw_sto, &
+            ksw_sen, &
+            ksw_pol, &
+            ksw_stolin, &
             premat_senes, &
             crop_dead, &       
             cc_prev, &
@@ -695,11 +734,9 @@ contains
             dtcc, &
             cc0, &
             ccx, &
-            cgc, &
             cdc, &
             emergence, &
             senescence, &
-            canopy_dev_end, &
             dr, &
             taw, &
             et_ref, &
@@ -725,6 +762,8 @@ contains
              ccx_act_ns = cc_ns
           end if
        end if
+       
+       ! print *, 'cc_ns', cc_ns
        
        ! adjust for microadvective effects
        cc_adj = (1.72  * cc) - (cc ** 2) + (0.3 * cc ** 3)

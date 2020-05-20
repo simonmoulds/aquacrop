@@ -3,14 +3,16 @@
 
 import os
 import sys
+import pandas as pd
 
-from hm.dynamicFramework import DynamicFramework
-from hm.DeterministicRunner import DeterministicRunner
-from hm.ModelTime import ModelTime
 from hm import disclaimer
-from hm.Reporting import Reporting
+from hm.dynamicmodel import HmDynamicModel
+from hm.dynamicframework import HmDynamicFramework
+from hm.config import Configuration
+from hm.utils import *
+from hm.api import set_modeltime, set_domain
+# TODO: create api for HmDynamicModel, HmDynamicFramework
 
-from hm import file_handling
 from .AquaCrop import AquaCrop
 from .io.AquaCropConfiguration import AquaCropConfiguration
 from .io import variable_list
@@ -18,36 +20,73 @@ from .io import variable_list
 import logging
 logger = logging.getLogger(__name__)
 
-def main(argv):
 
-    # disclaimer.print_disclaimer()
+def main(argv):
+    disclaimer.print_disclaimer()
 
     # get the full path of the config file provided as system argument
-    iniFileName = os.path.abspath(argv[0])
+    config_filename = os.path.abspath(argv[0])
+
+    # determine whether to run the model in debug mode
     debug_mode = False
     if len(argv) > 2:
-        if (argv[0] == "debug"):
+        if (argv[1] == "debug"):
             debug_mode = True
 
-    configuration = AquaCropConfiguration(iniFileName=iniFileName, debug_mode=debug_mode)
-    currTimeStep = ModelTime()
+    # load configuration
+    configuration = AquaCropConfiguration(
+        config_filename,
+        debug_mode
+    )
+    # create modeltime object
+    modeltime = set_modeltime(
+        pd.Timestamp(configuration.CLOCK['startTime']),
+        pd.Timestamp(configuration.CLOCK['endTime']),
+        pd.Timedelta(configuration.CLOCK['timeDelta'])
+    )
+
+    # retrieve z coordinate information from config
+    dz_lyr = configuration.SOIL_PROFILE['dzLayer']
+    z_lyr_bot = np.cumsum(dz_lyr)
+    z_lyr_top = z_lyr_bot - dz_lyr
+    z_lyr_mid = (z_lyr_top + z_lyr_bot) / 2
+    dz_comp = configuration.SOIL_PROFILE['dzComp']
+    z_comp_bot = np.cumsum(dz_comp)
+    z_comp_top = z_comp_bot - dz_comp
+    z_comp_mid = (z_comp_top + z_comp_bot) / 2
+    z_coords = {
+        'layer': z_lyr_mid,
+        'depth': z_comp_mid
+    }
+
+    # set model domain
+    domain = set_domain(
+        configuration.MODEL_GRID['mask'],
+        modeltime,
+        configuration.MODEL_GRID['mask_varname'],
+        configuration.MODEL_GRID['area_varname'],
+        configuration.MODEL_GRID['is_1d'],
+        configuration.MODEL_GRID['xy_dimname'],
+        z_coords,
+        configuration.PSEUDO_COORDS
+    )
+
+    # create dynamic model object
     initial_state = None
-    currTimeStep.getStartEndTimeSteps(
-        configuration.CLOCK['startTime'],
-        configuration.CLOCK['endTime'])
-    currTimeStep.update(1)    
-    logger.info('Transient simulation run has started')
-    deterministic_runner = DeterministicRunner(
+    dynamic_model = HmDynamicModel(
         AquaCrop,
         configuration,
-        currTimeStep,
+        modeltime,
+        domain,
         variable_list,
-        initial_state)
-    dynamic_framework = DynamicFramework(deterministic_runner, currTimeStep.nrOfTimeSteps)
+        initial_state
+    )
+    # run model
+    dynamic_framework = HmDynamicFramework(dynamic_model, len(modeltime) + 1)
     dynamic_framework.setQuiet(True)
     dynamic_framework.run()
-    file_handling.clear_cache()
+
 
 if __name__ == '__main__':
-    disclaimer.print_disclaimer(with_logger = True)
+    disclaimer.print_disclaimer(with_logger=True)
     sys.exit(main(sys.argv[1:]))

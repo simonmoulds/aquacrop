@@ -13,7 +13,6 @@ if GrowingSeason == true
     % Determine if water stress is occurring
     beta = true;
     Ksw = AOS_WaterStress(Crop,NewCond,Dr,TAW,Et0,beta);
-
     % Get canopy cover growth time
     if Crop.CalendarType == 1
         tCC = NewCond.DAP;

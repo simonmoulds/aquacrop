@@ -277,13 +277,14 @@ if ToExtract > 0
 
         % Extract water from compartments
         comp_sto = sum(Soil.Comp.dzsum<NewCond.EvapZ)+1;
-        comp = 0;     
+        comp = 0;
         while (ToExtractStg2 > 0) && (comp < comp_sto)
             % Increment compartment counter
             comp = comp+1;
             % Specify layer number
             layeri = Soil.Comp.Layer(comp);
             % Determine proportion of compartment in evaporation layer
+	    disp(NewCond.EvapZ);
             if Soil.Comp.dzsum(comp) > NewCond.EvapZ
                 factor = 1-((Soil.Comp.dzsum(comp)-NewCond.EvapZ)/Soil.Comp.dz(comp));
             else

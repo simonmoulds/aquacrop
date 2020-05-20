@@ -48,6 +48,7 @@ if (FieldMngt.Bunds == 0) || (FieldMngt.zBund < 0.001)
         elseif wet_top < 0
             wet_top = 0;
         end
+
         CN = round(Soil.CNbot+(Soil.CNtop-Soil.CNbot)*wet_top);
     else % Curve number is not adjusted        
         CN = Soil.CN;

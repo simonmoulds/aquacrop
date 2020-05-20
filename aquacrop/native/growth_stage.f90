@@ -28,7 +28,7 @@ contains
     integer(int32), intent(in) :: calendar_type
     integer(int32), intent(in) :: growing_season
     real(real64) :: t_adj
-    
+
     if ( growing_season == 1 ) then
        if ( calendar_type == 1 ) then
           t_adj = dap - delayed_cds

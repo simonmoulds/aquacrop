@@ -10,9 +10,10 @@ import shutil
 import subprocess
 import netCDF4 as nc
 import glob
-import test_utils
+# from .test_utils import
 
 from aquacrop import run
+
 
 @pytest.fixture
 def context(tmpdir, request):
@@ -31,13 +32,16 @@ def context(tmpdir, request):
     yrs = os.walk(str(tmpdir)).__next__()[1]
     test_yr = yrs[0]
     cwd = os.getcwd()
+    print(cwd)
     aquacrop_dir = os.path.abspath("../..")
     for yr in yrs:
         if yr == test_yr:
             os.chdir(os.path.join(str(tmpdir), str(yr)))
             # runner = os.path.join(aquacrop_dir, "aquacrop", "run.py")
             config = glob.glob("Config/*" + "_config.ini")[0]
-            run.main([config])
+            output = glob.glob("Output")[0]
+            # run.main([config])
+            os.system('aquacrop ' + config + ' -o ' + output)
             # print(runner)
             # print(config)
             # try:
@@ -46,4 +50,4 @@ def context(tmpdir, request):
             #     raise
             os.chdir(cwd)
         else:
-            shutil.rmtree(os.path.join(str(tmpdir), str(yr)))            
+            shutil.rmtree(os.path.join(str(tmpdir), str(yr)))

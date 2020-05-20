@@ -42,7 +42,6 @@ for ii = 1:nstress
         Drel(ii) = 1;
     end
 end
-
 %% Calculate root zone water stress coefficients %%
 Ks = ones(1,3);
 for ii = 1:3
