@@ -33,6 +33,9 @@ class SoilEvaporation(object):
         self.var.dz_sum_xy = np.broadcast_to(self.var.dz_sum[None, None, :, None], (
             self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy))
 
+        self.var.EsAct = np.zeros(
+            (self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        
     def reset_initial_conditions(self):
         pass
 

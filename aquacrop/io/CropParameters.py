@@ -38,7 +38,7 @@ class CropParameters(object):
                 pass
             self.model.CropParameterDatabase = sqlite3.connect(str(db_path))
 
-    def initial(self):
+    def initial(self):        
         self.read()
         self.model.PlantingDateAdj = np.copy(self.model.PlantingDate)
         self.model.HarvestDateAdj = np.copy(self.model.HarvestDate)
@@ -70,7 +70,21 @@ class CropParameters(object):
         self.compute_crop_parameters()
 
     def read(self):
-        self.get_crop_parameter_names()
+        self.model.crop_parameters_to_read = [
+            'CropType', 'PlantingDate', 'HarvestDate', 'Emergence',
+            'MaxRooting',
+            'Senescence', 'Maturity', 'HIstart', 'Flowering', 'YldForm',
+            'PolHeatStress', 'PolColdStress', 'BioTempStress', 'PlantPop',
+            'Determinant', 'ETadj', 'LagAer', 'Tbase', 'Tupp', 'Tmax_up',
+            'Tmax_lo', 'Tmin_up', 'Tmin_lo', 'GDD_up', 'GDD_lo', 'fshape_b',
+            'PctZmin', 'Zmin', 'Zmax', 'fshape_r', 'fshape_ex', 'SxTopQ',
+            'SxBotQ', 'a_Tr', 'SeedSize', 'CCmin', 'CCx', 'CDC', 'CGC',
+            'Kcb', 'fage', 'WP', 'WPy', 'fsink', 'bsted', 'bface', 'HI0',
+            'HIini', 'dHI_pre', 'a_HI', 'b_HI', 'dHI0', 'exc', 'MaxFlowPct',
+            'p_up1', 'p_up2', 'p_up3', 'p_up4', 'p_lo1', 'p_lo2', 'p_lo3',
+            'p_lo4', 'fshape_w1', 'fshape_w2', 'fshape_w3', 'fshape_w4',
+            'Aer', 'beta', 'GermThr'
+        ]
         
         if len(self.model.crop_parameters_to_read) > 0:
             for param in self.model.crop_parameters_to_read:
@@ -131,23 +145,6 @@ class CropParameters(object):
                                 + param + " from crop parameter database"
                             )
 
-    def get_crop_parameter_names(self):
-        self.model.crop_parameters_to_read = [
-            'CropType', 'PlantingDate', 'HarvestDate', 'Emergence',
-            'MaxRooting',
-            'Senescence', 'Maturity', 'HIstart', 'Flowering', 'YldForm',
-            'PolHeatStress', 'PolColdStress', 'BioTempStress', 'PlantPop',
-            'Determinant', 'ETadj', 'LagAer', 'Tbase', 'Tupp', 'Tmax_up',
-            'Tmax_lo', 'Tmin_up', 'Tmin_lo', 'GDD_up', 'GDD_lo', 'fshape_b',
-            'PctZmin', 'Zmin', 'Zmax', 'fshape_r', 'fshape_ex', 'SxTopQ',
-            'SxBotQ', 'a_Tr', 'SeedSize', 'CCmin', 'CCx', 'CDC', 'CGC',
-            'Kcb', 'fage', 'WP', 'WPy', 'fsink', 'bsted', 'bface', 'HI0',
-            'HIini', 'dHI_pre', 'a_HI', 'b_HI', 'dHI0', 'exc', 'MaxFlowPct',
-            'p_up1', 'p_up2', 'p_up3', 'p_up4', 'p_lo1', 'p_lo2', 'p_lo3',
-            'p_lo4', 'fshape_w1', 'fshape_w2', 'fshape_w3', 'fshape_w4',
-            'Aer', 'beta', 'GermThr'
-        ]
-
     def compute_crop_parameters(self):
         self.compute_initial_canopy_cover()
         self.compute_root_extraction_terms()
@@ -162,8 +159,12 @@ class CropParameters(object):
         self.compute_HI_linear()
 
     def compute_initial_canopy_cover(self):
-        self.model.CC0 = np.round(
-            10000. * (self.model.PlantPop * self.model.SeedSize) * 10 ** -8) / 10000
+        aquacrop_fc.crop_parameters_w.compute_init_cc_w(
+            self.model.CC0.T,
+            self.model.PlantPop.T,
+            self.model.SeedSize.T,
+            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+        )
 
     def compute_root_extraction_terms(self):
         aquacrop_fc.crop_parameters_w.compute_root_extraction_terms_w(
@@ -194,62 +195,61 @@ class CropParameters(object):
         """Calculate time from sowing to end of vegetative
         growth period.
         """
-        self.model.CanopyDevEnd = np.copy(self.model.Senescence)
-        cond1 = (self.model.Determinant == 1)
-        self.model.CanopyDevEnd[cond1] = (
-            np.round(self.model.HIstart + (self.model.Flowering / 2)))[cond1]
-
+        aquacrop_fc.crop_parameters_w.compute_canopy_dev_end_w(
+            self.model.CanopyDevEnd.T,
+            self.model.Senescence.T,
+            self.model.HIstart.T,
+            self.model.Flowering.T,
+            self.model.Determinant,
+            self.model.nFarm, self.model.nCrop, self.model.domain.nxy            
+            )
+        
     def compute_canopy_10pct(self):
         """Calculate time from sowing to 10% canopy cover
         (non-stressed conditions).
         """
-        self.model.Canopy10Pct = np.round(
-            self.model.Emergence +
-            np.divide(
-                np.log(
-                    np.divide(
-                        0.1,
-                        self.model.CC0,
-                        out=np.ones_like(self.model.CC0),
-                        where=self.model.CC0 != 0
-                    )
-                ),
-                self.model.CGC,
-                out=np.zeros_like(self.model.CGC),
-                where=self.model.CGC != 0
-            )
+        aquacrop_fc.crop_parameters_w.compute_canopy_10pct_w(
+            self.model.Canopy10Pct.T,
+            self.model.Emergence.T,
+            self.model.CC0.T,
+            self.model.CGC.T,
+            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
         )
-
+            
     def compute_max_canopy(self):
         """Calculate time from sowing to maximum canopy 
         cover (non-stressed conditions).
         """
-        self.model.MaxCanopy = np.round(
-            self.model.Emergence +
-            (np.log(
-                (0.25 * self.model.CCx * self.model.CCx / self.model.CC0)
-                / (self.model.CCx - (0.98 * self.model.CCx))
-            ) /
-                self.model.CGC)
+        aquacrop_fc.crop_parameters_w.compute_max_canopy_w(
+            self.model.MaxCanopy.T,
+            self.model.Emergence.T,
+            self.model.CCx.T,
+            self.model.CC0.T,
+            self.model.CGC.T,
+            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
         )
-
+            
     def compute_hi_end(self):
         """Calculate time from sowing to end of yield
         formation.
         """
-        self.model.HIend = self.model.HIstart + self.model.YldForm
+        aquacrop_fc.crop_parameters_w.compute_hi_end_w(
+            self.model.HIend.T,
+            self.model.HIstart.T,
+            self.model.YldForm.T,
+            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+        )
 
     def compute_flowering_end_cd(self):
-        arr_zeros = np.zeros_like(self.model.CropType)
-        cond2 = (self.model.CropType == 3)
-        self.model.FloweringEnd = np.copy(arr_zeros)
-        self.model.FloweringEnd[cond2] = (
-            self.model.HIstart + self.model.Flowering)[cond2]
-        FloweringEndCD = np.copy(arr_zeros)
-        FloweringEndCD[cond2] = self.model.FloweringEnd[cond2]
-        self.model.FloweringCD = np.copy(arr_zeros)
-        self.model.FloweringCD[cond2] = self.model.Flowering[cond2]
-
+        aquacrop_fc.crop_parameters_w.compute_flowering_end_cd_w(
+            self.model.FloweringEnd.T,
+            np.int32(self.model.FloweringCD).T,
+            np.int32(self.model.Flowering).T,
+            self.model.HIstart.T,
+            self.model.CropType.T,
+            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+        )        
+            
     def compute_HIGC(self):
         aquacrop_fc.crop_parameters_w.compute_higc_w(
             self.model.HIGC.T,
@@ -521,11 +521,9 @@ class CropParameters(object):
         as counters pertaining to crop growth
         """
         # Update crop parameters for currently grown crops
-        # self.compute_water_productivity_adjustment_factor()
         self.adjust_planting_and_harvesting_date()
         self.update_growing_season()
-        self.compute_water_productivity_adjustment_factor()
-        # self.read_crop_area()   # TEST
+        self.compute_water_productivity_adjustment_factor()  # TODO
         self.update_crop_parameters()
 
     def update_growing_season(self):

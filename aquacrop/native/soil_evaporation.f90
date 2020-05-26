@@ -287,6 +287,7 @@ contains
     real(real64), intent(in) :: es_pot, rew, evap_z_min
     real(real64), intent(inout) :: es_act, surface_storage, w_surf, w_stage_two, evap_z
 
+    es_act = 0.
     if ( surface_storage > zero ) then
        if ( surface_storage > es_pot ) then
           es_act = es_pot

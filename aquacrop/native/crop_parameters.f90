@@ -6,6 +6,111 @@ module crop_parameters
   
 contains
 
+  subroutine compute_max_canopy( &
+       max_canopy, &
+       emergence, &
+       ccx, &
+       cc0, &
+       cgc &
+       )
+    real(real64), intent(inout) :: max_canopy
+    real(real64), intent(in) :: emergence
+    real(real64), intent(in) :: ccx
+    real(real64), intent(in) :: cc0
+    real(real64), intent(in) :: cgc
+    real(real64) :: a
+    a = (0.25 * ccx * ccx / cc0) / (ccx - (0.98 * ccx))
+    if ( a .eq. 0. ) then
+       max_canopy = nint(emergence) ! NOT SURE ABOUT THIS
+    else       
+       max_canopy = nint(emergence + log((0.25 * ccx * ccx / cc0) / (ccx - (0.98 * ccx))) / cgc)
+    end if        
+  end subroutine compute_max_canopy
+
+  subroutine compute_hi_end( &
+       hi_end, &
+       hi_start, &
+       yld_form &
+       )    
+    real(real64), intent(inout) :: hi_end
+    real(real64), intent(in) :: hi_start
+    real(real64), intent(in) :: yld_form    
+    hi_end = hi_start + yld_form    
+  end subroutine compute_hi_end
+
+  subroutine compute_flowering_end_cd( &
+       flowering_end, &
+       flowering_cd, &
+       flowering, &
+       hi_start, &
+       crop_type &
+       )
+    real(real64), intent(inout) :: flowering_end
+    integer(int32), intent(inout) :: flowering_cd
+    integer(int32), intent(in) :: flowering
+    real(real64), intent(in) :: hi_start
+    integer(int32), intent(in) :: crop_type
+    flowering_end = 0.
+    flowering_cd = 0.
+    if ( crop_type .eq. 3 ) then
+       flowering_end = hi_start + flowering
+       flowering_cd = flowering
+    end if    
+  end subroutine compute_flowering_end_cd  
+       
+  subroutine compute_canopy_10pct( &
+       canopy_10pct, &
+       emergence, &
+       cc0, &
+       cgc &
+       )
+
+    real(real64), intent(inout) :: canopy_10pct
+    real(real64), intent(in) :: emergence
+    real(real64), intent(in) :: cc0
+    real(real64), intent(in) :: cgc
+
+    if ( cc0 /= 0. .and. cgc /= 0. ) then
+       canopy_10pct = nint(emergence + log(0.1 / cc0) / cgc)
+    else
+       canopy_10pct = nint(emergence)
+    end if
+    
+  end subroutine compute_canopy_10pct
+  
+  subroutine compute_canopy_dev_end( &
+       canopy_dev_end, &
+       senescence, &
+       hi_start, &
+       flowering, &
+       determinant &
+       )
+
+    real(real64), intent(inout) :: canopy_dev_end
+    real(real64), intent(in) :: senescence
+    real(real64), intent(in) :: hi_start
+    real(real64), intent(in) :: flowering
+    integer(int32), intent(in) :: determinant
+    if ( determinant == 1 ) then
+       canopy_dev_end = nint(hi_start + (flowering / 2.))
+    else
+       canopy_dev_end = senescence
+    end if
+  end subroutine compute_canopy_dev_end  
+    
+  subroutine compute_init_cc( &
+       cc0, &
+       plant_pop, &
+       seed_size &
+       )
+
+    real(real64), intent(inout) :: cc0
+    real(real64), intent(in) :: plant_pop
+    real(real64), intent(in) :: seed_size
+    cc0 = nint(10000. * plant_pop * seed_size * 1E-08) / 10000.
+    
+  end subroutine compute_init_cc
+  
   subroutine adjust_pd_hd( &
        planting_date_adj, &
        harvest_date_adj, &
@@ -92,18 +197,6 @@ contains
     end if
     
   end subroutine update_growing_season
-
-  function compute_init_cc( &
-       plant_pop, &
-       seed_size &
-       ) result (cc0)
-
-    integer(int32), intent(in) :: plant_pop
-    real(real64), intent(in) :: seed_size
-    real(real64) :: cc0
-    cc0 = nint(10000. * plant_pop * seed_size * 10 ** -8) / 10000.
-    
-  end function compute_init_cc
   
   subroutine compute_root_extraction_terms( &
        sx_top, &

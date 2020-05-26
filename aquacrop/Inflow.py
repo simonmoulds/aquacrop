@@ -16,7 +16,7 @@ class Inflow(object):
         self.var = GroundwaterInflow_variable
 
     def initial(self):
-        self.GwIn = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        self.var.GwIn = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
 
     def dynamic(self):
         self.dynamic_fortran()
