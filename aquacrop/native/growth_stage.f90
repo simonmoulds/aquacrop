@@ -23,7 +23,7 @@ contains
     real(real64), intent(in) :: senescence
     real(real64), intent(in) :: gdd_cum
     integer(int32), intent(in) :: dap
-    real(real64), intent(in) :: delayed_cds
+    integer(int32), intent(in) :: delayed_cds
     real(real64), intent(in) :: delayed_gdds
     integer(int32), intent(in) :: calendar_type
     integer(int32), intent(in) :: growing_season

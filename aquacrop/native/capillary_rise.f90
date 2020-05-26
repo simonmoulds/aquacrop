@@ -36,7 +36,7 @@ contains
   subroutine update_cap_rise( &
        cr_tot, &
        th, &
-       th_wp, &
+       th_wilt, &
        th_fc, &
        th_fc_adj, &
        k_sat, &
@@ -53,7 +53,7 @@ contains
 
     real(real64), intent(inout) :: cr_tot
     real(real64), dimension(:), intent(inout) :: th
-    real(real64), dimension(:), intent(in) :: th_wp
+    real(real64), dimension(:), intent(in) :: th_wilt
     real(real64), dimension(:), intent(in) :: th_fc
     real(real64), dimension(:), intent(in) :: th_fc_adj
     real(real64), dimension(:), intent(in) :: k_sat
@@ -126,8 +126,8 @@ contains
           ! downward drainage/infiltration has already occurred on
           ! current day.
           lyri = layer_ix(compi)
-          if ( th(compi) >= th_wp(lyri) .and. f_shape_cr > 0 ) then
-             df = 1 - (((th(compi) - th_wp(lyri)) / (th_fc_adj(compi) - th_wp(lyri))) ** f_shape_cr)
+          if ( th(compi) >= th_wilt(lyri) .and. f_shape_cr > 0 ) then
+             df = 1 - (((th(compi) - th_wilt(lyri)) / (th_fc_adj(compi) - th_wilt(lyri))) ** f_shape_cr)
              df = min(df, 1.)
              df = max(df, 0.)
           else
@@ -135,12 +135,12 @@ contains
           end if
 
           ! calculate relative hydraulic conductivity
-          th_thr = (th_wp(lyri) + th_fc(lyri)) / 2
+          th_thr = (th_wilt(lyri) + th_fc(lyri)) / 2
           if ( th(compi) < th_thr ) then
-             if ( th(compi) <= th_wp(lyri) .or. th_thr <= th_wp(lyri) ) then
+             if ( th(compi) <= th_wilt(lyri) .or. th_thr <= th_wilt(lyri) ) then
                 k_rel = 0.
              else
-                k_rel = (th(compi) - th_wp(lyri)) / (th_thr - th_wp(lyri))
+                k_rel = (th(compi) - th_wilt(lyri)) / (th_thr - th_wilt(lyri))
              end if
           else
              k_rel = 1.

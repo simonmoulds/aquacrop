@@ -8,7 +8,7 @@ contains
   subroutine update_cap_rise_w( &
        cr_tot, &
        th, &
-       th_wp, &
+       th_wilt, &
        th_fc, &
        th_fc_adj, &
        k_sat, &
@@ -27,7 +27,7 @@ contains
     integer(int32), intent(in) :: n_farm, n_crop, n_comp, n_layer, n_cell
     real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: cr_tot
     real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(inout) :: th
-    real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: th_wp
+    real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: th_wilt
     real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: th_fc
     real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(in) :: th_fc_adj
     real(real64), dimension(n_cell, n_layer, n_crop, n_farm), intent(in) :: k_sat
@@ -48,7 +48,7 @@ contains
              call update_cap_rise( &
                   cr_tot(k,j,i), &
                   th(k,:,j,i), &
-                  th_wp(k,:,j,i), &
+                  th_wilt(k,:,j,i), &
                   th_fc(k,:,j,i), &
                   th_fc_adj(k,:,j,i), &
                   k_sat(k,:,j,i), &
@@ -70,7 +70,7 @@ contains
   ! subroutine update_cap_rise_w( &
   !      cr_tot, &
   !      th, &
-  !      th_wp, &
+  !      th_wilt, &
   !      th_fc, &
   !      th_fc_adj, &
   !      k_sat, &
@@ -89,7 +89,7 @@ contains
   !   integer(int32), intent(in) :: n_farm, n_crop, n_comp, n_layer, n_cell
   !   real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: cr_tot
   !   real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(inout) :: th
-  !   real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: th_wp
+  !   real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: th_wilt
   !   real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: th_fc
   !   real(real64), dimension(n_farm, n_crop, n_comp, n_cell), intent(in) :: th_fc_adj
   !   real(real64), dimension(n_farm, n_crop, n_layer, n_cell), intent(in) :: k_sat
@@ -110,7 +110,7 @@ contains
   !            call update_cap_rise( &
   !                 cr_tot(i,j,k), &
   !                 th(i,j,:,k), &
-  !                 th_wp(i,j,:,k), &
+  !                 th_wilt(i,j,:,k), &
   !                 th_fc(i,j,:,k), &
   !                 th_fc_adj(i,j,:,k), &
   !                 k_sat(i,j,:,k), &

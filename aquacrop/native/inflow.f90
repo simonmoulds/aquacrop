@@ -21,7 +21,7 @@ contains
     real(real64), intent(in) :: z_gw
     real(real64), dimension(:), intent(in) :: th_sat
     real(real64), dimension(:), intent(in) :: dz
-    real(real64), dimension(:), intent(in) :: layer_ix
+    integer(int32), dimension(:), intent(in) :: layer_ix
 
     integer(int32) :: n_comp
     integer(int32) :: i

@@ -28,6 +28,7 @@ contains
        water_table, &
        z_gw, &
        calendar_type, &
+       growing_season_day1, &
        growing_season, &
        n_farm, n_crop, n_cell &
        )
@@ -47,7 +48,7 @@ contains
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: dap
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: gdd
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: gdd_cum
-    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_cds
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_cds
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_gdds
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: tr_ratio
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: germination
@@ -55,6 +56,7 @@ contains
     integer(int32), intent(in) :: water_table
     real(real64), dimension(n_cell), intent(in) :: z_gw
     integer(int32), intent(in) :: calendar_type
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season_day1
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season
     integer(int32) :: i, j, k
 
@@ -84,6 +86,7 @@ contains
                   water_table, &
                   z_gw(k), &
                   calendar_type, &
+                  growing_season_day1(k,j,i), &
                   growing_season(k,j,i) &
                   )
           end do

@@ -45,7 +45,7 @@ contains
        tau, &
        th_fc_adj, &
        dz, &
-       dzsum, &
+       dz_sum, &
        layer_ix &
        )
 
@@ -58,7 +58,7 @@ contains
     real(real64), dimension(:), intent(in) :: tau
     real(real64), dimension(:), intent(in) :: th_fc_adj
     real(real64), dimension(:), intent(in) :: dz
-    real(real64), dimension(:), intent(in) :: dzsum
+    real(real64), dimension(:), intent(in) :: dz_sum
     integer(int32), dimension(:), intent(in) :: layer_ix
 
     ! real(real64), allocatable, dimension(:) :: th
@@ -104,7 +104,7 @@ contains
        ! check drainage ability of compartment i against cumulative
        ! drainage from compartments above
        excess = 0.
-       prethick = dzsum(i) - dz(i)
+       prethick = dz_sum(i) - dz(i)
        drainmax = dthdt * 1000 * prethick
        if ( deep_perc <= drainmax ) then
           drainability = 1

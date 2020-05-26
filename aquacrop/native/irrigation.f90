@@ -9,7 +9,10 @@ contains
        irr, &
        irr_cum, &
        irr_net_cum, &           ! TODO - move to pre_irr
-       smt, &                   ! soil moisture threshold
+       smt1, &                  ! soil moisture threshold
+       smt2, &                  ! soil moisture threshold
+       smt3, &                  ! soil moisture threshold
+       smt4, &                  ! soil moisture threshold
        irr_scheduled, &
        app_eff, &               ! irrigation application efficiency
        z_root, &
@@ -35,7 +38,10 @@ contains
     real(real64), intent(inout) :: irr_cum
     real(real64), intent(inout) :: irr_net_cum
     
-    real(real64), dimension(:), intent(in) :: smt
+    real(real64), intent(in) :: smt1
+    real(real64), intent(in) :: smt2
+    real(real64), intent(in) :: smt3
+    real(real64), intent(in) :: smt4
     real(real64), intent(inout) :: irr_scheduled    
     real(real64), intent(in) :: app_eff
     
@@ -67,6 +73,10 @@ contains
     integer(int32) :: remainder !
     integer(int32) :: n_days    ! number of days since planting, minus one
     integer(int32) :: irrigate  ! flag to irrigate
+
+    real(real64), dimension(4) :: smt
+    
+    smt = (/smt1, smt2, smt3, smt4 /)
     
     if ( growing_season == 1) then
 

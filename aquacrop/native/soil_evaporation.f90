@@ -139,13 +139,18 @@ contains
        w_evap_dry, &
        evap_z, &
        dz, &
-       dz_sum &
+       dz_sum, &
+       layer_ix &
        )
     
     real(real64), dimension(:), intent(in) :: th, th_sat, th_fc, th_wilt, th_dry, dz, dz_sum
     real(real64), intent(in) :: evap_z
     real(real64), intent(out) :: w_evap_act, w_evap_sat, w_evap_fc, w_evap_wp, w_evap_dry
-    integer(int32) :: i, max_comp_idx
+    integer(int32), dimension(:), intent(in) :: layer_ix
+    
+    integer(int32) :: i
+    integer(int32) :: max_comp_idx
+    integer(int32) :: lyri
     real(real64) :: factor
 
     ! initialize water content to zero
@@ -160,14 +165,15 @@ contains
     
     ! loop through compartments, calculating the depth of water in each
     do i = 1, max_comp_idx
+       lyri = layer_ix(i)
        factor = 1. - (dz_sum(i) - evap_z) / dz(i)
        factor = min(factor, 1.0)
        factor = max(factor, 0.0)
        w_evap_act = w_evap_act + factor * 1000 * th(i) * dz(i)
-       w_evap_sat = w_evap_sat + factor * 1000 * th_sat(i) * dz(i)
-       w_evap_fc = w_evap_fc + factor * 1000 * th_fc(i) * dz(i)
-       w_evap_wp = w_evap_wp + factor * 1000 * th_wilt(i) * dz(i)
-       w_evap_dry = w_evap_dry + factor * 1000 * th_dry(i) * dz(i)
+       w_evap_sat = w_evap_sat + factor * 1000 * th_sat(lyri) * dz(i)
+       w_evap_fc = w_evap_fc + factor * 1000 * th_fc(lyri) * dz(i)
+       w_evap_wp = w_evap_wp + factor * 1000 * th_wilt(lyri) * dz(i)
+       w_evap_dry = w_evap_dry + factor * 1000 * th_dry(lyri) * dz(i)
     end do
     
   end subroutine get_evap_lyr_wc
@@ -323,7 +329,8 @@ contains
        dz, &
        dz_sum, &
        evap_z, &
-       evap_z_min &
+       evap_z_min, &
+       layer_ix &
        )
 
     real(real64), dimension(:), intent(in) :: th_dry, dz, dz_sum
@@ -331,9 +338,12 @@ contains
 
     real(real64), dimension(:), intent(inout) :: th
     real(real64), intent(inout) :: to_extract, to_extract_stage, es_act
+
+    integer(int32), dimension(:), intent(in) :: layer_ix
     
     real(real64) :: factor, w_dry, w, av_w
     integer(int32) :: comp, max_comp_idx
+    integer(int32) :: lyri
     
     ! get the index of the deepest compartment in the soil evaporation layer                                
     max_comp_idx = get_max_comp_idx(evap_z, dz, dz_sum)
@@ -341,6 +351,8 @@ contains
     comp = 0
     do while ( to_extract_stage > 0. .and. comp < max_comp_idx )
        comp = comp + 1
+       lyri = layer_ix(comp)
+       
        ! if ( dz_sum(comp) > evap_z_min ) then
        if ( dz_sum(comp) > evap_z ) then
           factor = 1. - (dz_sum(comp) - evap_z) / dz(comp)
@@ -349,7 +361,8 @@ contains
        end if       
        factor = min(factor, 1.)
        factor = max(factor, 0.)
-       w_dry = 1000. * th_dry(comp) * dz(comp)
+       w_dry = 1000. * th_dry(lyri) * dz(comp)
+       ! w_dry = 1000. * th_dry(comp) * dz(comp)
        w = 1000. * th(comp) * dz(comp)
        av_w = (w - w_dry) * factor
        av_w = max(av_w, 0.)
@@ -424,7 +437,9 @@ contains
        delayed_cds, &
        delayed_gdds, &
        time_step, &
-       evap_time_steps)
+       evap_time_steps, &
+       layer_ix &
+       )
     
     integer(int32), intent(in) :: calendar_type
     integer(int32), intent(in) :: time_step
@@ -444,7 +459,7 @@ contains
     
     integer(int32), intent(in) :: irr_method
     integer(int32), intent(in) :: dap
-    integer(int32), intent(in) :: gdd_cum
+    real(real64), intent(in) :: gdd_cum
     integer(int32), intent(in) :: delayed_cds
     real(real64), intent(in) :: delayed_gdds
     integer(int32), intent(in) :: mulches
@@ -455,6 +470,8 @@ contains
     real(real64), dimension(:), intent(inout) :: th
     real(real64), intent(inout) :: es_act, e_pot
     real(real64), intent(inout) :: surface_storage, w_surf, w_stage_two, evap_z
+
+    integer(int32), dimension(:), intent(in) :: layer_ix
     
     real(real64) :: w_evap_act, w_evap_sat, w_evap_fc, w_evap_wp, w_evap_dry
     real(real64) :: w_upper, w_lower, w_rel, w_check
@@ -473,7 +490,7 @@ contains
        
        call get_evap_lyr_wc(th, th_sat, th_fc, th_wilt, th_dry, &
             w_evap_act, w_evap_sat, w_evap_fc, w_evap_wp, w_evap_dry, &
-            evap_z, dz, dz_sum)
+            evap_z, dz, dz_sum, layer_ix)
 
        w_stage_two = (w_evap_act - (w_evap_fc - rew)) / (w_evap_sat - (w_evap_fc - rew))
        w_stage_two = anint(w_stage_two * 100.) / 100.
@@ -525,7 +542,7 @@ contains
 
     if ( to_extract_stage_one > zero ) then
        call extract_water(to_extract, to_extract_stage_one, es_act, th, th_dry, &
-          dz, dz_sum, evap_z, evap_z_min)
+          dz, dz_sum, evap_z, evap_z_min, layer_ix)
        
        ! update surface evaporation layer water balance
        w_surf = w_surf - es_act
@@ -537,7 +554,7 @@ contains
           
           call get_evap_lyr_wc(th, th_sat, th_fc, th_wilt, th_dry, &
                w_evap_act, w_evap_sat, w_evap_fc, w_evap_wp, w_evap_dry, &
-               evap_z, dz, dz_sum)
+               evap_z, dz, dz_sum, layer_ix)
 
           w_stage_two = (w_evap_act - (w_evap_fc - rew)) / (w_evap_sat - (w_evap_fc - rew))
           w_stage_two = anint(w_stage_two * 100.) / 100.
@@ -557,7 +574,7 @@ contains
 
           call get_evap_lyr_wc(th, th_sat, th_fc, th_wilt, th_dry, &
                w_evap_act, w_evap_sat, w_evap_fc, w_evap_wp, w_evap_dry, &
-               evap_z, dz, dz_sum)
+               evap_z, dz, dz_sum, layer_ix)
           
           w_upper = w_stage_two * (w_evap_sat - (w_evap_fc - rew)) + (w_evap_fc - rew)
           w_lower = w_evap_dry
@@ -574,7 +591,7 @@ contains
                 
                 call get_evap_lyr_wc(th, th_sat, th_fc, th_wilt, th_dry, &
                      w_evap_act, w_evap_sat, w_evap_fc, w_evap_wp, w_evap_dry, &
-                     evap_z, dz, dz_sum)
+                     evap_z, dz, dz_sum, layer_ix)
 
                 ! print*,'w_stage_two :',w_stage_two
                 ! print*,'w_evap_act  :',w_evap_act
@@ -603,7 +620,7 @@ contains
           to_extract_stage_two = kr * edt
           ! print*,'to_extract:', to_extract
           call extract_water(to_extract, to_extract_stage_two, es_act, th, th_dry, &
-             dz, dz_sum, evap_z, evap_z_min)
+             dz, dz_sum, evap_z, evap_z_min, layer_ix)
        end do
     end if
     

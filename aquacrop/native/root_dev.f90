@@ -70,6 +70,7 @@ contains
        water_table, &           ! is groundwater in soil profile?
        z_gw, &                  ! depth of groundwater
        calendar_type, &
+       growing_season_day1, &
        growing_season &         ! is it the growing season?
        )
 
@@ -87,7 +88,7 @@ contains
     integer(int32), intent(in) :: dap
     real(real64), intent(in) :: gdd
     real(real64), intent(in) :: gdd_cum
-    real(real64), intent(in) :: delayed_cds
+    integer(int32), intent(in) :: delayed_cds
     real(real64), intent(in) :: delayed_gdds
     real(real64), intent(in) :: tr_ratio
     integer(int32), intent(in) :: germination
@@ -95,6 +96,7 @@ contains
     integer(int32), intent(in) :: water_table
     real(real64), intent(in) :: z_gw
     integer(int32), intent(in) :: calendar_type
+    integer(int32), intent(in) :: growing_season_day1
     integer(int32), intent(in) :: growing_season
     real(real64) :: t_adj
     real(real64) :: t_old
@@ -106,9 +108,13 @@ contains
     if ( growing_season == 1 ) then
 
        ! if today is first day of season, root depth is equal to minimum depth
-       if ( dap == 1 ) then
+       if ( growing_season_day1 == 1 ) then
+          r_cor = 1
           z_root = z_min
-       end if
+       end if       
+       ! if ( dap == 1 ) then
+       !    z_root = z_min
+       ! end if
 
        ! adjust time for delayed development
        if ( calendar_type == 1 ) then

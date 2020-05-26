@@ -26,7 +26,7 @@ contains
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: senescence
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: gdd_cum
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: dap
-    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_cds
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_cds
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_gdds
     integer(int32), intent(in) :: calendar_type
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season

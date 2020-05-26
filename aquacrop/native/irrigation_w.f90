@@ -10,7 +10,10 @@ contains
        irr, &
        irr_cum, &
        irr_net_cum, &
-       smt, &
+       smt1, &
+       smt2, &
+       smt3, &
+       smt4, &
        irr_scheduled, &
        app_eff, &
        z_root, &
@@ -41,7 +44,10 @@ contains
     real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: irr_cum
     real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: irr_net_cum
     
-    real(real64), dimension(n_cell, n_crop, n_farm, 4), intent(in) :: smt
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: smt1
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: smt2
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: smt3
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: smt4
     real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: irr_scheduled    
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: app_eff
     
@@ -73,7 +79,10 @@ contains
                   irr(k,j,i), &
                   irr_cum(k,j,i), &
                   irr_net_cum(k,j,i), &
-                  smt(k,j,i,:), &
+                  smt1(k,j,i), &
+                  smt2(k,j,i), &
+                  smt3(k,j,i), &
+                  smt4(k,j,i), &
                   irr_scheduled(k,j,i), &
                   app_eff(k,j,i), &
                   z_root(k,j,i), &

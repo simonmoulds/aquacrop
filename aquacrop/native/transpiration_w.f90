@@ -236,6 +236,7 @@ contains
        dz, &
        dz_sum, &
        layer_ix, &
+       growing_season_day1, &
        growing_season, &
        n_farm, n_crop, n_comp, n_layer, n_cell &
        )
@@ -306,6 +307,7 @@ contains
     real(real64), dimension(n_comp), intent(in) :: dz
     real(real64), dimension(n_comp), intent(in) :: dz_sum
     integer(int32), dimension(n_comp), intent(in) :: layer_ix
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season_day1
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season
 
     integer(int32) :: i, j, k
@@ -372,6 +374,7 @@ contains
                   dz, &
                   dz_sum, &
                   layer_ix, &
+                  growing_season_day1(k,j,i), &
                   growing_season(k,j,i) &
                   )
           end do

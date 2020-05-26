@@ -21,6 +21,7 @@ contains
        growing_season, senescence, premat_senes, &
        calendar_type, dap, gdd_cum, delayed_cds, delayed_gdds, &
        time_step, evap_time_steps, &
+       layer_ix, &
        n_farm, n_crop, n_comp, n_cell)
 
     integer(int32), intent(in) :: n_farm, n_crop, n_comp, n_cell
@@ -42,7 +43,7 @@ contains
     
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: irr_method
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: dap
-    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: gdd_cum
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: gdd_cum
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_cds
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: delayed_gdds
     integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: mulches
@@ -53,6 +54,8 @@ contains
     real(real64), dimension(n_cell, n_comp, n_crop, n_farm), intent(inout) :: th
     real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: es_act, e_pot
     real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: surface_storage, w_surf, w_stage_two, evap_z
+    
+    integer(int32), dimension(n_comp), intent(in) :: layer_ix    
 
     integer(int32) :: i, j, k
     
@@ -74,7 +77,8 @@ contains
                   mulches(k,j,i), f_mulch(k,j,i), mulch_pct_gs(k,j,i), mulch_pct_os(k,j,i), &
                   growing_season(k,j,i), senescence(k,j,i), premat_senes(k,j,i), &
                   calendar_type, dap(k,j,i), gdd_cum(k,j,i), delayed_cds(k,j,i), delayed_gdds(k,j,i), &
-                  time_step, evap_time_steps)
+                  time_step, evap_time_steps, &
+                  layer_ix)
           end do
        end do
     end do

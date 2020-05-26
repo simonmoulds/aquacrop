@@ -31,7 +31,7 @@ contains
     real(real64), dimension(:), intent(in) :: th_wilt
     real(real64), dimension(:), intent(in) :: dz
     real(real64), dimension(:), intent(in) :: dz_sum
-    real(real64), dimension(:), intent(in) :: layer_ix
+    integer(int32), dimension(:), intent(in) :: layer_ix
     
     integer(int32) :: max_comp_idx
     integer(int32) :: i

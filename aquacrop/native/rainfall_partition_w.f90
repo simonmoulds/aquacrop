@@ -43,7 +43,7 @@ contains
     real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: cn_top
     real(real64), dimension(n_comp), intent(in) :: dz
     real(real64), dimension(n_comp), intent(in) :: dz_sum
-    real(real64), dimension(n_comp), intent(in) :: layer_ix
+    integer(int32), dimension(n_comp), intent(in) :: layer_ix
     integer(int32) :: i, j, k
     do i = 1, n_farm
        do j = 1, n_crop

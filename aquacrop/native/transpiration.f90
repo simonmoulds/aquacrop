@@ -376,6 +376,7 @@ contains
        dz, &                    ! soil compartment depth (m)
        dz_sum, &                ! cumulative soil compartment depth (m)
        layer_ix, &              ! index mapping layers to compartments
+       growing_season_day1, &
        growing_season &         ! logical indicating whether the growing season is active
        )
     
@@ -444,6 +445,7 @@ contains
     real(real64), dimension(:), intent(in) :: dz
     real(real64), dimension(:), intent(in) :: dz_sum
     integer(int32), dimension(:), intent(in) :: layer_ix
+    integer(int32), intent(in) :: growing_season_day1
     integer(int32), intent(in) :: growing_season
 
     ! real(real64) :: d_rel2
@@ -484,7 +486,16 @@ contains
     allocate(sx_comp(n_comp))
     
     if ( growing_season == 1 ) then
-       
+
+       if ( growing_season_day1 == 1 ) then
+          age_days = 0
+          age_days_ns = 0
+          aer_days = 0
+          t_pot = 0
+          tr_ratio = 1
+          day_submrgd = 0
+       end if       
+          
        call update_surf_trans( &
             tr_pot0, &
             tr_pot_ns, &
