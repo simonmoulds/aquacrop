@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from hm.config import Configuration
-
+import warnings
 import logging
 logger = logging.getLogger(__name__)
 
@@ -167,6 +167,12 @@ class AquaCropConfiguration(Configuration):
             self.SOIL_PARAMETERS['soilParametersNC'] = None
 
         if 'adjustReadilyAvailableWater' not in list(self.SOIL_PARAMETERS.keys()):
+            self.SOIL_PARAMETERS['adjustReadilyAvailableWater'] = False
+        elif self.SOIL_PARAMETERS['adjustReadilyAvailableWater'] is True:
+            warnings.warn(
+                'Adjustment of readily evaporable water is not currently '
+                'implemented: setting to False'
+            )
             self.SOIL_PARAMETERS['adjustReadilyAvailableWater'] = False
 
         if 'adjustCurveNumber' not in list(self.SOIL_PARAMETERS.keys()):

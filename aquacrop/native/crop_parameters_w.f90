@@ -5,6 +5,258 @@ module crop_parameters_w
 
 contains
 
+  subroutine switch_gdd_w( &
+       tmin, &
+       tmax, &
+       planting_day, &
+       harvest_day, &
+       start_day, &
+       emergence, &
+       canopy_10pct, &
+       max_rooting, &
+       senescence, &
+       maturity, &       
+       max_canopy, &
+       canopy_dev_end, &
+       hi_start, &
+       hi_end, &
+       yld_form, &       
+       max_canopy_cd, &
+       canopy_dev_end_cd, &
+       hi_start_cd, &
+       hi_end_cd, &
+       yld_form_cd, &       
+       flowering_end, &
+       flowering, &
+       cc0, &
+       ccx, &
+       cgc, &
+       cdc, &
+       t_upp, &
+       t_base, &
+       crop_type, &
+       gdd_method, &
+       calendar_type, &
+       n_day, &
+       n_farm, n_crop, n_cell &       
+       )
+
+    integer(int32), intent(in) :: n_day
+    integer(int32), intent(in) :: n_farm, n_crop, n_cell    
+    real(real64), dimension(n_cell, n_day), intent(in) :: tmin
+    real(real64), dimension(n_cell, n_day), intent(in) :: tmax
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: planting_day
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: harvest_day    
+    integer(int32), intent(in) :: start_day
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: emergence
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: canopy_10pct
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: max_rooting
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: senescence
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: maturity
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: max_canopy
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: canopy_dev_end
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: hi_start
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: hi_end
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: yld_form
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: max_canopy_cd
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: canopy_dev_end_cd
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: hi_start_cd
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: hi_end_cd
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: yld_form_cd
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: flowering_end
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: flowering
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: cc0
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: ccx
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: cgc
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: cdc
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: t_upp
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: t_base
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: crop_type
+    integer(int32), intent(in) :: gdd_method
+    integer(int32), intent(inout) :: calendar_type
+    integer(int32) :: i, j, k
+    
+    do i = 1, n_farm
+       do j = 1, n_crop
+          do k = 1, n_cell             
+             call switch_gdd( &
+                  tmin(k,:), &
+                  tmax(k,:), &
+                  planting_day(k,j,i), &
+                  harvest_day(k,j,i), &
+                  start_day, &
+                  emergence(k,j,i), &
+                  canopy_10pct(k,j,i), &
+                  max_rooting(k,j,i), &
+                  senescence(k,j,i), &
+                  maturity(k,j,i), &       
+                  max_canopy(k,j,i), &
+                  canopy_dev_end(k,j,i), &
+                  hi_start(k,j,i), &
+                  hi_end(k,j,i), &
+                  yld_form(k,j,i), &       
+                  max_canopy_cd(k,j,i), &
+                  canopy_dev_end_cd(k,j,i), &
+                  hi_start_cd(k,j,i), &
+                  hi_end_cd(k,j,i), &
+                  yld_form_cd(k,j,i), &       
+                  flowering_end(k,j,i), &
+                  flowering(k,j,i), &
+                  cc0(k,j,i), &
+                  ccx(k,j,i), &
+                  cgc(k,j,i), &
+                  cdc(k,j,i), &
+                  t_upp(k,j,i), &
+                  t_base(k,j,i), &
+                  crop_type(k,j,i), &
+                  gdd_method, &
+                  calendar_type &
+                  )
+          end do
+       end do
+    end do
+  end subroutine switch_gdd_w  
+  
+  subroutine compute_crop_calendar_type2_w( &
+       tmin, &
+       tmax, &
+       planting_day, &
+       harvest_day, &
+       start_day, &
+       max_canopy, &
+       canopy_dev_end, &
+       hi_start, &
+       hi_end, &
+       max_canopy_cd, &
+       canopy_dev_end_cd, &
+       hi_start_cd, &
+       hi_end_cd, &
+       yld_form_cd, &
+       flowering_cd, &
+       flowering_end, &
+       t_upp, &
+       t_base, &
+       crop_type, &
+       gdd_method, &
+       calendar_type, &
+       growing_season_day1, &
+       simulation_day1, &
+       n_day, &
+       n_farm, n_crop, n_cell &       
+       )
+
+    integer(int32), intent(in) :: n_day
+    integer(int32), intent(in) :: n_farm, n_crop, n_cell
+    
+    real(real64), dimension(n_cell, n_day), intent(in) :: tmin
+    real(real64), dimension(n_cell, n_day), intent(in) :: tmax
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: planting_day
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: harvest_day
+    
+    integer(int32), intent(in) :: start_day
+    
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: max_canopy
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: canopy_dev_end
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: hi_start
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: hi_end
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(inout) :: max_canopy_cd
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(inout) :: canopy_dev_end_cd
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(inout) :: hi_start_cd
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(inout) :: hi_end_cd
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(inout) :: yld_form_cd
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(inout) :: flowering_cd
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: flowering_end
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: t_upp
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: t_base
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: crop_type
+    
+    integer(int32), intent(in) :: gdd_method
+    integer(int32), intent(in) :: calendar_type
+    
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season_day1
+    
+    integer(int32), intent(in) :: simulation_day1
+
+    integer(int32) :: i, j, k
+
+    do i = 1, n_farm
+       do j = 1, n_crop
+          do k = 1, n_cell
+             call compute_crop_calendar_type2( &
+                  tmin(k,:), &
+                  tmax(k,:), &
+                  planting_day(k,j,i), &
+                  harvest_day(k,j,i), &
+                  start_day, &
+                  max_canopy(k,j,i), &
+                  canopy_dev_end(k,j,i), &
+                  hi_start(k,j,i), &
+                  hi_end(k,j,i), &
+                  max_canopy_cd(k,j,i), &
+                  canopy_dev_end_cd(k,j,i), &
+                  hi_start_cd(k,j,i), &
+                  hi_end_cd(k,j,i), &
+                  yld_form_cd(k,j,i), &
+                  flowering_cd(k,j,i), &
+                  flowering_end(k,j,i), &
+                  t_upp(k,j,i), &
+                  t_base(k,j,i), &
+                  crop_type(k,j,i), &
+                  gdd_method, &
+                  calendar_type, &
+                  growing_season_day1(k,j,i), &
+                  simulation_day1 &
+                  )
+          end do
+       end do
+    end do
+  end subroutine compute_crop_calendar_type2_w
+  
+  
+  subroutine compute_wp_adj_factor_w( &
+       f_co2, &
+       co2_current_conc, &
+       co2_conc, &
+       co2_refconc, &
+       bsted, &
+       bface, &
+       fsink, &
+       wp, &
+       growing_season_day1, &
+       n_farm, n_crop, n_cell &
+       )
+
+    integer(int32), intent(in) :: n_farm, n_crop, n_cell
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: f_co2
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(inout) :: co2_current_conc
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: co2_conc
+    real(real64), intent(in) :: co2_refconc
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: bsted
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: bface
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: fsink
+    real(real64), dimension(n_cell, n_crop, n_farm), intent(in) :: wp
+    integer(int32), dimension(n_cell, n_crop, n_farm), intent(in) :: growing_season_day1
+    integer(int32) :: i, j, k
+
+    do i = 1, n_farm
+       do j = 1, n_crop
+          do k = 1, n_cell
+             call compute_wp_adj_factor( &
+                  f_co2(k,j,i), &
+                  co2_current_conc(k,j,i), &
+                  co2_conc(k,j,i), &
+                  co2_refconc, &
+                  bsted(k,j,i), &
+                  bface(k,j,i), &
+                  fsink(k,j,i), &
+                  wp(k,j,i), &
+                  growing_season_day1(k,j,i) &
+                  )
+          end do
+       end do
+    end do
+  end subroutine compute_wp_adj_factor_w                   
+  
   subroutine compute_flowering_end_cd_w( &
        flowering_end, &
        flowering_cd, &

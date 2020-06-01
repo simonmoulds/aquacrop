@@ -7,24 +7,24 @@ import netCDF4 as nc
 import sqlite3
 from importlib_resources import path
 
-# from .AquaCropConfiguration import interpret_logical_string
 from hm.api import open_hmdataarray
 from .utils import read_parameter_from_sqlite
 from . import data
 
 
 class SoilParameters(object):
-    def __init__(self, model):  # , config_section_name):
+    def __init__(self, model):
         self.model = model
-        self.model.adjustReadilyAvailableWater = self.model.config.SOIL_PARAMETERS[
-            'adjustReadilyAvailableWater']
+        # NOT CURRENTLY IMPLEMENTED:
+        # self.model.adjustReadilyAvailableWater = \
+        #     self.model.config.SOIL_PARAMETERS['adjustReadilyAvailableWater']
         self.model.adjustCurveNumber = self.model.config.SOIL_PARAMETERS['adjustCurveNumber']
         self.load_soil_parameter_database()
 
     def initial(self):
         self.read_soil_parameters()
-        if not self.model.adjustReadilyAvailableWater:
-            self.compute_readily_available_water()
+        # if not self.model.adjustReadilyAvailableWater:
+        self.compute_readily_available_water()
         self.compute_curve_number_limits()
         self.compute_weighting_factor_for_cn_adjustment()
         self.adjust_zgerm()
@@ -114,47 +114,3 @@ class SoilParameters(object):
                     )
                 except:
                     pass
-
-# def read_params(fn):
-#     with open(fn) as f:
-#         content = f.read().splitlines()
-#     # remove commented lines
-#     content = [x for x in content if re.search('^(?!%).*', x)]
-#     content = [re.split('\s*:\s*', x) for x in content]
-#     params = {}
-#     for x in content:
-#         if len(x) > 1:
-#             nm = x[0]
-#             val = x[1]
-#             params[nm] = val
-#     return params
-
-# class SoilParametersPoint(SoilParameters):
-
-#     def read_soil_parameters(self):
-#         soil_parameters = [
-#             'EvapZsurf','EvapZmin', 'EvapZmax', 'Kex',
-#             'fevap', 'fWrelExp', 'fwcc',
-#             'CN', 'zCN', 'zGerm', 'zRes', 'fshape_cr'
-#         ]
-#         soil_parameter_values = read_params(self.model._configuration.SOIL_PARAMETERS['soilParameterFile'])
-
-#         for param in soil_parameters:
-#             read_from_file = (param in soil_parameter_values.keys())
-#             if read_from_file:
-#                 d = soil_parameter_values[param]
-#                 d = np.broadcast_to(d[None,None,:], (self.model.nFarm,self.model.nCrop, self.model.domain.nxy))
-#                 vars(self.model)[param] = d.copy()
-
-#             else:
-#                 try:
-#                     parameter_value = file_handling.read_soil_parameter_from_sqlite(
-#                         self.model.SoilParameterDatabase,
-#                         param
-#                     )
-#                     parameter_value = np.array(parameter_value[0], dtype=np.float64)
-#                     vars(self.model)[param] = np.full(
-#                         (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
-#                         parameter_value)
-#                 except:
-#                     pass

@@ -164,9 +164,9 @@ class SoilHydraulicParameters(object):
         self.model.aCR[cond43] = (-0.6366 + (8 * (10 ** -4) * 150))
         self.model.bCR[cond43] = (-1.9165 + (0.7063 * np.log(150)))
 
-        # Expand to soil compartments
-        self.model.aCR_comp = self.model.aCR[..., self.model.layerIndex, :]
-        self.model.bCR_comp = self.model.bCR[..., self.model.layerIndex, :]
+        # # Expand to soil compartments
+        # self.model.aCR_comp = self.model.aCR[..., self.model.layerIndex, :]
+        # self.model.bCR_comp = self.model.bCR[..., self.model.layerIndex, :]
 
     def dynamic(self):
         pass

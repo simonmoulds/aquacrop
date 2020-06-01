@@ -6,6 +6,477 @@ module crop_parameters
   
 contains
 
+  subroutine compute_pd_hd( &
+       pd, &
+       hd, &    
+       planting_day, &
+       harvest_day, &
+       start_day &
+       )
+
+    integer(int32), intent(inout) :: pd
+    integer(int32), intent(inout) :: hd
+    integer(int32), intent(in) :: planting_day
+    integer(int32), intent(in) :: harvest_day
+    integer(int32), intent(in) :: start_day    
+    pd = planting_day
+    hd = harvest_day
+    if ( hd < pd ) then
+       hd = hd + 365
+    end if
+    if ( start_day > pd ) then
+       pd = 0
+       hd = 0
+    end if
+    
+  end subroutine compute_pd_hd         
+  
+  subroutine compute_wp_adj_factor( &
+       f_co2, &
+       co2_current_conc, &
+       co2_conc, &
+       co2_refconc, &
+       bsted, &
+       bface, &
+       fsink, &
+       wp, &
+       growing_season_day1 &
+       )
+
+    real(real64), intent(inout) :: f_co2
+    real(real64), intent(inout) :: co2_current_conc
+    real(real64), intent(in) :: co2_conc
+    real(real64), intent(in) :: co2_refconc
+    real(real64), intent(in) :: bsted
+    real(real64), intent(in) :: bface
+    real(real64), intent(in) :: fsink
+    real(real64), intent(in) :: wp
+    integer(int32), intent(in) :: growing_season_day1
+
+    real(real64) :: fw, f_co2_init, ftype
+    
+    ! co2 weighting factor
+    fw = 0.
+    if ( co2_conc > co2_refconc ) then
+       if (co2_conc >= 550 ) then
+          fw = 1.
+       else
+          fw = 1. - ((550. - co2_conc) / (550. - co2_refconc))
+       end if
+    end if
+    
+    ! determine adjustment for each crop in first year of simulation
+    f_co2_init = ((co2_conc / co2_refconc) / (1. + (co2_conc - co2_refconc) &
+         * ((1 - fw) * bsted + fw * ((bsted * fsink) + (bface * (1 - fsink))))))
+
+    ftype  = (40. - wp) / (40. - 20)
+    if ( ftype > 1. ) then
+       ftype = 1.
+    else if (ftype < 0.) then
+       ftype = 0.
+    end if
+    f_co2_init = 1 + ftype * (f_co2_init - 1)
+
+    if ( growing_season_day1 == 1 ) then
+       f_co2 = f_co2_init
+       co2_current_conc = co2_conc
+    end if
+    
+  end subroutine compute_wp_adj_factor
+  
+    
+  subroutine switch_gdd( &
+       tmin, &
+       tmax, &
+       planting_day, &
+       harvest_day, &
+       start_day, &
+       emergence, &
+       canopy_10pct, &
+       max_rooting, &
+       senescence, &
+       maturity, &       
+       max_canopy, &
+       canopy_dev_end, &
+       hi_start, &
+       hi_end, &
+       yld_form, &       
+       max_canopy_cd, &
+       canopy_dev_end_cd, &
+       hi_start_cd, &
+       hi_end_cd, &
+       yld_form_cd, &       
+       flowering_end, &
+       flowering, &
+       cc0, &
+       ccx, &
+       cgc, &
+       cdc, &
+       t_upp, &
+       t_base, &
+       crop_type, &
+       gdd_method, &
+       calendar_type &
+       )
+
+    real(real64), dimension(:), intent(in) :: tmin
+    real(real64), dimension(:), intent(in) :: tmax
+    integer(int32), intent(in) :: planting_day
+    integer(int32), intent(in) :: harvest_day
+    integer(int32), intent(in) :: start_day
+    real(real64), intent(inout) :: emergence
+    real(real64), intent(inout) :: canopy_10pct
+    real(real64), intent(inout) :: max_rooting
+    real(real64), intent(inout) :: senescence
+    real(real64), intent(inout) :: maturity
+    real(real64), intent(inout) :: max_canopy
+    real(real64), intent(inout) :: canopy_dev_end
+    real(real64), intent(inout) :: hi_start
+    real(real64), intent(inout) :: hi_end
+    real(real64), intent(inout) :: yld_form
+    integer(int32), intent(in) :: max_canopy_cd
+    integer(int32), intent(in) :: canopy_dev_end_cd
+    integer(int32), intent(in) :: hi_start_cd
+    integer(int32), intent(in) :: hi_end_cd
+    integer(int32), intent(in) :: yld_form_cd
+    real(real64), intent(inout) :: flowering_end
+    real(real64), intent(inout) :: flowering
+    real(real64), intent(in) :: cc0
+    real(real64), intent(in) :: ccx
+    real(real64), intent(inout) :: cgc
+    real(real64), intent(inout) :: cdc
+    real(real64), intent(in) :: t_upp
+    real(real64), intent(in) :: t_base
+    integer(int32), intent(in) :: crop_type
+    integer(int32), intent(in) :: gdd_method
+    integer(int32), intent(inout) :: calendar_type
+    
+    integer(int32) :: pd, hd, n, i
+    integer(int32) :: t_cd
+    real(real64) :: t_gdd
+    real(real64) :: cci
+    integer(int32), allocatable, dimension(:) :: dindex
+    integer(int32), allocatable, dimension(:) :: gsindex
+    real(real64), allocatable, dimension(:) :: gddcum
+    real(real64) :: emergence_cd
+    real(real64) :: canopy_10pct_cd
+    real(real64) :: max_rooting_cd
+    real(real64) :: senescence_cd
+    real(real64) :: maturity_cd
+    real(real64) :: flowering_end_cd
+
+    emergence_cd = emergence
+    canopy_10pct_cd = canopy_10pct
+    max_rooting_cd = max_rooting
+    senescence_cd = senescence
+    maturity_cd = maturity
+    flowering_end_cd = flowering_end
+    
+    pd = planting_day
+    hd = harvest_day
+    if ( hd < pd ) then
+       hd = hd + 365
+    end if
+    if ( start_day > pd ) then
+       pd = 0
+       hd = 0
+    end if
+    
+    n = hd - start_day + 1
+    allocate(dindex(n))    
+    allocate(gsindex(n))
+    do i = 1, n
+       dindex(i) = start_day + (i - 1)
+       if ( (dindex(i) .ge. pd) .and. (dindex(i) .le. hd) ) then
+          gsindex(i) = 1
+       else
+          gsindex(i) = 0
+       end if       
+    end do
+
+    allocate(gddcum(n))    
+    call compute_cumulative_gdd( &
+         gddcum, &
+         tmin, &
+         tmax, &
+         t_upp, &
+         t_base, &
+         gdd_method &
+         )
+
+    if ( calendar_type == 1 ) then
+       
+       i = pd + emergence_cd
+       emergence = gddcum(i)
+       i = pd + canopy_10pct_cd
+       canopy_10pct = gddcum(i)
+       i = pd + max_rooting_cd
+       max_rooting = gddcum(i)
+       i = pd + senescence_cd
+       senescence = gddcum(i)
+       i = pd + maturity_cd
+       maturity = gddcum(i)       
+       i = pd + max_canopy_cd
+       max_canopy = gddcum(i)
+       i = pd + canopy_dev_end_cd
+       canopy_dev_end = gddcum(i)
+       i = pd + hi_start_cd
+       hi_start = gddcum(i)
+       i = pd + hi_end_cd
+       hi_end = gddcum(i)
+       i = pd + yld_form_cd
+       yld_form = gddcum(i)       
+
+       if ( crop_type == 3 ) then
+          i = pd + flowering_end
+          flowering_end = gddcum(i)
+          flowering = flowering_end - hi_start
+       end if
+
+       ! convert cgc to gdd mode
+       cgc = log((((0.98 * ccx) - ccx) * cc0) / (-0.25 * (ccx ** 2))) / (-(max_canopy - emergence))
+       ! convert cdc to gdd mode
+       t_cd = maturity_cd - senescence_cd
+       if ( t_cd <= 0 ) then
+          t_cd = 1
+       end if
+       cci = ccx * (1 - 0.05 * exp((cdc / ccx) * t_cd) - 1)
+       if ( cci < 0 ) then
+          cci = 0
+       end if
+       t_gdd = maturity - senescence
+       if ( t_gdd <= 0 ) then
+          t_gdd = 5
+       end if
+       
+       cdc = (ccx / t_gdd) * log(1 + ((1 - cci / ccx) / 0.05))
+       calendar_type = 2
+       
+    end if
+    
+  end subroutine switch_gdd
+         
+  subroutine compute_cumulative_gdd( &
+       gdd_cum, &
+       tmin, &
+       tmax, &
+       t_upp, &
+       t_base, &
+       gdd_method &
+       )
+
+    real(real64), dimension(:), intent(inout) :: gdd_cum
+    real(real64), dimension(:), intent(in) :: tmin
+    real(real64), dimension(:), intent(in) :: tmax
+    real(real64), intent(in) :: t_upp
+    real(real64), intent(in) :: t_base
+    integer(int32), intent(in) :: gdd_method    
+    real(real64), allocatable, dimension(:) :: tmean, gdd
+    real(real64) :: tmn, tmx
+    integer(int32) :: i, n
+
+    n = size(gdd_cum)
+    allocate(tmean(n))
+    allocate(gdd(n))
+
+    do i = 1, n
+       tmn = tmin(i)
+       tmx = tmax(i)
+       if ( gdd_method == 1 ) then
+          tmean(i) = (tmx + tmn) / 2
+          if ( tmean(i) > t_upp ) then
+             tmean(i) = t_upp
+          else if ( tmean(i) < t_base ) then
+             tmean(i) = t_base
+          end if
+
+       else if ( gdd_method == 2 .or. gdd_method == 3 ) then
+          if ( tmx < t_base ) then
+             tmx = t_base
+          else if ( tmx > t_upp ) then
+             tmx = t_upp
+          end if
+
+          if ( gdd_method == 2 .and. tmn < t_base ) then
+             tmn = t_base
+          else if ( tmn > t_upp ) then
+             tmn = t_upp
+          end if          
+          tmean(i) = (tmx + tmn) / 2
+       end if
+       gdd(i) = tmean(i) - t_base
+
+       if ( i > 1 ) then
+          gdd_cum(i) = gdd_cum(i-1) + gdd(i)
+       else
+          gdd_cum(i) = gdd(i)
+       end if
+       
+    end do
+    
+  end subroutine compute_cumulative_gdd
+  
+  ! subroutine compute_crop_calendar_type1( &
+  !      max_canopy_cd, &
+  !      canopy_dev_end_cd, &
+  !      hi_start_cd, &
+  !      hi_end_cd, &
+  !      yld_form_cd, &
+  !      flowering_cd, &
+  !      max_canopy, &
+  !      canopy_dev_end, &
+  !      hi_start, &
+  !      hi_end, &
+  !      yld_form, &
+  !      flowering &
+  !      )
+
+  !   integer(int32), intent(inout) :: max_canopy_cd
+  !   integer(int32), intent(inout) :: canopy_dev_end_cd
+  !   integer(int32), intent(inout) :: hi_start_cd
+  !   integer(int32), intent(inout) :: hi_end_cd
+  !   integer(int32), intent(inout) :: yld_form_cd
+  !   integer(int32), intent(inout) :: flowering_cd
+  !   real(real64), intent(in) :: max_canopy
+  !   real(real64), intent(in) :: canopy_dev_end
+  !   real(real64), intent(in) :: hi_start
+  !   real(real64), intent(in) :: hi_end
+  !   real(real64), intent(in) :: yld_form
+  !   real(real64), intent(in) :: flowering    
+  !   max_canopy_cd = max_canopy
+  !   canopy_dev_end_cd = canopy_dev_end
+  !   hi_start_cd = hi_start
+  !   hi_end_cd = hi_end
+  !   yld_form_cd = yld_form
+  !   flowering_cd = flowering
+    
+  ! end subroutine compute_crop_calendar_type1
+
+
+  subroutine compute_crop_calendar_type2( &
+       tmin, &
+       tmax, &
+       planting_day, &
+       harvest_day, &
+       start_day, &
+       max_canopy, &
+       canopy_dev_end, &
+       hi_start, &
+       hi_end, &
+       max_canopy_cd, &
+       canopy_dev_end_cd, &
+       hi_start_cd, &
+       hi_end_cd, &
+       yld_form_cd, &
+       flowering_cd, &
+       flowering_end, &
+       t_upp, &
+       t_base, &
+       crop_type, &
+       gdd_method, &
+       calendar_type, &
+       growing_season_day1, &
+       simulation_day1 &
+       )
+
+    real(real64), dimension(:), intent(in) :: tmin
+    real(real64), dimension(:), intent(in) :: tmax
+    integer(int32), intent(in) :: planting_day
+    integer(int32), intent(in) :: harvest_day
+    integer(int32), intent(in) :: start_day
+    real(real64), intent(in) :: max_canopy
+    real(real64), intent(in) :: canopy_dev_end
+    real(real64), intent(in) :: hi_start
+    real(real64), intent(in) :: hi_end
+    integer(int32), intent(inout) :: max_canopy_cd
+    integer(int32), intent(inout) :: canopy_dev_end_cd
+    integer(int32), intent(inout) :: hi_start_cd
+    integer(int32), intent(inout) :: hi_end_cd
+    integer(int32), intent(inout) :: yld_form_cd
+    integer(int32), intent(inout) :: flowering_cd
+    real(real64), intent(in) :: flowering_end
+    real(real64), intent(in) :: t_upp
+    real(real64), intent(in) :: t_base
+    integer(int32), intent(in) :: crop_type
+    integer(int32), intent(in) :: gdd_method
+    integer(int32), intent(in) :: calendar_type
+    integer(int32), intent(in) :: growing_season_day1
+    integer(int32), intent(in) :: simulation_day1
+    
+    integer(int32) :: pd, hd, n, i
+    real(real64) :: cci
+    
+    integer(int32) :: max_canopy_idx
+    integer(int32) :: canopy_dev_end_idx
+    integer(int32) :: hi_start_idx
+    integer(int32) :: hi_end_idx    
+    integer(int32) :: flowering_end_idx
+    
+    integer(int32), allocatable, dimension(:) :: dindex
+    integer(int32), allocatable, dimension(:) :: gsindex
+    integer(int32), allocatable, dimension(:) :: fill
+    real(real64), allocatable, dimension(:) :: gddcum
+
+    ! correct planting day/harvest day to ensure that harvest
+    ! is *after* planting
+    pd = planting_day
+    hd = harvest_day
+    if ( hd < pd ) then
+       hd = hd + 365
+    end if
+    if ( start_day > pd ) then
+       pd = 0
+       hd = 0
+    end if
+
+    ! allocate array variables
+    n = hd - start_day + 1
+    allocate(dindex(n))    
+    allocate(gsindex(n))
+    allocate(gddcum(n))    
+    allocate(fill(n))
+    fill = 999
+
+    ! day index, growing season index
+    do i = 1, n
+       dindex(i) = start_day + (i - 1)
+       if ( (dindex(i) .ge. pd) .and. (dindex(i) .le. hd) ) then
+          gsindex(i) = 1
+       else
+          gsindex(i) = 0
+       end if       
+    end do
+
+    ! compute cumulative gdd
+    call compute_cumulative_gdd( &
+         gddcum, &
+         tmin, &
+         tmax, &
+         t_upp, &
+         t_base, &
+         gdd_method &
+         )
+
+    ! get the index of the first day for which gddcum exceeds max_canopy etc.
+    max_canopy_idx = minval(pack(dindex, gddcum>max_canopy, fill))
+    canopy_dev_end_idx = minval(pack(dindex, gddcum>canopy_dev_end, fill))
+    hi_start_idx = minval(pack(dindex, gddcum>hi_start, fill))
+    hi_end_idx = minval(pack(dindex, gddcum>hi_end, fill))
+    flowering_end_idx = minval(pack(dindex, gddcum>flowering_end, fill))
+    
+    if ( growing_season_day1 == 1 .or. simulation_day1 == 1) then
+       max_canopy_cd = max_canopy_idx - pd + 1
+       canopy_dev_end_cd = canopy_dev_end_idx - pd + 1
+       hi_start_cd = hi_start_idx - pd + 1
+       hi_end_cd = hi_end_idx - pd + 1
+       if ( crop_type == 3 ) then
+          flowering_cd = (flowering_end_idx - pd + 1) - hi_start_cd
+       end if
+       yld_form_cd = hi_end_cd - hi_start_cd
+    end if
+    
+  end subroutine compute_crop_calendar_type2    
+    
   subroutine compute_max_canopy( &
        max_canopy, &
        emergence, &
@@ -143,7 +614,12 @@ contains
              harvest_date_adj = harvest_date
           end if
        end if
-    end if    
+    end if
+
+    ! ! TEST
+    ! if ( harvest_date_adj < planting_date_adj ) then
+    !    harvest_date_adj = harvest_date_adj + 365
+    ! end if    
     
   end subroutine adjust_pd_hd
 
