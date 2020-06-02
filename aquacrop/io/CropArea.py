@@ -11,7 +11,8 @@ class CropArea(object):
         self.model.CurrentCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
         self.model.CroplandArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
         self.model.CropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-        self.model.FarmCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))        
+        self.model.FarmCropArea = np.ones((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+        
     def dynamic(self):
         pass
         

@@ -18,12 +18,13 @@ class FarmParameters(object):
     def initial(self):
         pass
 
-    def set_farm_area(self):
-        self.model.FarmArea = np.ones(
-            (self.model.nFarm,
-             self.model.nCrop,
-             self.model.domain.nxy)
-        )
+    # def set_farm_area(self):
+    #     self.model.FarmArea = np.ones(
+    #         (self.model.nFarm,
+    #          self.model.nCrop,
+    #          self.model.domain.nxy)
+    #     )
         
     def dynamic(self):
-        self.set_farm_area()
+        pass
+        # self.set_farm_area()

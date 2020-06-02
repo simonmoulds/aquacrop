@@ -86,7 +86,7 @@ contains
                .and. th_fc(i) < 0.58 .and. th_sat(i) >= 0.49 .and. th_sat(i) <= 0.58 ) then
 
              if ( k_sat(i) >= 1. .and. k_sat(i) <= 150. ) then
-                a_cr(i) = -0.6366 + (k_sat(i) * 8 * 1E-04)
+                a_cr(i) = -0.6366 + (k_sat(i) * 8. * 1E-04)
                 b_cr(i) = -1.9165 + (0.7063 * log(k_sat(i)))
 
              else if ( k_sat(i) < 1 ) then
@@ -98,6 +98,7 @@ contains
                 b_cr(i) = -1.9165 + (0.7063 * log(150.))
 
              end if
+             
           end if
        end do
     end if

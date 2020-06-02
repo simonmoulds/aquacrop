@@ -33,44 +33,44 @@ contains
     real(real64), dimension(:), intent(in) :: th_dry
     real(real64), intent(in) :: evap_z_surf
 
-    rew = real(nint(1000. * (th_fc(1) - th_dry(1) * evap_z_surf)))
+    rew = real(nint(1000. * (th_fc(1) - th_dry(1)) * evap_z_surf))
 
   end subroutine compute_rew
 
-  subroutine compute_wrel( &
-       w_rel, &
-       z_cn, &
-       dz_sum &
-       )
+  ! subroutine compute_wrel( &
+  !      w_rel, &
+  !      z_cn, &
+  !      dz_sum &
+  !      )
 
-    real(real64), dimension(:), intent(inout) :: w_rel
-    real(real64), intent(in) :: z_cn
-    real(real64), dimension(:), intent(in) :: dz_sum
-    integer(int32) :: n, i
-    real(real64) :: dz_sum_i, xx, wx
+  !   real(real64), dimension(:), intent(inout) :: w_rel
+  !   real(real64), intent(in) :: z_cn
+  !   real(real64), dimension(:), intent(in) :: dz_sum
+  !   integer(int32) :: n, i
+  !   real(real64) :: dz_sum_i, xx, wx
     
-    n = size(dz_sum)
+  !   n = size(dz_sum)
 
-    xx = 0.
-    do i = 1, n
+  !   xx = 0.
+  !   do i = 1, n
 
-       if ( dz_sum(i) > z_cn ) then
-          dz_sum_i = z_cn
-       else
-          dz_sum_i = dz_sum(i)
-       end if
-       wx = 1.016 * (1 - exp(-4.16 * (dz_sum_i / z_cn)))
-       w_rel(i) = wx - xx
-       if ( w_rel(i) < 0 ) then
-          w_rel(i) = 0.
-       else if ( w_rel(i) > 1 ) then
-          w_rel(i) = 1.
-       end if
-       xx = wx
+  !      if ( dz_sum(i) > z_cn ) then
+  !         dz_sum_i = z_cn
+  !      else
+  !         dz_sum_i = dz_sum(i)
+  !      end if
+  !      wx = 1.016 * (1 - exp(-4.16 * (dz_sum_i / z_cn)))
+  !      w_rel(i) = wx - xx
+  !      if ( w_rel(i) < 0 ) then
+  !         w_rel(i) = 0.
+  !      else if ( w_rel(i) > 1 ) then
+  !         w_rel(i) = 1.
+  !      end if
+  !      xx = wx
        
-    end do
+  !   end do
 
-  end subroutine compute_wrel
+  ! end subroutine compute_wrel
 
   subroutine adjust_zgerm( &
        z_germ, &
@@ -93,7 +93,6 @@ contains
        cn_bot, &
        cn_top, &
        rew, &
-       w_rel, &
        z_germ, &
        cn, &
        th_fc, &
@@ -106,7 +105,6 @@ contains
     real(real64), intent(inout) :: cn_bot
     real(real64), intent(inout) :: cn_top
     real(real64), intent(inout) :: rew
-    real(real64), dimension(:), intent(inout) :: w_rel
     real(real64), intent(inout) :: z_germ    
     real(real64), intent(in) :: cn
     real(real64), dimension(:), intent(in) :: th_fc
@@ -126,12 +124,6 @@ contains
          th_fc, &
          th_dry, &
          evap_z_surf &
-         )
-
-    call compute_wrel( &
-         w_rel, &
-         z_cn, &
-         dz_sum &
          )
 
     call adjust_zgerm( &

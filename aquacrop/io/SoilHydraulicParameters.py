@@ -5,6 +5,8 @@ import numpy as np
 
 from hm.api import open_hmdataarray
 
+import aquacrop_fc
+
 
 class SoilProfile(object):
     def __init__(self, model):
@@ -35,8 +37,13 @@ class SoilHydraulicParameters(object):
     def initial(self):
         self.read_soil_hydraulic_parameters()
         self.compute_additional_soil_hydraulic_parameters()
-        self.compute_capillary_rise_parameters()
-
+        # print(self.model.k_sat)
+        # print(self.model.aCR)
+        # print(self.model.bCR)        
+        # self.compute_capillary_rise_parameters()        
+        # print(self.model.aCR)
+        # print(self.model.bCR)
+        
     def read_soil_hydraulic_parameters(self):
 
         # TODO: optionally read directly from config file
@@ -48,8 +55,6 @@ class SoilHydraulicParameters(object):
             'th_wilt': self.model.config.SOIL_HYDRAULIC_PARAMETERS['wiltingPointVolumetricWaterContentVarName']
         }
         for param, var_name in soil_hydraulic_parameters.items():
-            # TODO: how to cope with broadcasting?
-            # more general point: do we need to broadcast at all, now that we're not using numpy in the same way?
             arr = open_hmdataarray(
                 self.model.config.SOIL_HYDRAULIC_PARAMETERS['soilHydraulicParametersNC'],
                 var_name,
@@ -57,17 +62,13 @@ class SoilHydraulicParameters(object):
                 self.model.config.SOIL_HYDRAULIC_PARAMETERS['is_1d'],
                 self.model.config.SOIL_HYDRAULIC_PARAMETERS['xy_dimname'],
             )
-            vars(self.model)[param] = np.broadcast_to(
-                arr.values[None, None, :, :],
-                (self.model.nFarm, self.model.nCrop,
-                 self.model.nLayer, self.model.domain.nxy)
-            )
+            vars(self.model)[param] = arr.values
             # vars(self.model)[param] = np.broadcast_to(
             #     arr.values[None, None, :, :],
             #     (self.model.nFarm, self.model.nCrop,
             #      self.model.nLayer, self.model.domain.nxy)
             # )
-
+        
     def compute_additional_soil_hydraulic_parameters(self):
         zBot = np.cumsum(self.model.dz)
         zTop = zBot - self.model.dz
@@ -77,96 +78,124 @@ class SoilHydraulicParameters(object):
         self.model.layerIndex = np.sum(
             ((zMid[:, None] * np.ones((self.model.nLayer))[None, :]) > dz_layer_top), axis=1) - 1
 
-        # The following is adapted from AOS_ComputeVariables.m, lines 129-139
-        # "Calculate drainage characteristic (tau)
-        self.model.tau = 0.0866 * (self.model.k_sat ** 0.35)
-        self.model.tau = np.round(self.model.tau * 100) / 100
-        self.model.tau[self.model.tau > 1] = 1
-        self.model.tau[self.model.tau < 0] = 0
+        # # The following is adapted from AOS_ComputeVariables.m, lines 129-139
+        # # "Calculate drainage characteristic (tau)
+        # self.model.tau = 0.0866 * (self.model.k_sat ** 0.35)
+        # self.model.tau = np.round(self.model.tau * 100) / 100
+        # self.model.tau[self.model.tau > 1] = 1
+        # self.model.tau[self.model.tau < 0] = 0
 
-        # The following is adapted from AOS_ComputeVariables.m, lines 25
-        self.model.th_dry = self.model.th_wilt / 2
+        # # The following is adapted from AOS_ComputeVariables.m, lines 25
+        # self.model.th_dry = self.model.th_wilt / 2
 
-        # transform certain soil properties to (ncrop, ncomp, ncell)
-        soil_params = ['th_sat', 'th_fc', 'th_wilt', 'th_dry', 'k_sat', 'tau']
-        for nm in soil_params:
-            newnm = nm + '_comp'
-            vars(self.model)[newnm] = vars(self.model)[
-                nm][..., self.model.layerIndex, :]
+        # # # transform certain soil properties to (ncrop, ncomp, ncell)
+        # # soil_params = ['th_sat', 'th_fc', 'th_wilt', 'th_dry', 'k_sat', 'tau']
+        # # for nm in soil_params:
+        # #     newnm = nm + '_comp'
+        # #     vars(self.model)[newnm] = vars(self.model)[
+        # #         nm][..., self.model.layerIndex, :]
 
-    def compute_capillary_rise_parameters(self):
-        # Function adapted from AOS_ComputeVariables.m, lines 60-127
+        arr_zeros = np.zeros(
+            (self.model.nLayer, self.model.domain.nxy)
+        )
+        self.model.aCR = arr_zeros.copy()
+        self.model.bCR = arr_zeros.copy()
+        self.model.tau = arr_zeros.copy()
+        self.model.th_dry = arr_zeros.copy()
+        
+        aquacrop_fc.soil_hydraulic_parameters_w.compute_soil_h_parameters_w(
+            self.model.aCR.T,
+            self.model.bCR.T,
+            self.model.tau.T,
+            self.model.th_dry.T,
+            self.model.th_fc.T,
+            self.model.th_sat.T,
+            self.model.th_wilt.T,
+            self.model.k_sat.T,
+            np.int32(1),
+            # np.int32(self.model.WaterTable),
+            self.model.nLayer, self.model.domain.nxy
+        )
+        
+    # def compute_capillary_rise_parameters(self):
+    #     # Function adapted from AOS_ComputeVariables.m, lines 60-127
 
-        self.model.aCR = np.zeros(
-            (self.model.nFarm, self.model.nCrop, self.model.nLayer, self.model.domain.nxy))
-        self.model.bCR = np.zeros(
-            (self.model.nFarm, self.model.nCrop, self.model.nLayer, self.model.domain.nxy))
+    #     self.model.aCR = np.zeros(
+    #         (self.model.nLayer, self.model.domain.nxy)
+    #     )
+    #     self.model.bCR = np.zeros(
+    #         (self.model.nLayer, self.model.domain.nxy)
+    #     )
+    #     # self.model.aCR = np.zeros(
+    #     #     (self.model.nFarm, self.model.nCrop, self.model.nLayer, self.model.domain.nxy))
+    #     # self.model.bCR = np.zeros(
+    #     #     (self.model.nFarm, self.model.nCrop, self.model.nLayer, self.model.domain.nxy))
 
-        # "Sandy soil class"
-        cond1 = (self.model.th_wilt >= 0.04) & (self.model.th_wilt <= 0.15) & (self.model.th_fc >= 0.09) & (
-            self.model.th_fc <= 0.28) & (self.model.th_sat >= 0.32) & (self.model.th_sat <= 0.51)
-        cond11 = (cond1 & (self.model.k_sat >= 200)
-                  & (self.model.k_sat <= 2000))
-        cond12 = (cond1 & (self.model.k_sat < 200))
-        cond13 = (cond1 & (self.model.k_sat > 2000))
-        self.model.aCR[cond11] = (-0.3112 -
-                                  (self.model.k_sat * (10 ** -5)))[cond11]
-        self.model.bCR[cond11] = (-1.4936 +
-                                  (0.2416 * np.log(self.model.k_sat)))[cond11]
-        self.model.aCR[cond12] = (-0.3112 - (200 * (10 ** -5)))
-        self.model.bCR[cond12] = (-1.4936 + (0.2416 * np.log(200)))
-        self.model.aCR[cond13] = (-0.3112 - (2000 * (10 ** -5)))
-        self.model.bCR[cond13] = (-1.4936 + (0.2416 * np.log(2000)))
+    #     # "Sandy soil class"
+    #     cond1 = (self.model.th_wilt >= 0.04) & (self.model.th_wilt <= 0.15) & (self.model.th_fc >= 0.09) & (
+    #         self.model.th_fc <= 0.28) & (self.model.th_sat >= 0.32) & (self.model.th_sat <= 0.51)
+    #     cond11 = (cond1 & (self.model.k_sat >= 200)
+    #               & (self.model.k_sat <= 2000))
+    #     cond12 = (cond1 & (self.model.k_sat < 200))
+    #     cond13 = (cond1 & (self.model.k_sat > 2000))
+    #     self.model.aCR[cond11] = (-0.3112 -
+    #                               (self.model.k_sat * (10 ** -5)))[cond11]
+    #     self.model.bCR[cond11] = (-1.4936 +
+    #                               (0.2416 * np.log(self.model.k_sat)))[cond11]
+    #     self.model.aCR[cond12] = (-0.3112 - (200 * (10 ** -5)))
+    #     self.model.bCR[cond12] = (-1.4936 + (0.2416 * np.log(200)))
+    #     self.model.aCR[cond13] = (-0.3112 - (2000 * (10 ** -5)))
+    #     self.model.bCR[cond13] = (-1.4936 + (0.2416 * np.log(2000)))
 
-        # "Loamy soil class"
-        cond2 = (self.model.th_wilt >= 0.06) & (self.model.th_wilt <= 0.20) & (self.model.th_fc >= 0.23) & (
-            self.model.th_fc <= 0.42) & (self.model.th_sat >= 0.42) & (self.model.th_sat <= 0.55)
-        cond21 = (cond2 & (self.model.k_sat >= 100)
-                  & (self.model.k_sat <= 750))
-        cond22 = (cond2 & (self.model.k_sat < 100))
-        cond23 = (cond2 & (self.model.k_sat > 750))
-        self.model.aCR[cond21] = (-0.4986 +
-                                  (9 * (10 ** -5) * self.model.k_sat))[cond21]
-        self.model.bCR[cond21] = (-2.1320 +
-                                  (0.4778 * np.log(self.model.k_sat)))[cond21]
-        self.model.aCR[cond22] = (-0.4986 + (9 * (10 ** -5) * 100))
-        self.model.bCR[cond22] = (-2.1320 + (0.4778 * np.log(100)))
-        self.model.aCR[cond23] = (-0.4986 + (9 * (10 ** -5) * 750))
-        self.model.bCR[cond23] = (-2.1320 + (0.4778 * np.log(750)))
+    #     # "Loamy soil class"
+    #     cond2 = (self.model.th_wilt >= 0.06) & (self.model.th_wilt <= 0.20) & (self.model.th_fc >= 0.23) & (
+    #         self.model.th_fc <= 0.42) & (self.model.th_sat >= 0.42) & (self.model.th_sat <= 0.55)
+    #     cond21 = (cond2 & (self.model.k_sat >= 100)
+    #               & (self.model.k_sat <= 750))
+    #     cond22 = (cond2 & (self.model.k_sat < 100))
+    #     cond23 = (cond2 & (self.model.k_sat > 750))
+    #     self.model.aCR[cond21] = (-0.4986 +
+    #                               (9 * (10 ** -5) * self.model.k_sat))[cond21]
+    #     self.model.bCR[cond21] = (-2.1320 +
+    #                               (0.4778 * np.log(self.model.k_sat)))[cond21]
+    #     self.model.aCR[cond22] = (-0.4986 + (9 * (10 ** -5) * 100))
+    #     self.model.bCR[cond22] = (-2.1320 + (0.4778 * np.log(100)))
+    #     self.model.aCR[cond23] = (-0.4986 + (9 * (10 ** -5) * 750))
+    #     self.model.bCR[cond23] = (-2.1320 + (0.4778 * np.log(750)))
 
-        # "Sandy clayey soil class"
-        cond3 = (self.model.th_wilt >= 0.16) & (self.model.th_wilt <= 0.34) & (self.model.th_fc >= 0.25) & (
-            self.model.th_fc <= 0.45) & (self.model.th_sat >= 0.40) & (self.model.th_sat <= 0.53)
-        cond31 = (cond3 & (self.model.k_sat >= 5) & (self.model.k_sat <= 150))
-        cond32 = (cond3 & (self.model.k_sat < 5))
-        cond33 = (cond3 & (self.model.k_sat > 150))
-        self.model.aCR[cond31] = (-0.5677 -
-                                  (4 * (10 ** -5) * self.model.k_sat))[cond31]
-        self.model.bCR[cond31] = (-3.7189 +
-                                  (0.5922 * np.log(self.model.k_sat)))[cond31]
-        self.model.aCR[cond32] = (-0.5677 - (4 * (10 ** -5) * 5))
-        self.model.bCR[cond32] = (-3.7189 + (0.5922 * np.log(5)))
-        self.model.aCR[cond33] = (-0.5677 - (4 * (10 ** -5) * 150))
-        self.model.bCR[cond33] = (-3.7189 + (0.5922 * np.log(150)))
+    #     # "Sandy clayey soil class"
+    #     cond3 = (self.model.th_wilt >= 0.16) & (self.model.th_wilt <= 0.34) & (self.model.th_fc >= 0.25) & (
+    #         self.model.th_fc <= 0.45) & (self.model.th_sat >= 0.40) & (self.model.th_sat <= 0.53)
+    #     cond31 = (cond3 & (self.model.k_sat >= 5) & (self.model.k_sat <= 150))
+    #     cond32 = (cond3 & (self.model.k_sat < 5))
+    #     cond33 = (cond3 & (self.model.k_sat > 150))
+    #     self.model.aCR[cond31] = (-0.5677 -
+    #                               (4 * (10 ** -5) * self.model.k_sat))[cond31]
+    #     self.model.bCR[cond31] = (-3.7189 +
+    #                               (0.5922 * np.log(self.model.k_sat)))[cond31]
+    #     self.model.aCR[cond32] = (-0.5677 - (4 * (10 ** -5) * 5))
+    #     self.model.bCR[cond32] = (-3.7189 + (0.5922 * np.log(5)))
+    #     self.model.aCR[cond33] = (-0.5677 - (4 * (10 ** -5) * 150))
+    #     self.model.bCR[cond33] = (-3.7189 + (0.5922 * np.log(150)))
 
-        # "Silty clayey soil class"
-        cond4 = (self.model.th_wilt >= 0.20) & (self.model.th_wilt <= 0.42) & (self.model.th_fc >= 0.40) & (
-            self.model.th_fc <= 0.58) & (self.model.th_sat >= 0.49) & (self.model.th_sat <= 0.58)
-        cond41 = (cond4 & (self.model.k_sat >= 1) & (self.model.k_sat <= 150))
-        cond42 = (cond4 & (self.model.k_sat < 1))
-        cond43 = (cond4 & (self.model.k_sat > 150))
-        self.model.aCR[cond41] = (-0.6366 +
-                                  (8 * (10 ** -4) * self.model.k_sat))[cond41]
-        self.model.bCR[cond41] = (-1.9165 +
-                                  (0.7063 * np.log(self.model.k_sat)))[cond41]
-        self.model.aCR[cond42] = (-0.6366 + (8 * (10 ** -4) * 1))
-        self.model.bCR[cond42] = (-1.9165 + (0.7063 * np.log(1)))
-        self.model.aCR[cond43] = (-0.6366 + (8 * (10 ** -4) * 150))
-        self.model.bCR[cond43] = (-1.9165 + (0.7063 * np.log(150)))
+    #     # "Silty clayey soil class"
+    #     cond4 = (self.model.th_wilt >= 0.20) & (self.model.th_wilt <= 0.42) & (self.model.th_fc >= 0.40) & (
+    #         self.model.th_fc <= 0.58) & (self.model.th_sat >= 0.49) & (self.model.th_sat <= 0.58)
+    #     cond41 = (cond4 & (self.model.k_sat >= 1) & (self.model.k_sat <= 150))
+    #     cond42 = (cond4 & (self.model.k_sat < 1))
+    #     cond43 = (cond4 & (self.model.k_sat > 150))
+    #     self.model.aCR[cond41] = (-0.6366 +
+    #                               (8 * (10 ** -4) * self.model.k_sat))[cond41]
+    #     self.model.bCR[cond41] = (-1.9165 +
+    #                               (0.7063 * np.log(self.model.k_sat)))[cond41]
+    #     self.model.aCR[cond42] = (-0.6366 + (8 * (10 ** -4) * 1))
+    #     self.model.bCR[cond42] = (-1.9165 + (0.7063 * np.log(1)))
+    #     self.model.aCR[cond43] = (-0.6366 + (8 * (10 ** -4) * 150))
+    #     self.model.bCR[cond43] = (-1.9165 + (0.7063 * np.log(150)))
 
-        # # Expand to soil compartments
-        # self.model.aCR_comp = self.model.aCR[..., self.model.layerIndex, :]
-        # self.model.bCR_comp = self.model.bCR[..., self.model.layerIndex, :]
+    #     # # Expand to soil compartments
+    #     # self.model.aCR_comp = self.model.aCR[..., self.model.layerIndex, :]
+    #     # self.model.bCR_comp = self.model.bCR[..., self.model.layerIndex, :]
 
     def dynamic(self):
         pass

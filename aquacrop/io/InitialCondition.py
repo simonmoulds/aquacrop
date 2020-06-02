@@ -81,15 +81,31 @@ class InitialCondition(object):
         ).copy()
         
     def set_initial_condition_from_percent(self):
-        self.var.th = (self.var.th_wilt_comp + ((self.var.initialConditionPercent / 100.) * (self.var.th_fc_comp - self.var.th_wilt_comp)))
-
+        # self.var.th = (self.var.th_wilt_comp + ((self.var.initialConditionPercent / 100.) * (self.var.th_fc_comp - self.var.th_wilt_comp)))
+        th = (
+            self.var.th_wilt
+            + ((self.var.initialConditionPercent / 100.) * (self.var.th_fc - self.var.th_wilt))
+        )        
+        th = np.broadcast_to(
+            th[self.var.layerIndex,:][None,None,...],
+            (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy)
+        )            
+        self.var.th = th.copy()
+        
     def set_initial_condition_from_property(self):
         if self.var.initialConditionProperty == 'FC':
-            self.var.th = self.var.th_fc_comp.copy()
+            th = self.var.th_fc.copy()
+            
         elif self.var.initialConditionProperty == 'WP':
-            self.var.th = self.var.th_wilt_comp.copy()
+            th = self.var.th_wilt.copy()
+            
         elif self.var.initialConditionProperty == 'SAT':
-            self.var.th = self.var.th_sat_comp.copy()
+            th = self.var.th_sat.copy()
+
+        self.var.th = np.broadcast_to(
+            th[self.var.layerIndex,:][None,None,...],
+            (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy)
+        )
 
     def initial(self):
         if self.var.initial_condition_type == 'FILE':

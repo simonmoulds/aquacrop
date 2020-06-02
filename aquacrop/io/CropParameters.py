@@ -40,16 +40,25 @@ class CropParameters(object):
             self.model.CropParameterDatabase = sqlite3.connect(str(db_path))
 
     def initial(self):
-        # read parameters from file or crop database
         self.read()
         
         self.model.PlantingDateAdj = np.copy(self.model.PlantingDate)
         self.model.HarvestDateAdj = np.copy(self.model.HarvestDate)
-        arr_zeros = np.zeros(
-            (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
+
+        # Growing season index has a farm dimension because this is
+        # automatically changed to false when a crop dies, which
+        # may vary depending on farm management practices
+        self.model.GrowingSeasonIndex = np.zeros(
+            (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
+            dtype=np.int32
         )
-        self.model.GrowingSeasonIndex = np.copy(arr_zeros.astype(bool))
-        self.model.GrowingSeasonDayOne = np.copy(arr_zeros.astype(bool))
+        self.model.GrowingSeasonDayOne = np.zeros(
+            (self.model.nCrop, self.model.domain.nxy),
+            dtype=np.int32
+        )
+
+        # self.model.GrowingSeasonIndex = np.copy(arr_zeros.astype(bool))
+        # self.model.GrowingSeasonDayOne = np.copy(arr_zeros.astype(bool))
         
         # divide into int/float parameters because this makes it
         # easier when passing as arguments to Fortran extension
@@ -65,10 +74,16 @@ class CropParameters(object):
             'FloweringEnd', 'CurrentConc'
         ]
         for param in int_params_to_compute:
-            vars(self.model)[param] = np.copy(arr_zeros.astype(np.int32))
+            vars(self.model)[param] = np.zeros(
+                (self.model.nCrop, self.model.domain.nxy),
+                dtype=np.int32
+            )
             
         for param in flt_params_to_compute:
-            vars(self.model)[param] = np.copy(arr_zeros.astype(np.float64))
+            vars(self.model)[param] = np.zeros(
+                (self.model.nCrop, self.model.domain.nxy),
+                dtype=np.float64
+            )
             
         self.compute_crop_parameters()
 
@@ -97,9 +112,8 @@ class CropParameters(object):
                     parameter_values = np.array(self.config[param])
                     if (len(parameter_values) == 1) | (len(parameter_values) == self.model.nCrop):                        
                         vars(self.model)[param] = np.broadcast_to(
-                            parameter_values[:, None, None],
-                            (self.model.nFarm, self.model.nCrop,
-                             self.model.domain.nxy)
+                            parameter_values[:, None],
+                            (self.model.nCrop, self.model.domain.nxy)
                         )
                         
                     else:
@@ -122,8 +136,12 @@ class CropParameters(object):
                         )
                         vars(self.model)[param] = np.broadcast_to(
                             arr.values,
-                            (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
+                            (self.model.nCrop, self.model.domain.nxy)
                         )
+                        # vars(self.model)[param] = np.broadcast_to(
+                        #     arr.values,
+                        #     (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
+                        # )
                         
                     # 3 - Read from default parameter database
                     except:                        
@@ -135,14 +153,18 @@ class CropParameters(object):
                                     crop_id,
                                     param
                                 )[0]
+                                
                             vars(self.model)[param] = np.broadcast_to(
-                                parameter_values[:, None, None],
-                                (self.model.nFarm, self.model.nCrop,
-                                 self.model.domain.nxy)
+                                parameter_values[:, None],
+                                (self.model.nCrop, self.model.domain.nxy)
                             )
+                            # vars(self.model)[param] = np.broadcast_to(
+                            #     parameter_values[:, None, None],
+                            #     (self.model.nFarm, self.model.nCrop,
+                            #      self.model.domain.nxy)
+                            # )
 
-                        except:
-                            
+                        except:                            
                             raise KeyError(
                                 "Error reading parameter "
                                 + param + " from crop parameter database"
@@ -170,7 +192,7 @@ class CropParameters(object):
             self.model.CC0.T,
             self.model.PlantPop.T,
             self.model.SeedSize.T,
-            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+            self.model.nCrop, self.model.domain.nxy
         )
 
     def compute_root_extraction_terms(self):
@@ -179,7 +201,7 @@ class CropParameters(object):
             self.model.SxBot.T,
             self.model.SxTopQ.T,
             self.model.SxBotQ.T,
-            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+            self.model.nCrop, self.model.domain.nxy
         )
 
     def adjust_planting_and_harvesting_date(self):
@@ -191,7 +213,6 @@ class CropParameters(object):
             self.model.time.doy,
             self.model.time.timestep,
             int(self.model.time.is_leap_year),
-            self.model.nFarm,
             self.model.nCrop,
             self.model.domain.nxy
         )
@@ -203,7 +224,7 @@ class CropParameters(object):
             self.model.HIstart.T,
             self.model.Flowering.T,
             self.model.Determinant,
-            self.model.nFarm, self.model.nCrop, self.model.domain.nxy            
+            self.model.nCrop, self.model.domain.nxy            
             )
         
     def compute_canopy_10pct(self):
@@ -212,7 +233,7 @@ class CropParameters(object):
             self.model.Emergence.T,
             self.model.CC0.T,
             self.model.CGC.T,
-            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+            self.model.nCrop, self.model.domain.nxy
         )
             
     def compute_max_canopy(self):
@@ -222,7 +243,7 @@ class CropParameters(object):
             self.model.CCx.T,
             self.model.CC0.T,
             self.model.CGC.T,
-            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+            self.model.nCrop, self.model.domain.nxy
         )
             
     def compute_hi_end(self):
@@ -230,7 +251,7 @@ class CropParameters(object):
             self.model.HIend.T,
             self.model.HIstart.T,
             self.model.YldForm.T,
-            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+            self.model.nCrop, self.model.domain.nxy
         )
 
     def compute_flowering_end_cd(self):
@@ -240,7 +261,7 @@ class CropParameters(object):
             np.int32(self.model.Flowering).T,
             self.model.HIstart.T,
             self.model.CropType.T,
-            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+            self.model.nCrop, self.model.domain.nxy
         )        
             
     def compute_HIGC(self):
@@ -249,7 +270,6 @@ class CropParameters(object):
             self.model.YldFormCD.T,
             self.model.HI0.T,
             self.model.HIini.T,
-            self.model.nFarm,
             self.model.nCrop,
             self.model.domain.nxy
         )
@@ -262,7 +282,6 @@ class CropParameters(object):
             self.model.HI0.T,
             self.model.HIGC.T,
             self.model.YldFormCD.T,
-            self.model.nFarm,
             self.model.nCrop,
             self.model.domain.nxy
         )
@@ -453,7 +472,7 @@ class CropParameters(object):
                 self.model.GDDmethod,
                 self.model.CalendarType,
                 int(self.model.model.tmin.values.shape[0]),
-                self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+                self.model.nCrop, self.model.domain.nxy
                 )
             
             # return tmin/tmax to current time
@@ -583,7 +602,7 @@ class CropParameters(object):
             self.model.GrowingSeasonDayOne.T,
             sim_start,
             int(self.model.model.tmin.values.shape[0]),
-            self.model.nFarm, self.model.nCrop, self.model.domain.nxy
+            self.model.nCrop, self.model.domain.nxy
         )
         
         # return tmin/tmax to current time
@@ -623,8 +642,8 @@ class CropParameters(object):
         self.update_crop_parameters()
 
     def update_growing_season(self):
-        gs = np.int32(self.model.GrowingSeasonIndex.copy())
-        gsd = np.int32(self.model.GrowingSeasonDayOne.copy())
+        # gs = np.int32(self.model.GrowingSeasonIndex.copy())
+        # gsd = np.int32(self.model.GrowingSeasonDayOne.copy())
         endnum = netCDF4.date2num(
             datetime.datetime(
                 self.model.time.endtime.year,
@@ -640,10 +659,10 @@ class CropParameters(object):
             units='days since 1900-01-01 00:00:00'
         )
         aquacrop_fc.crop_parameters_w.update_growing_season_w(
-            gs.T,
-            gsd.T,
-            # np.int32(self.model.GrowingSeasonIndex).T,
-            # np.int32(self.model.GrowingSeasonDayOne).T,
+            # gs.T,
+            # gsd.T,
+            np.int32(self.model.GrowingSeasonIndex).T,
+            np.int32(self.model.GrowingSeasonDayOne).T,
             np.int32(self.model.DAP).T,
             np.int32(self.model.PlantingDateAdj).T,
             np.int32(self.model.HarvestDateAdj).T,
@@ -659,5 +678,5 @@ class CropParameters(object):
             self.model.nCrop,
             self.model.domain.nxy
         )
-        self.model.GrowingSeasonIndex = gs.astype(bool)
-        self.model.GrowingSeasonDayOne = gsd.astype(bool)
+        # self.model.GrowingSeasonIndex = gs.astype(bool)
+        # self.model.GrowingSeasonDayOne = gsd.astype(bool)

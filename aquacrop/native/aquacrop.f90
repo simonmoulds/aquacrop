@@ -157,7 +157,6 @@ contains
        evap_z_max, &
        rew, &
        kex, &
-       ccxw, &
        fwcc, &
        f_evap, &
        f_wrel_exp, &
@@ -180,7 +179,6 @@ contains
        irr_net, &
        max_canopy_cd, &
        kcb, &
-       ccxw_ns, &
        a_tr, &
        fage, &
        lag_aer, &
@@ -389,7 +387,7 @@ contains
     real(real64), intent(in) :: evap_z_min
     real(real64), intent(in) :: evap_z_max    
     real(real64), intent(in) :: kex
-    real(real64), intent(in) :: ccxw
+    ! real(real64), intent(in) :: ccxw
     real(real64), intent(in) :: fwcc
     real(real64), intent(in) :: f_evap
     real(real64), intent(in) :: f_wrel_exp
@@ -416,7 +414,7 @@ contains
     real(real64), intent(inout) :: irr_net
     integer(int32), intent(in) :: max_canopy_cd
     real(real64), intent(in) :: kcb
-    real(real64), intent(in) :: ccxw_ns
+    ! real(real64), intent(in) :: ccxw_ns
     real(real64), intent(in) :: a_tr
     real(real64), intent(in) :: fage
     integer(int32), intent(in) :: lag_aer
@@ -795,7 +793,7 @@ contains
          evap_z_max, &
          rew, &
          kex, &
-         ccxw, &
+         ccx_w, &
          fwcc, &
          f_evap, &
          f_wrel_exp, &
@@ -903,8 +901,8 @@ contains
          cc_adj, &
          cc_adj_ns, &
          cc_prev, &
-         ccxw, &
-         ccxw_ns, &
+         ccx_w, &
+         ccx_w_ns, &
          z_root, &
          r_cor, &
          z_min, &
