@@ -31,42 +31,96 @@ class IrrigationManagementParameters(object):
 
     def __init__(self, model):
         self.model = model
+        self.config = self.model.config.IRRIGATION_MANAGEMENT
         # self.irrigation_schedule = IrrigationSchedule(model)
 
     def initial(self):
-        self.model.irrMgmtParameterFileNC = self.model.config.IRRIGATION_MANAGEMENT['irrigationManagementNC']
-        self.model.parameter_names = [
+        
+        self.model.irrig_parameters_to_read = [
             'IrrMethod','IrrInterval',
             'SMT1','SMT2','SMT3','SMT4','MaxIrr',
             'AppEff','NetIrrSMT','WetSurf'
-        ]        
-        for param in self.model.parameter_names:
-            if self.model.irrMgmtParameterFileNC is not None:
-                try:
-                    d = file_handling.netcdf_to_arrayWithoutTime(
-                        self.model.irrMgmtParameterFileNC,
-                        param,
-                        cloneMapFileName=self.model.cloneMapFileName)
-                    d = d[self.model.landmask_crop].reshape(self.model.nCrop,self.model.domain.nxy)
-                except:
-                    d = np.zeros((self.model.nCrop, self.model.domain.nxy))
-            else:
-                d = np.zeros((self.model.nCrop, self.model.domain.nxy))
-                
-            vars(self.model)[param] = np.broadcast_to(d, (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
-
-        # check if an irrigation schedule file is required
-        if np.sum(self.model.IrrMethod == 3) > 0:
-            if self.model._configuration.IRRIGATION_MANAGEMENT['irrigationScheduleNC'] != "None":
-                self.model.irrScheduleFileNC = self.model._configuration.IRRIGATION_MANAGEMENT['irrigationScheduleNC']
-            else:
-                logger.error('IrrMethod equals 3 in some or all places, but irrScheduleNC is not set in configuration file')
-
-        else:
-            self.model.irrScheduleFileNC = None
-
-        # TODO: put this somewhere more appropriate
+        ]
         
+        for param in self.model.irrig_parameters_to_read:
+            
+            if param in self.config.keys():
+                # 1 - Try to read from config file
+                # TODO: what dimensions should it have?
+                parameter_values = np.array(self.config[param]) 
+                if (len(parameter_values) == 1) | (len(parameter_values) == self.model.nFarm):                        
+                    vars(self.model)[param] = np.require(
+                        np.broadcast_to(
+                            parameter_values,
+                            (self.model.nFarm,
+                             self.model.nCrop,
+                             self.model.domain.nxy)
+                        ),
+                        requirements=['A','O','W','F']
+                    )
+                else:
+                    raise ValueError(
+                        "Error reading parameter " + param
+                        + " from configuration file: length"
+                        + " of parameter list must equal number"
+                        + " of farms in simulation"
+                    )
+
+            else:        
+                # 2 - Try to read from netCDF file
+                try:
+                    arr = open_hmdataarray(
+                        self.config['irrigationManagementNC'],
+                        param,
+                        self.model.domain
+                    )
+                    vars(self.model)[param] = np.require(
+                        np.broadcast_to(
+                            arr.values,
+                            (self.model.nFarm,
+                             self.model.nCrop,
+                             self.model.domain.nxy)
+                        ),
+                        requirements=['A','O','W','F']
+                    )                    
+                    
+                # 3 - Set to zero
+                except:
+                    vars(self.model)[param] = np.require(
+                        np.zeros((
+                            self.model.nFarm,
+                            self.model.nCrop,
+                            self.model.domain.nxy
+                        )),
+                        requirements=['A','O','W','F']
+                    )
+            
+            # if self.model.irrMgmtParameterFileNC is not None:
+            #     try:
+            #         d = file_handling.netcdf_to_arrayWithoutTime(
+            #             self.model.irrMgmtParameterFileNC,
+            #             param,
+            #             cloneMapFileName=self.model.cloneMapFileName)
+            #         d = d[self.model.landmask_crop].reshape(self.model.nCrop,self.model.domain.nxy)
+            #     except:
+            #         d = np.zeros((self.model.nCrop, self.model.domain.nxy))
+            # else:
+            #     d = np.zeros((self.model.nCrop, self.model.domain.nxy))
+                
+            # vars(self.model)[param] = np.broadcast_to(d, (self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
+
+        # # check if an irrigation schedule file is required
+        # if np.any(self.model.IrrMethod == 3) > 0:
+            
+        #     if self.config['irrigationScheduleNC'] != None:
+        #         self.model.irrScheduleFileNC = self.model._configuration.IRRIGATION_MANAGEMENT['irrigationScheduleNC']
+        #     else:
+        #         logger.error('IrrMethod equals 3 in some or all places, but irrScheduleNC is not set in configuration file')
+
+        # else:
+        #     self.model.irrScheduleFileNC = None
+        
+        # TODO: put this somewhere more appropriate        
         # self.irrigation_schedule.initial()
         self.model.IrrScheduled = np.zeros((self.model.nFarm, self.model.nCrop, self.model.domain.nxy))
             

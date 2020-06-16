@@ -16,22 +16,37 @@ class FieldManagementParameters(object):
         self.read_field_mgmt_parameters()
         
     def read_field_mgmt_parameters(self):
-        field_mgmt_parameter_names = [
-            'Mulches','MulchPctGS','MulchPctOS',
-            'fMulch','Bunds','zBund','BundWater'
+        int_field_mgmt_params = [
+            'Mulches', 'Bunds'
         ]
-        for param in field_mgmt_parameter_names:            
+        flt_field_mgmt_params = [
+            'MulchPctGS','MulchPctOS',
+            'fMulch','zBund','BundWater'
+        ]
+        field_mgmt_params = int_field_mgmt_params + flt_field_mgmt_params
+        for param in field_mgmt_params:
+
+            if param in int_field_mgmt_params:
+                datatype = np.int32
+            else:
+                datatype = np.float64
+            
             if param in self.config.keys():
-                # should have length equal to number of farms
+                # 1 - Try to read from config file
+                    
+                # should have length equal to number of farms (?)                
                 parameter_values = np.array(self.config[param]) 
                 if (len(parameter_values) == 1) | (len(parameter_values) == self.model.nFarm):                        
-                    vars(self.model)[param] = np.broadcast_to(
-                        parameter_values,
-                        (self.model.nFarm,
-                         self.model.nCrop,
-                         self.model.domain.nxy)
+                    vars(self.model)[param] = np.require(
+                        np.broadcast_to(
+                            parameter_values,
+                            (self.model.nFarm,
+                             self.model.nCrop,
+                             self.model.domain.nxy)
+                        ),
+                        dtype=datatype,
+                        requirements=['A','O','W','F']
                     )
-
                 else:
                     raise ValueError(
                         "Error reading parameter " + param
@@ -48,20 +63,28 @@ class FieldManagementParameters(object):
                         param,
                         self.model.domain
                     )
-                    vars(self.model)[param] = np.broadcast_to(
-                        arr.values,
-                        (self.model.nFarm,
-                         self.model.nCrop,
-                         self.model.domain.nxy)
-                    )
+                    vars(self.model)[param] = np.require(
+                        np.broadcast_to(
+                            arr.values,
+                            (self.model.nFarm,
+                             self.model.nCrop,
+                             self.model.domain.nxy)
+                        ),
+                        dtype=datatype,
+                        requirements=['A','O','W','F']
+                    )                    
                     
                 # 3 - Set to zero
                 except:
-                    vars(self.model)[param] = np.zeros((
-                        self.model.nFarm,
-                        self.model.nCrop,
-                        self.model.domain.nxy
-                    ))                         
+                    vars(self.model)[param] = np.require(
+                        np.zeros((
+                            self.model.nFarm,
+                            self.model.nCrop,
+                            self.model.domain.nxy
+                        )),
+                        dtype=datatype,
+                        requirements=['A','O','W','F']
+                    )
                         
     def dynamic(self):
         pass

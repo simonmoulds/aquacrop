@@ -6,6 +6,187 @@ module crop_parameters
   
 contains
 
+  subroutine update_crop_parameters( &
+       higc, &
+       t_lin_switch, &
+       dhi_linear, &
+       yld_form_cd, &
+       hi0, &
+       hi_ini &
+       )
+
+    real(real64), intent(inout) :: higc
+    integer(int32), intent(inout) :: t_lin_switch
+    real(real64), intent(inout) :: dhi_linear
+    integer(int32), intent(in) :: yld_form_cd
+    real(real64), intent(in) :: hi0
+    real(real64), intent(in) :: hi_ini
+
+    call compute_higc( &
+         higc, &
+         yld_form_cd, &
+         hi0, &
+         hi_ini &
+         ) 
+    call compute_hi_linear( &
+         t_lin_switch, &
+         dhi_linear, &
+         hi_ini, &
+         hi0, &
+         higc, &
+         yld_form_cd &
+         )
+
+  end subroutine update_crop_parameters
+
+  
+       
+  subroutine compute_crop_parameters( &
+       cc0, &
+       sx_top, &
+       sx_bot, &
+       planting_date_adj, &
+       harvest_date_adj, &
+       canopy_dev_end, &
+       canopy_10pct, &
+       max_canopy, &
+       hi_end, &
+       flowering_end, &
+       flowering_cd, &
+       higc, &
+       t_lin_switch, &
+       dhi_linear, &
+       plant_pop, &
+       seed_size, &
+       sx_top_q, &
+       sx_bot_q, &
+       planting_date, &
+       harvest_date, &
+       day_of_year, &
+       time_step, &
+       leap_year, &
+       senescence, &
+       hi_start, &
+       flowering, &
+       determinant, &
+       emergence, &
+       cgc, &
+       ccx, &
+       yld_form, &
+       crop_type, &
+       yld_form_cd, &
+       hi0, &
+       hi_ini &
+       )
+
+    real(real64), intent(inout) :: cc0
+    real(real64), intent(inout) :: sx_top
+    real(real64), intent(inout) :: sx_bot
+    integer(int32), intent(inout) :: planting_date_adj
+    integer(int32), intent(inout) :: harvest_date_adj
+    real(real64), intent(inout) :: canopy_dev_end
+    real(real64), intent(inout) :: canopy_10pct
+    real(real64), intent(inout) :: max_canopy
+    real(real64), intent(inout) :: hi_end
+    real(real64), intent(inout) :: flowering_end
+    integer(int32), intent(inout) :: flowering_cd
+    real(real64), intent(inout) :: higc
+    integer(int32), intent(inout) :: t_lin_switch
+    real(real64), intent(inout) :: dhi_linear
+    
+    integer(int32), intent(in) :: plant_pop
+    real(real64), intent(in) :: seed_size
+    real(real64), intent(in) :: sx_top_q
+    real(real64), intent(in) :: sx_bot_q
+    integer(int32), intent(in) :: planting_date
+    integer(int32), intent(in) :: harvest_date
+    integer(int32), intent(in) :: day_of_year
+    integer(int32), intent(in) :: time_step
+    integer(int32), intent(in) :: leap_year
+    real(real64), intent(in) :: senescence
+    real(real64), intent(in) :: hi_start
+    real(real64), intent(in) :: flowering
+    integer(int32), intent(in) :: determinant
+    real(real64), intent(in) :: emergence
+    real(real64), intent(in) :: cgc
+    real(real64), intent(in) :: ccx
+    real(real64), intent(in) :: yld_form    
+    integer(int32), intent(in) :: crop_type
+    integer(int32), intent(in) :: yld_form_cd
+    real(real64), intent(in) :: hi0
+    real(real64), intent(in) :: hi_ini
+
+    call compute_init_cc( &
+         cc0, &
+         plant_pop, &
+         seed_size &
+         )    
+    call compute_root_extraction_terms( &
+         sx_top, &
+         sx_bot, &
+         sx_top_q, &
+         sx_bot_q &
+         )
+    call adjust_pd_hd( &
+         planting_date_adj, &
+         harvest_date_adj, &
+         planting_date, &
+         harvest_date, &
+         day_of_year, &
+         time_step, &
+         leap_year &
+         )
+    call compute_canopy_dev_end( &
+         canopy_dev_end, &
+         senescence, &
+         hi_start, &
+         flowering, &
+         determinant &
+         )
+    call compute_canopy_10pct( &
+         canopy_10pct, &
+         emergence, &
+         cc0, &
+         cgc &
+         )
+    call compute_max_canopy( &
+         max_canopy, &
+         emergence, &
+         ccx, &
+         cc0, &
+         cgc &
+         )    
+    call compute_hi_end( &
+         hi_end, &
+         hi_start, &
+         yld_form &
+         )    
+    call compute_flowering_end_cd( &
+         flowering_end, &
+         flowering_cd, &
+         flowering, &
+         hi_start, &
+         crop_type &
+         )
+    call compute_higc( &
+         higc, &
+         yld_form_cd, &
+         hi0, &
+         hi_ini &
+         ) 
+    call compute_hi_linear( &
+         t_lin_switch, &
+         dhi_linear, &
+         hi_ini, &
+         hi0, &
+         higc, &
+         yld_form_cd &
+         )
+
+  end subroutine compute_crop_parameters
+
+
+  
   subroutine compute_pd_hd( &
        pd, &
        hd, &    
@@ -484,6 +665,7 @@ contains
        cc0, &
        cgc &
        )
+    
     real(real64), intent(inout) :: max_canopy
     real(real64), intent(in) :: emergence
     real(real64), intent(in) :: ccx
@@ -518,7 +700,8 @@ contains
        )
     real(real64), intent(inout) :: flowering_end
     integer(int32), intent(inout) :: flowering_cd
-    integer(int32), intent(in) :: flowering
+    ! integer(int32), intent(in) :: flowering
+    real(real64), intent(in) :: flowering
     real(real64), intent(in) :: hi_start
     integer(int32), intent(in) :: crop_type
     flowering_end = 0.
@@ -576,7 +759,7 @@ contains
        )
 
     real(real64), intent(inout) :: cc0
-    real(real64), intent(in) :: plant_pop
+    integer(int32), intent(in) :: plant_pop
     real(real64), intent(in) :: seed_size
     cc0 = nint(10000. * plant_pop * seed_size * 1E-08) / 10000.
     
@@ -757,7 +940,6 @@ contains
        yld_form_cd &
        )
 
-    ! real(real64), intent(inout) :: t_lin_switch
     integer(int32), intent(inout) :: t_lin_switch
     real(real64), intent(inout) :: dhi_linear
     real(real64), intent(in) :: hi_ini

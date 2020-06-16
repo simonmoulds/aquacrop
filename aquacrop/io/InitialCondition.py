@@ -107,6 +107,25 @@ class InitialCondition(object):
             (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy)
         )
 
+    def set_initial_adjusted_field_capacity(self):
+        self.var.th_fc_adj = np.require(
+            np.broadcast_to(
+                self.var.th_fc[self.var.layerIndex,:][None,None,...],
+                (self.var.nFarm, self.var.nCrop, self.var.nComp, self.var.domain.nxy)
+            ),
+            requirements=['A','O','W','F']            
+        )
+
+    def set_initial_surface_storage(self):
+        cond1 = (self.var.Bunds == 0) & (self.var.zBund > 0.001)
+        SurfaceStorage = np.zeros((self.var.nFarm, self.var.nCrop, self.var.domain.nxy))
+        SurfaceStorage[cond1] = self.var.BundWater[cond1]
+        SurfaceStorage = np.clip(SurfaceStorage, None, self.var.zBund)
+        self.var.SurfaceStorage = np.require(
+            np.copy(SurfaceStorage),
+            requirements=['A','O','W','F']
+        )            
+        
     def initial(self):
         if self.var.initial_condition_type == 'FILE':
             self.set_initial_condition_from_file()
@@ -116,6 +135,13 @@ class InitialCondition(object):
             self.set_initial_condition_from_property()
         else:
             pass
+
+        self.var.th = np.require(
+            self.var.th,
+            requirements=['A','O','W','F']
+        )        
+        self.set_initial_adjusted_field_capacity()
+        self.set_initial_surface_storage()
         
     def dynamic(self):
         # Condition to identify crops which are not being grown or crops which

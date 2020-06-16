@@ -18,7 +18,8 @@ class AquaCrop(Model):
             config,
             time,
             domain,
-            init
+            is_1d=True,
+            init=init
         )
         self.weather_module = Weather(self)
         self.groundwater_module = Groundwater(self)
