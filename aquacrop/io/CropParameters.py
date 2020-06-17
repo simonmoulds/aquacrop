@@ -61,7 +61,7 @@ class CropParameters(object):
         )
         self.model.GrowingSeasonDayOne = np.require(
             np.zeros(
-                (self.model.nCrop, self.model.domain.nxy),
+                (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
                 dtype=np.int32
             ),
             requirements=['A','O','W','F']
@@ -88,7 +88,7 @@ class CropParameters(object):
         for param in int_params_to_compute:
             vars(self.model)[param] = np.require(
                 np.zeros(
-                    (self.model.nCrop, self.model.domain.nxy),
+                    (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
                     dtype=np.int32
                 ),
                 requirements=['A','O','W','F']
@@ -96,7 +96,7 @@ class CropParameters(object):
         for param in flt_params_to_compute:
             vars(self.model)[param] = np.require(
                 np.zeros(
-                    (self.model.nCrop, self.model.domain.nxy),
+                    (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
                     dtype=np.float64
                 ),
                 requirements=['A','O','W','F']                
@@ -144,7 +144,7 @@ class CropParameters(object):
                         vars(self.model)[param] = np.require(
                             np.broadcast_to(
                                 parameter_values[:, None],
-                                (self.model.nCrop, self.model.domain.nxy)
+                                (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
                             ),
                             dtype=datatype,
                             requirements=['A','O','W','F']
@@ -171,7 +171,7 @@ class CropParameters(object):
                         vars(self.model)[param] = np.require(
                             np.broadcast_to(
                                 arr.values,
-                                (self.model.nCrop, self.model.domain.nxy)
+                                (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
                             ),
                             dtype=datatype,
                             requirements=['A','O','W','F']
@@ -190,8 +190,8 @@ class CropParameters(object):
                                 
                             vars(self.model)[param] = np.require(
                                 np.broadcast_to(
-                                    parameter_values[:, None],
-                                    (self.model.nCrop, self.model.domain.nxy)
+                                    parameter_values[None, :, None],
+                                    (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
                                 ),
                                 dtype=datatype,
                                 requirements=['A','O','W','F']
@@ -240,6 +240,7 @@ class CropParameters(object):
             self.model.YldFormCD,
             self.model.HI0,
             self.model.HIini,
+            self.model.nFarm,
             self.model.nCrop,
             self.model.domain.nxy
         )        
@@ -351,7 +352,9 @@ class CropParameters(object):
             self.model.GrowingSeasonDayOne,
             int(self.model.time.timestep == 0),
             int(self.model.model.tmin.values.shape[0]),
-            self.model.nCrop, self.model.domain.nxy
+            self.model.nFarm,
+            self.model.nCrop,
+            self.model.domain.nxy
         )
         
         # return tmin/tmax to current time
@@ -375,6 +378,7 @@ class CropParameters(object):
                     self.model.YldFormCD,
                     self.model.HI0,
                     self.model.HIini,
+                    self.model.nFarm,
                     self.model.nCrop,
                     self.model.domain.nxy
                 )
@@ -389,7 +393,10 @@ class CropParameters(object):
             self.model.bface,
             self.model.fsink,
             self.model.WP,
-            self.model.GrowingSeasonDayOne
+            self.model.GrowingSeasonDayOne,
+            self.model.nFarm,
+            self.model.nCrop,
+            self.model.domain.nxy            
         )        
     def dynamic(self):
         self.adjust_planting_and_harvesting_date()
@@ -438,6 +445,7 @@ class CropParameters(object):
             self.model.time.doy,
             self.model.time.timestep,
             int(self.model.time.is_leap_year),
+            self.model.nFarm,
             self.model.nCrop,
             self.model.domain.nxy
         )

@@ -240,14 +240,14 @@ contains
     real(real64), dimension(n_cell), intent(in) :: t_max ! input
     real(real64), dimension(n_cell), intent(in) :: t_min ! input
     
-    real(real64), dimension(n_crop, n_cell), intent(in) :: t_base ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: t_upp  ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: t_base ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: t_upp  ! crop param
 
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: growth_stage ! intermediate variable
     
-    real(real64), dimension(n_crop, n_cell), intent(in) :: canopy_10pct ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: max_canopy ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: senescence ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: canopy_10pct ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: max_canopy ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: senescence ! crop param
 
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: dap ! state variable
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: delayed_cds ! state variable
@@ -267,7 +267,7 @@ contains
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: pre_irr ! intermediate variable
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: irr_method ! irrigation mgmt param
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: z_root ! intermediate variable
-    real(real64), dimension(n_crop, n_cell), intent(in) :: z_min ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: z_min ! crop param
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: net_irr_smt ! irrigation mgmt param
     real(real64), dimension(n_layer, n_cell), intent(in) :: th_wilt ! soil hydraulic param
     real(real64), dimension(n_comp), intent(in) :: dz_sum           ! soil profile
@@ -303,7 +303,7 @@ contains
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: taw ! intermediate variable
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: dr ! intermediate variable
     real(real64), dimension(n_layer, n_cell), intent(in) :: th_dry ! soil hydraulic param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: aer ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: aer ! crop param
     ! irrigation
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: irr ! intermediate variable
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: irr_cum ! state variable
@@ -328,17 +328,17 @@ contains
     ! germination
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: germ ! state variable (?)
     real(real64), dimension(n_cell), intent(in) :: z_germ ! soil param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: germ_thr ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: germ_thr ! crop param
     ! root_development
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: r_cor ! state variable (?)
-    real(real64), dimension(n_crop, n_cell), intent(in) :: z_max ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: pct_z_min ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: emergence ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: max_rooting ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: fshape_r ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: fshape_ex ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: sx_bot ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: sx_top ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: z_max ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: pct_z_min ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: emergence ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: max_rooting ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: fshape_r ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: fshape_ex ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: sx_bot ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: sx_top ! crop param
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: tr_ratio ! intermediate variable
     real(real64), dimension(n_cell), intent(in) :: z_res ! soil param
     ! canopy_cover
@@ -361,27 +361,27 @@ contains
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: premat_senes ! state variable (?)
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: crop_dead ! state variable (?)
 
-    real(real64), dimension(n_crop, n_cell), intent(in) :: cc0 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: ccx ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: cgc ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: cdc ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: maturity ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: canopy_dev_end ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: cc0 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: ccx ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: cgc ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: cdc ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: maturity ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: canopy_dev_end ! crop param
     
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: et_adj ! crop param - should this be a switch???
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: et_adj ! crop param - should this be a switch???
     
-    real(real64), dimension(n_crop, n_cell), intent(in) :: p_up1 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: p_up2 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: p_up3 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: p_up4 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: p_lo1 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: p_lo2 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: p_lo3 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: p_lo4 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: f_shape_w1 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: f_shape_w2 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: f_shape_w3 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: f_shape_w4 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_up1 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_up2 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_up3 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_up4 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_lo1 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_lo2 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_lo3 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: p_lo4 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shape_w1 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shape_w2 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shape_w3 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shape_w4 ! crop param
 
     ! soil_evaporation    
     integer(int32), intent(in) :: time_step ! clock
@@ -416,11 +416,11 @@ contains
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: age_days_ns ! state variable
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: day_submrgd ! state variable
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: irr_net ! intermediate variable
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: max_canopy_cd ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: kcb ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: a_tr ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: fage ! crop param
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: lag_aer ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: max_canopy_cd ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: kcb ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: a_tr ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: fage ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: lag_aer ! crop param
     real(real64), dimension(n_cell), intent(in) :: co2_conc
     real(real64), intent(in) :: co2_refconc
 
@@ -434,33 +434,33 @@ contains
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: hi_ref ! intermediate variable
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: pct_lag_phase ! intermediate variable
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: yield_form ! intermediate variable
-    real(real64), dimension(n_crop, n_cell), intent(in) :: cc_min ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: hi_ini ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: hi0 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: higc ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: hi_start ! crop param
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: hi_start_cd ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: t_lin_switch ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: dhi_linear ! crop param
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: crop_type ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: cc_min ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: hi_ini ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: hi0 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: higc ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: hi_start ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: hi_start_cd ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: t_lin_switch ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: dhi_linear ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: crop_type ! crop param
 
     ! temperature_stress
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: bio_temp_stress ! crop param
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: pol_heat_stress ! crop param
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: pol_cold_stress ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: gdd_up, gdd_lo ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: t_max_up, t_max_lo ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: t_min_up, t_min_lo ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: f_shp_b ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: bio_temp_stress ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: pol_heat_stress ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: pol_cold_stress ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: gdd_up, gdd_lo ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: t_max_up, t_max_lo ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: t_min_up, t_min_lo ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_shp_b ! crop param
 
     ! biomass_accumulation
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: b ! state variable
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: b_ns ! state variable
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: yld_form_cd ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: wp ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: wpy ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: f_co2 ! crop param
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: determinant ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: yld_form_cd ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: wp ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: wpy ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: f_co2 ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: determinant ! crop param
 
     ! adjust_harvest_index
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: hi_adj ! state variable
@@ -472,21 +472,21 @@ contains
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: fpost_upp ! intermediate variable
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: s_cor1 ! state variable (?)
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: s_cor2 ! state variable (?)
-    real(real64), dimension(n_crop, n_cell), intent(in) :: dhi0 ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: dhi_pre ! crop param
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: canopy_dev_end_cd ! crop param
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: hi_end_cd ! crop param
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: flowering_cd ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: a_hi ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: b_hi ! crop param
-    real(real64), dimension(n_crop, n_cell), intent(in) :: exc ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: dhi0 ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: dhi_pre ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: canopy_dev_end_cd ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: hi_end_cd ! crop param
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: flowering_cd ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: a_hi ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: b_hi ! crop param
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: exc ! crop param
     
     ! crop_yield
     real(real64), dimension(n_farm, n_crop, n_cell), intent(inout) :: yield ! intermediate variable
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(inout) :: crop_mature ! state variable (?)
     
     integer(int32), intent(in) :: calendar_type ! option
-    integer(int32), dimension(n_crop, n_cell), intent(in) :: growing_season_day1
+    integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: growing_season_day1
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: growing_season
     integer(int32) :: i, j, k
 
@@ -502,12 +502,12 @@ contains
                   gdd_method, &
                   t_max(i), &
                   t_min(i), &
-                  t_base(j,i), &
-                  t_upp(j,i), &
+                  t_base(k,j,i), &
+                  t_upp(k,j,i), &
                   growth_stage(k,j,i), &
-                  canopy_10pct(j,i), &
-                  max_canopy(j,i), &
-                  senescence(j,i), &
+                  canopy_10pct(k,j,i), &
+                  max_canopy(k,j,i), &
+                  senescence(k,j,i), &
                   dap(k,j,i), &
                   delayed_cds(k,j,i), &
                   delayed_gdds(k,j,i), &
@@ -524,7 +524,7 @@ contains
                   pre_irr(k,j,i), &
                   irr_method(k,j,i), &
                   z_root(k,j,i), &
-                  z_min(j,i), &
+                  z_min(k,j,i), &
                   net_irr_smt(k,j,i), &
                   th_wilt(:,i), &
                   dz_sum, &
@@ -552,7 +552,7 @@ contains
                   taw(k,j,i), &
                   dr(k,j,i), &
                   th_dry(:,i), &
-                  aer(j,i), &
+                  aer(k,j,i), &
                   irr(k,j,i), &
                   irr_cum(k,j,i), &
                   irr_net_cum(k,j,i), &
@@ -573,16 +573,16 @@ contains
                   dz_layer, &
                   germ(k,j,i), &
                   z_germ(i), &
-                  germ_thr(j,i), &
+                  germ_thr(k,j,i), &
                   r_cor(k,j,i), &
-                  z_max(j,i), &
-                  pct_z_min(j,i), &
-                  emergence(j,i), &
-                  max_rooting(j,i), &
-                  fshape_r(j,i), &
-                  fshape_ex(j,i), &
-                  sx_bot(j,i), &
-                  sx_top(j,i), &
+                  z_max(k,j,i), &
+                  pct_z_min(k,j,i), &
+                  emergence(k,j,i), &
+                  max_rooting(k,j,i), &
+                  fshape_r(k,j,i), &
+                  fshape_ex(k,j,i), &
+                  sx_bot(k,j,i), &
+                  sx_top(k,j,i), &
                   tr_ratio(k,j,i), &
                   z_res(i), &
                   cc(k,j,i), &
@@ -599,25 +599,25 @@ contains
                   t_early_sen(k,j,i), &
                   premat_senes(k,j,i), &
                   crop_dead(k,j,i), &
-                  cc0(j,i), &
-                  ccx(j,i), &
-                  cgc(j,i), &
-                  cdc(j,i), &
-                  maturity(j,i), &
-                  canopy_dev_end(j,i), &
-                  et_adj(j,i), &
-                  p_up1(j,i), &
-                  p_up2(j,i), &
-                  p_up3(j,i), &
-                  p_up4(j,i), &
-                  p_lo1(j,i), &
-                  p_lo2(j,i), &
-                  p_lo3(j,i), &
-                  p_lo4(j,i), &
-                  f_shape_w1(j,i), &
-                  f_shape_w2(j,i), &
-                  f_shape_w3(j,i), &
-                  f_shape_w4(j,i), &
+                  cc0(k,j,i), &
+                  ccx(k,j,i), &
+                  cgc(k,j,i), &
+                  cdc(k,j,i), &
+                  maturity(k,j,i), &
+                  canopy_dev_end(k,j,i), &
+                  et_adj(k,j,i), &
+                  p_up1(k,j,i), &
+                  p_up2(k,j,i), &
+                  p_up3(k,j,i), &
+                  p_up4(k,j,i), &
+                  p_lo1(k,j,i), &
+                  p_lo2(k,j,i), &
+                  p_lo3(k,j,i), &
+                  p_lo4(k,j,i), &
+                  f_shape_w1(k,j,i), &
+                  f_shape_w2(k,j,i), &
+                  f_shape_w3(k,j,i), &
+                  f_shape_w4(k,j,i), &
                   es_act(k,j,i), &
                   e_pot(k,j,i), &
                   wet_surf(k,j,i), &
@@ -648,11 +648,11 @@ contains
                   age_days_ns(k,j,i), &
                   day_submrgd(k,j,i), &
                   irr_net(k,j,i), &
-                  max_canopy_cd(j,i), &
-                  kcb(j,i), &
-                  a_tr(j,i), &
-                  fage(j,i), &
-                  lag_aer(j,i), &
+                  max_canopy_cd(k,j,i), &
+                  kcb(k,j,i), &
+                  a_tr(k,j,i), &
+                  fage(k,j,i), &
+                  lag_aer(k,j,i), &
                   co2_conc(i), &
                   co2_refconc, &
                   et_pot(k,j,i), &
@@ -660,32 +660,32 @@ contains
                   hi_ref(k,j,i), &
                   pct_lag_phase(k,j,i), &
                   yield_form(k,j,i), &
-                  cc_min(j,i), &
-                  hi_ini(j,i), &
-                  hi0(j,i), &
-                  higc(j,i), &
-                  hi_start(j,i), &
-                  hi_start_cd(j,i), &
-                  t_lin_switch(j,i), &
-                  dhi_linear(j,i), &
-                  crop_type(j,i), &                  
-                  bio_temp_stress(j,i), &
-                  gdd_up(j,i), &
-                  gdd_lo(j,i), &
-                  pol_heat_stress(j,i), &
-                  t_max_up(j,i), &
-                  t_max_lo(j,i), &
-                  f_shp_b(j,i), &
-                  pol_cold_stress(j,i), &
-                  t_min_up(j,i), &
-                  t_min_lo(j,i), &
+                  cc_min(k,j,i), &
+                  hi_ini(k,j,i), &
+                  hi0(k,j,i), &
+                  higc(k,j,i), &
+                  hi_start(k,j,i), &
+                  hi_start_cd(k,j,i), &
+                  t_lin_switch(k,j,i), &
+                  dhi_linear(k,j,i), &
+                  crop_type(k,j,i), &                  
+                  bio_temp_stress(k,j,i), &
+                  gdd_up(k,j,i), &
+                  gdd_lo(k,j,i), &
+                  pol_heat_stress(k,j,i), &
+                  t_max_up(k,j,i), &
+                  t_max_lo(k,j,i), &
+                  f_shp_b(k,j,i), &
+                  pol_cold_stress(k,j,i), &
+                  t_min_up(k,j,i), &
+                  t_min_lo(k,j,i), &
                   b(k,j,i), &
                   b_ns(k,j,i), &
-                  yld_form_cd(j,i), &
-                  wp(j,i), &
-                  wpy(j,i), &
-                  f_co2(j,i), &
-                  determinant(j,i), &
+                  yld_form_cd(k,j,i), &
+                  wp(k,j,i), &
+                  wpy(k,j,i), &
+                  f_co2(k,j,i), &
+                  determinant(k,j,i), &
                   hi_adj(k,j,i), &
                   pre_adj(k,j,i), &
                   f_pre(k,j,i), &
@@ -695,18 +695,18 @@ contains
                   fpost_upp(k,j,i), &
                   s_cor1(k,j,i), &
                   s_cor2(k,j,i), &
-                  dhi0(j,i), &
-                  dhi_pre(j,i), &
-                  canopy_dev_end_cd(j,i), &
-                  hi_end_cd(j,i), &
-                  flowering_cd(j,i), &
-                  a_hi(j,i), &
-                  b_hi(j,i), &
-                  exc(j,i), &                  
+                  dhi0(k,j,i), &
+                  dhi_pre(k,j,i), &
+                  canopy_dev_end_cd(k,j,i), &
+                  hi_end_cd(k,j,i), &
+                  flowering_cd(k,j,i), &
+                  a_hi(k,j,i), &
+                  b_hi(k,j,i), &
+                  exc(k,j,i), &                  
                   yield(k,j,i), &
                   crop_mature(k,j,i), &
                   calendar_type, &
-                  growing_season_day1(j,i), &
+                  growing_season_day1(k,j,i), &
                   growing_season(k,j,i) &
                   )
           end do
