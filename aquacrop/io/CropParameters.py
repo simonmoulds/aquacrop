@@ -127,20 +127,6 @@ class CropParameters(object):
             'p_lo3','p_lo4', 'fshape_w1', 'fshape_w2', 'fshape_w3',
             'fshape_w4','Aer', 'beta', 'GermThr'
         ]        
-        # crop_parameters_to_read = [
-        #     'CropType', 'PlantingDate', 'HarvestDate', 'Emergence', 'MaxRooting',
-        #     'Senescence', 'Maturity', 'HIstart', 'Flowering', 'YldForm',
-        #     'PolHeatStress', 'PolColdStress', 'BioTempStress', 'PlantPop',
-        #     'Determinant', 'ETadj', 'LagAer', 'Tbase', 'Tupp', 'Tmax_up',
-        #     'Tmax_lo', 'Tmin_up', 'Tmin_lo', 'GDD_up', 'GDD_lo', 'fshape_b',
-        #     'PctZmin', 'Zmin', 'Zmax', 'fshape_r', 'fshape_ex', 'SxTopQ',
-        #     'SxBotQ', 'a_Tr', 'SeedSize', 'CCmin', 'CCx', 'CDC', 'CGC',
-        #     'Kcb', 'fage', 'WP', 'WPy', 'fsink', 'bsted', 'bface', 'HI0',
-        #     'HIini', 'dHI_pre', 'a_HI', 'b_HI', 'dHI0', 'exc', 'MaxFlowPct',
-        #     'p_up1', 'p_up2', 'p_up3', 'p_up4', 'p_lo1', 'p_lo2', 'p_lo3',
-        #     'p_lo4', 'fshape_w1', 'fshape_w2', 'fshape_w3', 'fshape_w4',
-        #     'Aer', 'beta', 'GermThr'
-        # ]
         crop_params_to_read = int_crop_params + flt_crop_params
         if len(crop_params_to_read) > 0:
             for param in crop_params_to_read:
@@ -152,6 +138,7 @@ class CropParameters(object):
 
                 # 1 Try to read from configuration file:
                 if param in self.config.keys():
+                    # TODO
                     parameter_values = np.array(self.config[param])
                     if (len(parameter_values) == 1) | (len(parameter_values) == self.model.nCrop):                        
                         vars(self.model)[param] = np.require(

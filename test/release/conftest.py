@@ -12,7 +12,7 @@ import netCDF4 as nc
 import glob
 # from .test_utils import
 
-from aquacrop import run
+# from aquacrop import run
 
 
 @pytest.fixture
