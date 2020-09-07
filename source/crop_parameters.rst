@@ -32,11 +32,14 @@ Options
 ``filename``
     NetCDF file containing crop parameters.
 
+In addition to these options, users may supply any parameter values, or none, in
+the configuration file directly (e.g. ``crop_type = 1``). When reading crop parameter values, the program initially checks the configuration file, then the supplied netCDF file. Default values are supplied for all parameters except ``crop_type``, ``planting_date``, and ``harvest_date``.
+    
 Parameters
 ~~~~~~~~~~
 
 +--------------+-----------------------------+---------+-----------------------+
-| Parameter    | Description                 | Units   |         Default       |
+| Parameter    | Description                 | Units   |      Default [#]_     |
 +==============+=============================+=========+=======================+
 | crop_type    | Crop category               | \-      | | 1 = Leafy vegetable |
 |              |                             |         | | 2 = Root/tuber      |
@@ -368,3 +371,5 @@ Parameters
 |              | germination                 |         |                       |
 |              |                             |         |                       |
 +--------------+-----------------------------+---------+-----------------------+
+
+.. [#] Only parameters with generic (not crop-specific) default values are shown here.

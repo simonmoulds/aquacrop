@@ -17,20 +17,11 @@ Features
 
 .. toctree::
    :maxdepth: 2
-	     
+   :hidden:
+      
    installation
    configuration
-   model_grid
-   clock
-   pseudo_coords
-   meteorological_inputs
-   groundwater
-   crop_parameters
-   irrigation
-   field_parameters
-   soil_hydraulic_parameters
-   soil_parameters
-   reporting
+   run
    
 Indices and tables
 ==================
