@@ -45,6 +45,8 @@ class AquaCropConfiguration(Configuration):
             for key, value in self.PSEUDO_COORDS.items():
                 if isinstance(value, (int, float)):
                     self.PSEUDO_COORDS[key] = [value]
+                elif isinstance(value, (str)):
+                    self.PSEUDO_COORDS[key] = eval(value)
 
     def check_config_file_for_required_entry(
             self,

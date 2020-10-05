@@ -140,7 +140,13 @@ class CropParameters(object):
                 if param in self.config.keys():
                     # TODO
                     parameter_values = np.array(self.config[param])
-                    if (len(parameter_values) == 1) | (len(parameter_values) == self.model.nCrop):                        
+
+                    # ensure the parameter has a farm dimension
+                    if len(parameter_values.shape) == 1:
+                        if len(parameter_values) == self.model.nCrop:
+                            parameter_values = np.broadcast_to(parameter_values, (self.model.nFarm, self.model.nCrop))
+                            
+                    if (parameter_values.shape[0] == self.model.nFarm) & (parameter_values.shape[1] == self.model.nCrop):                        
                         vars(self.model)[param] = np.require(
                             np.broadcast_to(
                                 parameter_values[:, None],
@@ -157,7 +163,6 @@ class CropParameters(object):
                             + " of parameter list must equal number"
                             + " of crops in simulation"
                         )
-                        
                 else:        
                     # 2 Try to read from netCDF file
                     try:
@@ -254,7 +259,7 @@ class CropParameters(object):
         time_slc = slice(
             self.model.time.curr_time,
             self.model.time.curr_time +
-            datetime.timedelta(int(max_harvest_date - sd))
+            datetime.timedelta(int(max_harvest_date - sd + 1))  # TODO: '+1' is new addition to match Fortran code
         )
         return time_slc
     
@@ -279,7 +284,7 @@ class CropParameters(object):
             # values to calculate growing degree days
             time_slc = self.compute_time_slice()
             self.model.model.tmin.select(time_slc)
-            self.model.model.tmax.select(time_slc)            
+            self.model.model.tmax.select(time_slc)
             aquacrop_w.crop_parameters_w.switch_gdd_w(
                 self.model.model.tmin.values,
                 self.model.model.tmax.values,
@@ -326,7 +331,7 @@ class CropParameters(object):
         time_slc = self.compute_time_slice()
         self.model.model.tmin.select(time_slc)
         self.model.model.tmax.select(time_slc)
-        
+                
         aquacrop_fc.crop_parameters_w.compute_crop_calendar_type2_w(
             self.model.model.tmin.values,
             self.model.model.tmax.values,
@@ -358,8 +363,8 @@ class CropParameters(object):
         )
         
         # return tmin/tmax to current time
-        self.model.model.tmin.select(time=self.model.time.curr_time)
-        self.model.model.tmax.select(time=self.model.time.curr_time)
+        self.model.model.tmin.select(time=self.model.time.curr_time, method='nearest')  # TODO: method='nearest' is new addition - CHECK
+        self.model.model.tmax.select(time=self.model.time.curr_time, method='nearest')  # TODO: method='nearest' is new addition - CHECK
 
     def compute_crop_calendar(self):
         if self.model.CalendarType == 1:

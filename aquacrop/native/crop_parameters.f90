@@ -611,7 +611,7 @@ contains
     end if
 
     ! allocate array variables
-    n = hd - start_day + 1
+    n = hd - start_day + 1    
     allocate(dindex(n))    
     allocate(gsindex(n))
     allocate(gddcum(n))    

@@ -421,7 +421,7 @@ contains
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: a_tr ! crop param
     real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: fage ! crop param
     integer(int32), dimension(n_farm, n_crop, n_cell), intent(in) :: lag_aer ! crop param
-    real(real64), dimension(n_cell), intent(in) :: co2_conc
+    real(real64), dimension(n_farm, n_crop, n_cell), intent(in) :: co2_conc
     real(real64), intent(in) :: co2_refconc
 
     ! evapotranspiration
@@ -653,7 +653,7 @@ contains
                   a_tr(k,j,i), &
                   fage(k,j,i), &
                   lag_aer(k,j,i), &
-                  co2_conc(i), &
+                  co2_conc(k,j,i), &
                   co2_refconc, &
                   et_pot(k,j,i), &
                   gw_in(k,j,i), &

@@ -108,7 +108,7 @@ class SoilHydraulicParameters(object):
                 ),
                 requirements=['A','O','W','F']
             )
-            
+
         aquacrop_fc.soil_hydraulic_parameters_w.compute_soil_h_parameters_w(
             np.asfortranarray(self.model.aCR.T),  # TODO
             np.asfortranarray(self.model.bCR.T),  # TODO
