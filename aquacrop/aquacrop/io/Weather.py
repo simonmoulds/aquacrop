@@ -105,7 +105,7 @@ class Weather(object):
         # self.mean_temperature_module.initial()
         self.prec.initial()
         self.etref.initial()
-
+        
     def dynamic(self):
         self.max_temperature_module.dynamic()
         self.min_temperature_module.dynamic()

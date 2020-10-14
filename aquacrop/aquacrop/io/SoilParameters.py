@@ -61,16 +61,18 @@ class SoilParameters(object):
         for param in soil_parameters:
             try:
                 arr = open_hmdataarray(
-                    self.model.config.SOIL_PARAMETERS['soilParametersNC'],
+                    self.model.config.SOIL_PARAMETERS['filename'],
                     param,
-                    self.model.domain
+                    self.model.domain,
+                    self.model.config.SOIL_PARAMETERS['is_1d'],
+                    self.model.config.SOIL_PARAMETERS['xy_dimname'],
                 )
                 vars(self.model)[param] = np.require(
                     arr.values,
                     requirements=['A','O','W','F']
                 )
                 
-            except TypeError:
+            except:
                 try:
                     parameter_value = read_parameter_from_sqlite(
                         self.model.SoilParameterDatabase,

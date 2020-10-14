@@ -19,3 +19,4 @@ class CarbonDioxide(HmInputData):
         self.is_1d = model.config.CARBON_DIOXIDE['is_1d']
         self.xy_dimname = model.config.CARBON_DIOXIDE['xy_dimname']
         self.model_varname = 'conc'
+            

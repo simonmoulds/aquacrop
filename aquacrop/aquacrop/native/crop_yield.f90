@@ -37,7 +37,6 @@ contains
     end if
 
     if ( growing_season == 1 ) then
-       
        yield = (b / 100.) * hi_adj
        if ( calendar_type == 1 ) then
           if ( (dap - delayed_cds) >= maturity ) then

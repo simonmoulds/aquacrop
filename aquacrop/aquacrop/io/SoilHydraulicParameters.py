@@ -44,16 +44,16 @@ class SoilHydraulicParameters(object):
         # TODO: optionally read directly from config file
         
         soil_hydraulic_parameters = {
-            'k_sat'  : self.config['saturatedHydraulicConductivityVarName'],
-            'th_sat' : self.config['saturatedVolumetricWaterContentVarName'],
-            'th_fc'  : self.config['fieldCapacityVolumetricWaterContentVarName'],
-            'th_wilt': self.config['wiltingPointVolumetricWaterContentVarName']
+            'k_sat'  : self.model.config.SOIL_HYDRAULIC_PARAMETERS['k_sat_varname'],
+            'th_sat' : self.model.config.SOIL_HYDRAULIC_PARAMETERS['th_sat_varname'],
+            'th_fc'  : self.model.config.SOIL_HYDRAULIC_PARAMETERS['th_fc_varname'],
+            'th_wilt': self.model.config.SOIL_HYDRAULIC_PARAMETERS['th_wilt_varname']
         }
-        for param, var_name in soil_hydraulic_parameters.items():
+        for param, varname in soil_hydraulic_parameters.items():
 
-            if param in self.config.keys():
+            if param in self.model.config.SOIL_HYDRAULIC_PARAMETERS.keys():
                 # 1 - Try to read from config file
-                parameter_values = np.array(self.config[param]) 
+                parameter_values = np.array(self.model.config.SOIL_HYDRAULIC_PARAMETERS[param]) 
                 if (len(parameter_values) == self.model.nLayer):
                     vars(self.model)[param] = np.require(
                         np.broadcast_to(
@@ -75,8 +75,8 @@ class SoilHydraulicParameters(object):
                 # 2 - Try to read from netCDF file
                 try:
                     arr = open_hmdataarray(
-                        self.config['soilHydraulicParametersNC'],
-                        var_name,
+                        self.model.config.SOIL_HYDRAULIC_PARAMETERS['filename'],
+                        varname,
                         self.model.domain,
                         self.model.config.SOIL_HYDRAULIC_PARAMETERS['is_1d'],
                         self.model.config.SOIL_HYDRAULIC_PARAMETERS['xy_dimname'],

@@ -11,13 +11,32 @@ from hm.utils import *
 from hm.api import set_modeltime, set_domain
 # TODO: create api for HmDynamicModel, HmDynamicFramework
 
-from ..AquaCrop import AquaCrop
-from ..io.AquaCropConfiguration import AquaCropConfiguration
-from ..io import variable_list
+from ..aquacrop.AquaCrop import AquaCrop
+from ..aquacrop.io.AquaCropConfiguration import AquaCropConfiguration
+from ..aquacrop.io import variable_list
+
+from ..etref.penmanmonteith import PenmanMonteith
+from ..etref.hargreaves import Hargreaves
+from ..etref.priestleytaylor import PriestleyTaylor
+from ..etref import variable_list
 
 import logging
 logger = logging.getLogger(__name__)
 
+def run_etref(method, config, modeltime, domain, init):
+    dynamic_model = HmDynamicModel(
+        method,
+        config,
+        modeltime,
+        domain,
+        variable_list,
+        init
+    )
+    dynamic_framework = HmDynamicFramework(dynamic_model, len(modeltime))
+    dynamic_framework.setQuiet(True)
+    dynamic_framework.run()
+    output_fn = dynamic_model.model.reporting_module.output_variables['ETref_daily_total'].filename
+    return output_fn
 
 @click.command()
 @click.option('--debug/--no-debug', default=False)
@@ -54,10 +73,6 @@ def cli(debug, outputdir, config):
         'layer': z_lyr_mid,
         'depth': z_comp_mid
     }
-    # z_coords = {
-    #     'layer': z_lyr_mid,
-    #     'depth': z_comp_mid
-    # }
 
     # set model domain
     domain = set_domain(
@@ -71,8 +86,26 @@ def cli(debug, outputdir, config):
         configuration.PSEUDO_COORDS
     )
 
+    # decide whether to preprocess etref
+    # would this be better as an option?
+    if configuration.ETREF['preprocess']:
+        initial_state = None
+        etref_method = configuration.ETREF['method']
+        if 'PenmanMonteith' in etref_method:
+            etref_fn = run_etref(PenmanMonteith, configuration, modeltime, domain, initial_state)
+        if 'Hargreaves' in etref_method:
+            etref_fn = run_etref(Hargreaves, configuration, modeltime, domain, initial_state)
+        if 'PriestleyTaylor' in etref_method:
+            etref_fn = run_etref(PriestleyTaylor, configuration, modeltime, domain, initial_state)
+            
+        # Update configuration
+        configuration.ETREF['filename'] = etref_fn
+        configuration.ETREF['varname'] = 'etref'
+        clear_cache()
+    
     # create dynamic model object
     initial_state = None
+    modeltime.reset()
     dynamic_model = HmDynamicModel(
         AquaCrop,
         configuration,

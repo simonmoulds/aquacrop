@@ -25,6 +25,7 @@ class AquaCropConfiguration(Configuration):
         )
         self.set_model_grid_options()
         self.set_weather_options()
+        self.set_etref_preprocess_options()
         self.set_pseudo_coord_options()
         self.set_initial_condition_options()
         self.set_groundwater_options()
@@ -78,6 +79,16 @@ class AquaCropConfiguration(Configuration):
                 if opt not in vars(self)[section].keys():
                     vars(self)[section][opt] = default_value
 
+    def set_etref_preprocess_options(self):
+        if 'preprocess' in vars(self)['ETREF'].keys():
+            if vars(self)['ETREF']['preprocess'] is True:
+                vars(self)['ETREF']['report'] = True
+                vars(self)['ETREF']['daily_total'] = 'ETref'
+            else:
+                vars(self)['ETREF']['preprocess'] = False
+        else:
+            vars(self)['ETREF']['preprocess'] = False
+                
     def set_initial_condition_options(self):
         self.check_config_file_for_required_entry(
             'INITIAL_WATER_CONTENT',
@@ -164,9 +175,12 @@ class AquaCropConfiguration(Configuration):
                 self.SOIL_HYDRAULIC_PARAMETERS[opt] = default_value
 
     def set_soil_parameter_options(self):
-        if ('soilParametersNC' not in list(self.SOIL_PARAMETERS.keys())) | \
-           (self.SOIL_PARAMETERS['soilParametersNC'] in VALID_NONE_VALUES):
-            self.SOIL_PARAMETERS['soilParametersNC'] = None
+        for opt, default_value in DEFAULT_INPUT_FILE_OPTS.items():
+            if opt not in self.SOIL_PARAMETERS.keys():
+                self.SOIL_PARAMETERS[opt] = default_value
+        # if ('filename' not in list(self.SOIL_PARAMETERS.keys())) | \
+        #    (self.SOIL_PARAMETERS['filename'] in VALID_NONE_VALUES):
+        #     self.SOIL_PARAMETERS['filename'] = None
 
         if 'adjustReadilyAvailableWater' not in list(self.SOIL_PARAMETERS.keys()):
             self.SOIL_PARAMETERS['adjustReadilyAvailableWater'] = False
@@ -241,8 +255,11 @@ class AquaCropConfiguration(Configuration):
         pass
 
     def set_field_management_options(self):
-        if 'fieldManagementNC' not in list(self.FIELD_MANAGEMENT.keys()):
-            self.FIELD_MANAGEMENT['fieldManagementNC'] = None
+        for opt, default_value in DEFAULT_INPUT_FILE_OPTS.items():
+            if opt not in self.FIELD_MANAGEMENT.keys():
+                self.FIELD_MANAGEMENT[opt] = default_value
+        # if 'filename' not in list(self.FIELD_MANAGEMENT.keys()):
+        #     self.FIELD_MANAGEMENT['filename'] = None
 
     def set_reporting_options(self):
         if 'REPORTING' not in self.config_sections:

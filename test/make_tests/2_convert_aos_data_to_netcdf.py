@@ -1086,11 +1086,13 @@ def run():
                     'year_max'         : ['Y']
                 },
                 'IRRIGATION_MANAGEMENT' : {
-                    'irrigationManagementNC' : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
+                    'filename' : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
+                    'varname' : '',
                     'irrigationScheduleNC'   : os.path.join('Input', 'irrigation_schedule_' + nc_prefix + '.nc'),
                 },
                 'FIELD_MANAGEMENT' : {
-                    'fieldManagementNC' : os.path.join('Input', 'params_' + nc_prefix + '.nc')
+                    'filename' : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
+                    'varname' : ''
                 },
                 'SOIL_PROFILE' : {
                     'dzLayer' : [float(val) for val in zLayer],
@@ -1098,14 +1100,15 @@ def run():
                 },
                 'SOIL_HYDRAULIC_PARAMETERS' : {
                     'calculateSoilHydraulicParametersFromSoilTexture' : False,
-                    'soilHydraulicParametersNC'                 : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
-                    'saturatedHydraulicConductivityVarName'     : 'ksat',
-                    'saturatedVolumetricWaterContentVarName'    : 'th_s',
-                    'fieldCapacityVolumetricWaterContentVarName': 'th_fc',
-                    'wiltingPointVolumetricWaterContentVarName' : 'th_wp'
+                    'filename'        : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
+                    'k_sat_varname'   : 'ksat',
+                    'th_sat_varname'  : 'th_s',
+                    'th_fc_varname'   : 'th_fc',
+                    'th_wilt_varname' : 'th_wp'
                 },
                 'SOIL_PARAMETERS' : {
-                    'soilParametersNC' : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
+                    'filename' : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
+                    'varname'  : '',
                     'adjustReadilyAvailableWater' : bool(int(soil_params['AdjREW'])),
                     'adjustCurveNumber'           : bool(int(soil_params['AdjCN']))
                 },                

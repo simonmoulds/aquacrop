@@ -25,7 +25,8 @@ class CropParameters(object):
         self.model = model
         self.config = self.model.config.CROP_PARAMETERS
         self.model.nCrop = len(self.model.domain._coords['crop'])
-        self.model.CropID = self.config['crop_id']
+        self.model.CropID = self.model.domain._coords['crop']
+        # self.model.CropID = self.config['crop_id']
         self.model.CalendarType = self.config['calendar_type']
         self.model.SwitchGDD = self.config['switch_gdd']
         self.model.GDDmethod = self.config['gdd_method']

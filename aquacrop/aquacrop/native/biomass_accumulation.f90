@@ -118,7 +118,11 @@ contains
        ! calculate biomass accumulation on current day
        db_ns = wp_adj * (tr_pot / et_ref) * kst_bio
        db = wp_adj * (tr / et_ref) * kst_bio
-
+       ! print*,'wp_adj',wp_adj
+       ! print*,'et_ref',et_ref
+       ! print*,'tr',tr
+       ! print*,'kst_bio',kst_bio
+       
        ! TODO: nan check?
 
        ! update biomass accumulation

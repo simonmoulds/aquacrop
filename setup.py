@@ -18,7 +18,7 @@ os.system("rm -rf ./*.egg-info")
 # =================================== #
 # 1. Compile the pure Fortran modules #
 # =================================== #
-os.chdir("aquacrop/native")
+os.chdir("aquacrop/aquacrop/native")
 os.system("gfortran types.f90 -c -o types.o -O3 -fPIC -fbounds-check -mtune=native")
 os.system("gfortran soil_evaporation.f90 -c -o soil_evaporation.o -O3 -fPIC -fbounds-check -mtune=native")
 os.system("gfortran temperature_stress.f90 -c -o temperature_stress.o -O3 -fPIC -fbounds-check -mtune=native")
@@ -45,7 +45,7 @@ os.system("gfortran soil_parameters.f90 -c -o soil_parameters.o -O3 -fPIC -fboun
 os.system("gfortran irrigation.f90 -c -o irrigation.o -O3 -fPIC -fbounds-check -mtune=native")
 os.system("gfortran crop_yield.f90 -c -o crop_yield.o -O3 -fPIC -fbounds-check -mtune=native")
 os.system("gfortran aquacrop.f90 -c -o aquacrop.o -O3 -fPIC -fbounds-check -mtune=native")
-os.chdir("../..")
+os.chdir("../../..")
 
 # =================================== #
 # 2. Compile the f2py wrappers        #
@@ -83,7 +83,7 @@ f90_fnames = [
 
 f90_paths = []
 for fname in f90_fnames:
-    f90_paths.append( 'aquacrop/native/' + fname )
+    f90_paths.append( 'aquacrop/aquacrop/native/' + fname )
 
 f90_flags = ["-fPIC", "-O3", "-fbounds-check", "-mtune=native"]
 
@@ -92,7 +92,7 @@ ext1 = numpy.distutils.core.Extension(
     name = 'aquacrop_fc',
     sources = f90_paths,
     extra_f90_compile_args = f90_flags,
-    extra_link_args=['aquacrop/native/soil_evaporation.o','aquacrop/native/temperature_stress.o','aquacrop/native/biomass_accumulation.o','aquacrop/native/water_stress.o','aquacrop/native/canopy_cover.o','aquacrop/native/capillary_rise.o','aquacrop/native/check_gw_table.o','aquacrop/native/drainage.o','aquacrop/native/germination.o','aquacrop/native/gdd.o','aquacrop/native/growth_stage.o','aquacrop/native/harvest_index.o','aquacrop/native/infiltration.o','aquacrop/native/inflow.o','aquacrop/native/pre_irr.o','aquacrop/native/rainfall_partition.o','aquacrop/native/root_dev.o','aquacrop/native/root_zone_water.o','aquacrop/native/transpiration.o','aquacrop/native/crop_parameters.o','aquacrop/native/soil_hydraulic_parameters.o','aquacrop/native/soil_parameters.o','aquacrop/native/irrigation.o','aquacrop/native/crop_yield.o','aquacrop/native/aquacrop.o']
+    extra_link_args=['aquacrop/aquacrop/native/soil_evaporation.o','aquacrop/aquacrop/native/temperature_stress.o','aquacrop/aquacrop/native/biomass_accumulation.o','aquacrop/aquacrop/native/water_stress.o','aquacrop/aquacrop/native/canopy_cover.o','aquacrop/aquacrop/native/capillary_rise.o','aquacrop/aquacrop/native/check_gw_table.o','aquacrop/aquacrop/native/drainage.o','aquacrop/aquacrop/native/germination.o','aquacrop/aquacrop/native/gdd.o','aquacrop/aquacrop/native/growth_stage.o','aquacrop/aquacrop/native/harvest_index.o','aquacrop/aquacrop/native/infiltration.o','aquacrop/aquacrop/native/inflow.o','aquacrop/aquacrop/native/pre_irr.o','aquacrop/aquacrop/native/rainfall_partition.o','aquacrop/aquacrop/native/root_dev.o','aquacrop/aquacrop/native/root_zone_water.o','aquacrop/aquacrop/native/transpiration.o','aquacrop/aquacrop/native/crop_parameters.o','aquacrop/aquacrop/native/soil_hydraulic_parameters.o','aquacrop/aquacrop/native/soil_parameters.o','aquacrop/aquacrop/native/irrigation.o','aquacrop/aquacrop/native/crop_yield.o','aquacrop/aquacrop/native/aquacrop.o']
     )
 
 # =================================== #
@@ -123,8 +123,8 @@ numpy.distutils.core.setup(
 # 4. Clean up                         #
 # =================================== #
 
-os.system("rm -rf aquacrop/native/*.o")
-os.system("rm -rf aquacrop/native/*.mod")
+os.system("rm -rf aquacrop/aquacrop/native/*.o")
+os.system("rm -rf aquacrop/aquacrop/native/*.mod")
 
 # not used:
 
