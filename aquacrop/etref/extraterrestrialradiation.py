@@ -8,12 +8,15 @@ class ExtraterrestrialRadiation(object):
         self.model = model
 
     def initial(self):
-        latitudes = np.broadcast_to(
-            self.model.domain.y[:,None],
-            (self.model.domain.ny, self.model.domain.nx)
-        )
-        self.latitudes = latitudes[self.model.domain.mask]
-
+        latitudes = self.model.domain.y
+        if self.model.domain.is_2d:
+            latitudes = np.broadcast_to(
+                self.model.domain.y[:,None],
+                (self.model.domain.ny, self.model.domain.nx)
+            )
+            
+        self.latitudes = latitudes[self.model.domain.mask.values]
+        
     def compute_extraterrestrial_radiation(self):
         """Compute extraterrestrial radiation (MJ m-2 d-1)"""
         LatRad = self.latitudes * np.pi / 180.0

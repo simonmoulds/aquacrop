@@ -30,15 +30,6 @@ netcdf_description['lat'] = None
 comment['lat'] = None
 latex_symbol['lat'] = None
 
-netcdf_shortname['space'] = 'space'
-netcdf_standard_name['space'] = 'space'
-netcdf_dimensions['space'] = ('space',)
-netcdf_units['space'] = '1'
-netcdf_long_name['space'] = 'space'
-netcdf_description['space'] = None
-comment['space'] = None
-latex_symbol['space'] = None
-
 netcdf_shortname['lon'] = 'lon'
 netcdf_standard_name['lon'] = 'longitude'
 netcdf_dimensions['lon'] = ('lon',)
@@ -47,6 +38,15 @@ netcdf_long_name['lon'] = 'longitude'
 netcdf_description['lon'] = None
 comment['lon'] = None
 latex_symbol['lon'] = None
+
+netcdf_shortname['space'] = 'space'
+netcdf_standard_name['space'] = 'space'
+netcdf_dimensions['space'] = ('space',)
+netcdf_units['space'] = '1'
+netcdf_long_name['space'] = 'space'
+netcdf_description['space'] = None
+comment['space'] = None
+latex_symbol['space'] = None
 
 netcdf_shortname['crop'] = 'crop'
 netcdf_standard_name['crop'] = 'crop'

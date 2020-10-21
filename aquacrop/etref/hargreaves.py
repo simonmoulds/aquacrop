@@ -20,7 +20,7 @@ class Hargreaves(Model):
         self.extraterrestrial_radiation_module = ExtraterrestrialRadiation(self)
         self.temperature_module.initial()
         self.extraterrestrial_radiation_module.initial()
-        self.ETref = np.zeros((self.domain.nxy))        
+        self.ETref = np.zeros((self.domain.nxy))
         self.reporting_module = Reporting(self, variable_list, config_section='ETREF')
         self.reporting_module.initial()
         
@@ -31,7 +31,7 @@ class Hargreaves(Model):
             * ((np.maximum(0, (self.tmean.values[0, self.domain.mask.values] - 273.0))) + 17.8)
             * np.sqrt(np.maximum(0, (self.tmax.values[0, self.domain.mask.values] - self.tmin.values[0, self.domain.mask.values])))
         )
-    
+        
     def dynamic(self):
         self.temperature_module.dynamic()
         self.extraterrestrial_radiation_module.dynamic()

@@ -53,7 +53,6 @@ def cli(debug, outputdir, config):
     )
 
     # create modeltime object
-    print(type(configuration.CLOCK['start_time']))
     modeltime = set_modeltime(
         pd.Timestamp(configuration.CLOCK['start_time']),
         pd.Timestamp(configuration.CLOCK['end_time']),
@@ -101,6 +100,9 @@ def cli(debug, outputdir, config):
         # Update configuration
         configuration.ETREF['filename'] = etref_fn
         configuration.ETREF['varname'] = 'etref'
+        if domain.is_1d:
+            configuration.ETREF['is_1d'] = True
+            configuration.ETREF['xy_dimname'] = 'space'            
         clear_cache()
     
     # create dynamic model object
