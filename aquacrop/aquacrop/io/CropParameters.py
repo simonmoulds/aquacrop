@@ -284,11 +284,11 @@ class CropParameters(object):
             # to compute the parameters, since we need tmin/tmax
             # values to calculate growing degree days
             time_slc = self.compute_time_slice()
-            self.model.model.tmin.select(time_slc)
-            self.model.model.tmax.select(time_slc)
+            self.model.tmin.select(time_slc)
+            self.model.tmax.select(time_slc)
             aquacrop_w.crop_parameters_w.switch_gdd_w(
-                self.model.model.tmin.values,
-                self.model.model.tmax.values,
+                self.model.tmin.values,
+                self.model.tmax.values,
                 self.model.PlantingDayAdj,
                 self.model.HarvestDateAdj,
                 int(self.model.time.doy),
@@ -318,24 +318,24 @@ class CropParameters(object):
                 self.model.CropType,
                 self.model.GDDmethod,
                 self.model.CalendarType,
-                int(self.model.model.tmin.values.shape[0]),
+                int(self.model.tmin.values.shape[0]),
                 self.model.nCrop,
                 self.model.domain.nxy
             )
             
             # return tmin/tmax to current time
-            self.model.model.tmin.select(time=self.model.time.curr_time)
-            self.model.model.tmax.select(time=self.model.time.curr_time)
+            self.model.tmin.select(time=self.model.time.curr_time)
+            self.model.tmax.select(time=self.model.time.curr_time)
             
     def compute_crop_calendar_type_2(self, update=False):
 
         time_slc = self.compute_time_slice()
-        self.model.model.tmin.select(time_slc)
-        self.model.model.tmax.select(time_slc)
+        self.model.tmin.select(time_slc)
+        self.model.tmax.select(time_slc)
                 
         aquacrop_fc.crop_parameters_w.compute_crop_calendar_type2_w(
-            self.model.model.tmin.values,
-            self.model.model.tmax.values,
+            self.model.tmin.values,
+            self.model.tmax.values,
             self.model.PlantingDateAdj,
             self.model.HarvestDateAdj,
             int(self.model.time.doy),
@@ -357,15 +357,15 @@ class CropParameters(object):
             self.model.CalendarType,
             self.model.GrowingSeasonDayOne,
             int(self.model.time.timestep == 0),
-            int(self.model.model.tmin.values.shape[0]),
+            int(self.model.tmin.values.shape[0]),
             self.model.nFarm,
             self.model.nCrop,
             self.model.domain.nxy
         )
         
         # return tmin/tmax to current time
-        self.model.model.tmin.select(time=self.model.time.curr_time, method='nearest')  # TODO: method='nearest' is new addition - CHECK
-        self.model.model.tmax.select(time=self.model.time.curr_time, method='nearest')  # TODO: method='nearest' is new addition - CHECK
+        self.model.tmin.select(time=self.model.time.curr_time, method='nearest')  # TODO: method='nearest' is new addition - CHECK
+        self.model.tmax.select(time=self.model.time.curr_time, method='nearest')  # TODO: method='nearest' is new addition - CHECK
 
     def compute_crop_calendar(self):
         if self.model.CalendarType == 1:

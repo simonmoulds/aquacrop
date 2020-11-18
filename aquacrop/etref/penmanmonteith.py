@@ -53,8 +53,7 @@ class PenmanMonteith(Model):
         self.vapour_pressure_module.initial()
         self.net_radiation_module.initial()
         self.temperature_module.initial()
-        self.wind_module.initial()
-        
+        self.wind_module.initial()        
         self.reporting_module = Reporting(self, variable_list)
         self.reporting_module.initial()
 

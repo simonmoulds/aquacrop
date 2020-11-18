@@ -1,11 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import click
 
 import os
 import sys
 
 from hm import disclaimer
-from hm.dynamicmodel import HmDynamicModel
-from hm.dynamicframework import HmDynamicFramework
+from hm.dynamicmodel import HmDynamicModel, HmMonteCarloModel
+from hm.dynamicframework import HmDynamicFramework, HmMonteCarloFramework
 from hm.config import Configuration
 from hm.utils import *
 from hm.api import set_modeltime, set_domain
@@ -13,7 +16,7 @@ from hm.api import set_modeltime, set_domain
 
 from ..aquacrop.AquaCrop import AquaCrop
 from ..aquacrop.io.AquaCropConfiguration import AquaCropConfiguration
-from ..aquacrop.io import variable_list
+from ..aquacrop.io import variable_list_crop
 
 from ..etref.penmanmonteith import PenmanMonteith
 from ..etref.hargreaves import Hargreaves
@@ -22,6 +25,8 @@ from ..etref import variable_list
 
 import logging
 logger = logging.getLogger(__name__)
+
+np.warnings.filterwarnings('error', category=np.VisibleDeprecationWarning)
 
 def run_etref(method, config, modeltime, domain, init):
     dynamic_model = HmDynamicModel(
@@ -105,18 +110,47 @@ def cli(debug, outputdir, config):
             configuration.ETREF['xy_dimname'] = 'space'            
         clear_cache()
     
+    # # create dynamic model object
+    # initial_state = None
+    # modeltime.reset()
+    # dynamic_model = HmDynamicModel(
+    #     AquaCrop,
+    #     configuration,
+    #     modeltime,
+    #     domain,
+    #     variable_list,
+    #     initial_state
+    # )
+    # # run model    
+    # dynamic_framework = HmDynamicFramework(
+    #     dynamic_model,
+    #     lastTimeStep=len(modeltime) + 1,
+    #     firstTimestep=1
+    # )
+    # dynamic_framework.setQuiet(True)
+    # dynamic_framework.run()
+
+    # TEST:
+    
     # create dynamic model object
     initial_state = None
     modeltime.reset()
-    dynamic_model = HmDynamicModel(
+    dynamic_model = HmMonteCarloModel(
         AquaCrop,
         configuration,
         modeltime,
         domain,
-        variable_list,
+        variable_list_crop,
         initial_state
     )
-    # run model
-    dynamic_framework = HmDynamicFramework(dynamic_model, len(modeltime) + 1)
+    # run model    
+    dynamic_framework = HmDynamicFramework(
+        dynamic_model,
+        lastTimeStep=len(modeltime) + 1,
+        firstTimestep=1
+    )
     dynamic_framework.setQuiet(True)
-    dynamic_framework.run()
+    # dynamic_framework.run()    
+    mc_framework = HmMonteCarloFramework(dynamic_framework, nrSamples=5)
+    mc_framework.run()
+

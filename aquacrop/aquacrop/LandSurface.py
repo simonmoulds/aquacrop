@@ -24,6 +24,10 @@ class LandSurface(object):
         # )
         # self.grid_cell_area_module = GridCellArea(LandSurface_variable)
         self.force_cover_fraction_sum_to_equal_one = False
+
+        # TEMP:
+        self.reporting_vars = self.model.config.REPORTING['daily_total'] + self.model.config.REPORTING['year_max']
+        print(self.reporting_vars)
         
     def initial(self):
         for module in self.land_cover_module_names:
@@ -91,81 +95,86 @@ class LandSurface(object):
         
         self.aggregate_land_cover_variables()
 
-    def aggregate_land_cover_variables(self):
-        """Function to aggregate values computed separately 
-        for each land cover
-        """
-        self.aggregate_variables_for_all_land_covers()
-        self.aggregate_variables_for_land_covers_with_soil()
+    # def aggregate_land_cover_variables(self):
+    #     """Function to aggregate values computed separately 
+    #     for each land cover
+    #     """
+    #     self.aggregate_variables_for_all_land_covers()
+    #     self.aggregate_variables_for_land_covers_with_soil()
         
-    def aggregate_variables_for_all_land_covers(self):
-        for var_name in self.variables_to_aggregate:
-            var = self.aggregate_single_land_cover_variable(
-                var_name,
-                self.land_cover_module_names,
-                self.total_cover_fraction
-            )
-            vars(self.model)[var_name] = var.copy()  # remove farm, crop dimension
+    # def aggregate_variables_for_all_land_covers(self):
+    #     for var_name in self.variables_to_aggregate:
+    #         var = self.aggregate_single_land_cover_variable(
+    #             var_name,
+    #             self.land_cover_module_names,
+    #             self.total_cover_fraction
+    #         )
+    #         vars(self.model)[var_name] = var.copy()  # remove farm, crop dimension
             
-    def aggregate_variables_for_land_covers_with_soil(self):
-        for var_name in self.soil_variables_to_aggregate:
-            var = self.aggregate_single_land_cover_variable(
-                var_name,
-                self.land_cover_module_names_with_soil,
-                self.total_cover_fraction_soil
-                )            
-            vars(self.model)[var_name] = var.copy()
+    # def aggregate_variables_for_land_covers_with_soil(self):
+    #     for var_name in self.soil_variables_to_aggregate:
+    #         var = self.aggregate_single_land_cover_variable(
+    #             var_name,
+    #             self.land_cover_module_names_with_soil,
+    #             self.total_cover_fraction_soil
+    #             )            
+    #         vars(self.model)[var_name] = var.copy()
 
-    def aggregate_single_land_cover_variable(self, var_name, module_names, total_cover_fraction):
-        var_list = []
-        for module in module_names:
-            attr = getattr(self.land_cover_modules[module], var_name)
-            # attempt to retrieve FarmCropArea from module to
-            # use as a weight. If not present then we assume
-            # the size of these dimensions is one.
-            try:
-                farm_crop_area = getattr(
-                    self.land_cover_modules[module],
-                    'FarmCropArea'
-                )
-                if var_name in self.soil_variables_to_aggregate:
-                    farm_crop_area = np.broadcast_to(
-                        farm_crop_area[...,None,:],
-                        attr.shape
-                    )
+    # def aggregate_single_land_cover_variable(self, var_name, module_names, total_cover_fraction):
+    #     var_list = []
+    #     for module in module_names:
+    #         attr = getattr(self.land_cover_modules[module], var_name)
+    #         # attempt to retrieve FarmCropArea from module to
+    #         # use as a weight. If not present then we assume
+    #         # the size of these dimensions is one.
+    #         try:
+    #             farm_crop_area = getattr(
+    #                 self.land_cover_modules[module],
+    #                 'FarmCropArea'
+    #             )
+    #             if var_name in self.soil_variables_to_aggregate:
+    #                 farm_crop_area = np.broadcast_to(
+    #                     farm_crop_area[...,None,:],
+    #                     attr.shape
+    #                 )
                     
-            except AttributeError:
-                farm_crop_area = np.ones_like(attr)
+    #         except AttributeError:
+    #             farm_crop_area = np.ones_like(attr)
 
-            # weighted average along farm, crop dimensions. We use
-            # np.ma.average to handle the situation where the
-            # sum of weights along the given axis equals zero
-            attr_masked = np.ma.average(
-                attr,
-                axis=(0,1),
-                weights=farm_crop_area
-            )
-            mask = attr_masked.mask
-            attr = attr_masked.data
-            attr[mask] = 0.
+    #         # weighted average along farm, crop dimensions. We use
+    #         # np.ma.average to handle the situation where the
+    #         # sum of weights along the given axis equals zero
+    #         attr_masked = np.ma.average(
+    #             attr,
+    #             axis=(0,1),
+    #             weights=farm_crop_area
+    #         )
+    #         mask = attr_masked.mask
+    #         attr = attr_masked.data
+    #         attr[mask] = 0.
             
-            # weight variable by area allocated to land cover
-            # represented by module
-            attr *= (self.cover_fraction[module] * self.model.domain.area)
-            var_list.append(attr)
+    #         # weight variable by area allocated to land cover
+    #         # represented by module
+    #         attr *= (self.cover_fraction[module] * self.model.domain.area)
+    #         var_list.append(attr)
 
-        # sum variables; if average is required, divide by total
-        # cover fraction.
-        # N.B. by not averaging we end up with a volume, because
-        # we have multiplied by the area allocated to the
-        # respective land cover
-        var = np.sum(var_list, axis=0)
-        if var_name in self.variables_to_aggregate_by_averaging:
-            var /= (self.model.domain.area * total_cover_fraction)
-        return var
-                
+    #     # sum variables; if average is required, divide by total
+    #     # cover fraction.
+    #     # N.B. by not averaging we end up with a volume, because
+    #     # we have multiplied by the area allocated to the
+    #     # respective land cover
+    #     var = np.sum(var_list, axis=0)
+    #     if var_name in self.variables_to_aggregate_by_averaging:
+    #         var /= (self.model.domain.area * total_cover_fraction)
+    #     return var
+
+    # def copy_reporting_vars(self):
+    #     for k,v in self.land_cover_modules.items():
+    #         for var in self.reporting_vars:
+    #             pass
+            
     def dynamic(self):
         for module in self.land_cover_module_names:
             self.land_cover_modules[module].dynamic()
         self.correct_cover_fraction()
-        self.aggregate_land_cover_variables()
+        # self.aggregate_land_cover_variables()
