@@ -1,3 +1,0 @@
-# AquaCrop Source Code
-
-TODO

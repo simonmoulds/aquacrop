@@ -1,3 +1,0 @@
-# AquaCrop Model References
-
-TODO

@@ -1,1 +1,0 @@
-# AquaCrop Model Overview

@@ -1,4 +1,0 @@
-# AquaCrop Testing
-
-TODO
-
