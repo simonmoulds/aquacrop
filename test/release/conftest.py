@@ -38,7 +38,7 @@ def context(tmpdir, request):
         if yr == test_yr:
             os.chdir(os.path.join(str(tmpdir), str(yr)))
             # runner = os.path.join(aquacrop_dir, "aquacrop", "run.py")
-            config = glob.glob("Config/*" + "_config.ini")[0]
+            config = glob.glob("Config/*" + "_config.toml")[0]
             output = glob.glob("Output")[0]
             # run.main([config])
             os.system('aquacrop ' + config + ' -o ' + output)

@@ -1,0 +1,93 @@
+[MODEL_GRID]
+mask = "Input/test.landmask.tif"
+
+[PSEUDO_COORDS]
+crop = [ 1,]
+farm = [ 1,]
+
+[CLOCK]
+start_time = "1980-10-15"
+end_time = "1981-10-01"
+
+[INITIAL_WATER_CONTENT]
+type = "FILE"
+filename = "Input/initial_conditions_aos_ch7_ex1a_tunis_wheat.nc"
+interp_method = "Depth"
+
+[NETCDF_ATTRIBUTES]
+institution = "Imperial College London, UK"
+title = "AquaCrop v5.0 output"
+description = "test version (by Simon Moulds)"
+netcdf_y_orientation_follow_cf_convention = true
+formatNetCDF = "NETCDF4"
+zlib = true
+
+[PRECIPITATION]
+filename = "Input/prec_aos_ch7_ex1a_tunis_wheat.nc"
+varname = "precipitation"
+
+[TAVG]
+filename = ""
+varname = ""
+
+[TMIN]
+filename = "Input/temp_aos_ch7_ex1a_tunis_wheat.nc"
+varname = "Tmin"
+
+[TMAX]
+filename = "Input/temp_aos_ch7_ex1a_tunis_wheat.nc"
+varname = "Tmax"
+
+[ETREF]
+filename = "Input/eto_aos_ch7_ex1a_tunis_wheat.nc"
+varname = "referencePotET"
+
+[CARBON_DIOXIDE]
+filename = "Input/annual_co2_conc_aos_ch7_ex1a_tunis_wheat.nc"
+varname = "co2"
+
+[WATER_TABLE]
+water_table = false
+dynamic = false
+
+[LAND_COVER]
+
+[CROP_PARAMETERS]
+filename = "Input/params_aos_ch7_ex1a_tunis_wheat.nc"
+calendar_type = 2
+switch_gdd = true
+gdd_method = 3
+
+[IRRIGATION_MANAGEMENT]
+filename = "Input/params_aos_ch7_ex1a_tunis_wheat.nc"
+varname = ""
+irrigationScheduleNC = "Input/irrigation_schedule_aos_ch7_ex1a_tunis_wheat.nc"
+
+[FIELD_MANAGEMENT]
+filename = "Input/params_aos_ch7_ex1a_tunis_wheat.nc"
+varname = ""
+
+[SOIL_PROFILE]
+dzLayer = [ 0.3, 1.25,]
+dzComp = [ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.15, 0.15, 0.15, 0.15, 0.15, 0.2,]
+
+[SOIL_HYDRAULIC_PARAMETERS]
+calculateSoilHydraulicParametersFromSoilTexture = false
+filename = "Input/params_aos_ch7_ex1a_tunis_wheat.nc"
+k_sat_varname = "ksat"
+th_sat_varname = "th_s"
+th_fc_varname = "th_fc"
+th_wilt_varname = "th_wp"
+
+[SOIL_PARAMETERS]
+filename = "Input/params_aos_ch7_ex1a_tunis_wheat.nc"
+varname = ""
+adjustReadilyAvailableWater = false
+adjustCurveNumber = true
+
+[REPORTING]
+report = true
+daily_total = [ "th", "Y", "Irr", "B", "IrrCum", "IrrNetCum",]
+year_max = [ "Y",]
+formatNetCDF = "NETCDF4"
+zlib = true

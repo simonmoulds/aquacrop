@@ -8,12 +8,14 @@ import sys
 
 from hm import disclaimer
 from hm.dynamicmodel import HmDynamicModel, HmMonteCarloModel
-from hm.dynamicframework import HmDynamicFramework, HmMonteCarloFramework
+from hm.dynamicframework import HmDynamicFramework, HmMonteCarloFramework, HmEnsKalmanFilterFramework
 from hm.config import Configuration
 from hm.utils import *
 from hm.api import set_modeltime, set_domain
 # TODO: create api for HmDynamicModel, HmDynamicFramework
 
+# from .enkfmodel import AqEnKfModel
+from ..aquacrop.AquaCrop import AqEnKfModel
 from ..aquacrop.AquaCrop import AquaCrop
 from ..aquacrop.io.AquaCropConfiguration import AquaCropConfiguration
 from ..aquacrop.io import variable_list_crop
@@ -44,10 +46,12 @@ def run_etref(method, config, modeltime, domain, init):
     return output_fn
 
 @click.command()
-@click.option('--debug/--no-debug', default=False)
+@click.option('--debug/--no-debug', 'debug', default=False)
 @click.option('-o', '--outputdir', 'outputdir', default='.', type=click.Path())
+@click.option('--monte-carlo', 'montecarlo', default=False)
+@click.option('--enkf', 'kalmanfilter', default=False)
 @click.argument('config', type=click.Path(exists=True))
-def cli(debug, outputdir, config):
+def cli(debug, outputdir, montecarlo, kalmanfilter, config):
     """Example script"""
 
     # load configuration
@@ -89,7 +93,6 @@ def cli(debug, outputdir, config):
         z_coords,
         configuration.PSEUDO_COORDS
     )
-
     # decide whether to preprocess etref
     # would this be better as an option?
     if configuration.ETREF['preprocess']:
@@ -109,48 +112,68 @@ def cli(debug, outputdir, config):
             configuration.ETREF['is_1d'] = True
             configuration.ETREF['xy_dimname'] = 'space'            
         clear_cache()
-    
-    # # create dynamic model object
-    # initial_state = None
-    # modeltime.reset()
-    # dynamic_model = HmDynamicModel(
-    #     AquaCrop,
-    #     configuration,
-    #     modeltime,
-    #     domain,
-    #     variable_list,
-    #     initial_state
-    # )
-    # # run model    
-    # dynamic_framework = HmDynamicFramework(
-    #     dynamic_model,
-    #     lastTimeStep=len(modeltime) + 1,
-    #     firstTimestep=1
-    # )
-    # dynamic_framework.setQuiet(True)
-    # dynamic_framework.run()
 
-    # TEST:
-    
-    # create dynamic model object
-    initial_state = None
-    modeltime.reset()
-    dynamic_model = HmMonteCarloModel(
-        AquaCrop,
-        configuration,
-        modeltime,
-        domain,
-        variable_list_crop,
-        initial_state
-    )
-    # run model    
-    dynamic_framework = HmDynamicFramework(
-        dynamic_model,
-        lastTimeStep=len(modeltime) + 1,
-        firstTimestep=1
-    )
-    dynamic_framework.setQuiet(True)
-    # dynamic_framework.run()    
-    mc_framework = HmMonteCarloFramework(dynamic_framework, nrSamples=5)
-    mc_framework.run()
+    # run model using user-specified model framework
+    if kalmanfilter:
+        initial_state = None
+        modeltime.reset()
+        dynamic_model = AqEnKfModel(
+            AquaCrop,
+            configuration,
+            modeltime,
+            domain,
+            variable_list_crop,
+            initial_state
+        )
+        dynamic_framework = HmDynamicFramework(
+            dynamic_model,
+            lastTimeStep=len(modeltime) + 1,
+            firstTimestep=1
+        )
+        dynamic_framework.setQuiet(True)        
+        mc_framework = HmMonteCarloFramework(dynamic_framework, nrSamples=5)
+        enkf_framework = HmEnsKalmanFilterFramework(mc_framework)
+        enkf_framework.setFilterTimesteps([240, 250, 260, 270])
+        enkf_framework.run()
+        
+    elif montecarlo:
+        initial_state = None
+        modeltime.reset()
+        dynamic_model = HmMonteCarloModel(
+            AquaCrop,
+            configuration,
+            modeltime,
+            domain,
+            variable_list_crop,
+            initial_state
+        )
+        dynamic_framework = HmDynamicFramework(
+            dynamic_model,
+            lastTimeStep=len(modeltime) + 1,
+            firstTimestep=1
+        )
+        dynamic_framework.setQuiet(True)
+        mc_framework = HmMonteCarloFramework(dynamic_framework, nrSamples=5)
+        mc_framework.run()
+        
+    else:
+        initial_state = None
+        modeltime.reset()
+        dynamic_model = HmDynamicModel(
+            AquaCrop,
+            configuration,
+            modeltime,
+            domain,
+            variable_list_crop,
+            initial_state
+        )
+        dynamic_framework = HmDynamicFramework(
+            dynamic_model,
+            lastTimeStep=len(modeltime) + 1,
+            firstTimestep=1
+        )
+        dynamic_framework.setQuiet(True)
+        dynamic_framework.run()
 
+    
+    

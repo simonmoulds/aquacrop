@@ -1082,8 +1082,6 @@ def run():
                     'calendar_type'    : int(calendar_type),
                     'switch_gdd'       : bool(int(switch_gdd)),
                     'gdd_method'       : int(gdd_method),
-                    'daily_total'      : ['th', 'Y', 'Irr', 'B', 'IrrCum', 'IrrNetCum'],
-                    'year_max'         : ['Y']
                 },
                 'IRRIGATION_MANAGEMENT' : {
                     'filename' : os.path.join('Input', 'params_' + nc_prefix + '.nc'),
@@ -1113,11 +1111,14 @@ def run():
                     'adjustCurveNumber'           : bool(int(soil_params['AdjCN']))
                 },                
                 'REPORTING' : {
+                    'report'       : True,
+                    'daily_total'  : ['th', 'Y', 'Irr', 'B', 'IrrCum', 'IrrNetCum'],
+                    'year_max'     : ['Y'],
                     'formatNetCDF' : 'NETCDF4',
                     'zlib'         : True
                 }
             }
-            with open(os.path.join(pythondir, configdir, nc_prefix + '_' + str(yr) + '_config.ini'), 'w') as configfile:
+            with open(os.path.join(pythondir, configdir, nc_prefix + '_' + str(yr) + '_config.toml'), 'w') as configfile:
                 toml.dump(config, configfile)
                 
             # import configparser

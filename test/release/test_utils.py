@@ -27,8 +27,7 @@ def read_aos_yield(fn):
 def read_multiyear_yield(datadir):
     datadir = str(datadir)
     yr = os.walk(datadir).__next__()[1][0]
-    # fn = os.path.join(datadir, str(yr), "Output", "netcdf", "Y_cropland_yearMax_output.nc")
-    fn = os.path.join(datadir, str(yr), "Output", "netcdf", "hm_output_year_max_Y.nc")
+    fn = os.path.join(datadir, str(yr), "Output", "netcdf", "hm_output_year_max_Y.001.nc")
     try:
         aqpy_yld = read_aqpy_yield(fn)
         try:
@@ -60,7 +59,7 @@ def read_yield(datadir):
     for ix, yr in enumerate(yrs):
         # fn = os.path.join(datadir, str(yr), "Output", "netcdf", "Y_cropland_dailyTot_output.nc")
         # fn = os.path.join(datadir, str(yr), "Output", "netcdf", "Y_cropland_yearMax_output.nc")
-        fn = os.path.join(datadir, str(yr), "Output", "netcdf", "hm_output_year_max_Y.nc")
+        fn = os.path.join(datadir, str(yr), "Output", "netcdf", "hm_output_year_max_Y.001.nc")
         try:
             aqpy_yld[ix] = read_aqpy_yield(fn)
         except:
