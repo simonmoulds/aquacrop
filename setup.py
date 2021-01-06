@@ -96,6 +96,17 @@ ext1 = numpy.distutils.core.Extension(
     )
 
 # =================================== #
+# 3. Get dependencies
+# =================================== #
+
+lib_dir = os.path.dirname(os.path.realpath(__file__))
+requirements_fn = lib_dir + '/requirements.txt'
+install_requires = [] 
+if os.path.isfile(requirements_fn):
+    with open(requirements_fn) as f:
+        install_requires = f.read().splitlines()
+
+# =================================== #
 # 3. run setup                        #
 # =================================== #
 
@@ -108,9 +119,10 @@ numpy.distutils.core.setup(
     author_email='sim.moulds@gmail.com',
     license='GPL',
     packages=['aquacrop'],
-    install_requires=[
-        'click'
-    ],
+    # install_requires=[
+    #     'click'
+    # ],
+    install_requires = install_requires,
     entry_points='''
         [console_scripts]
         aquacrop=aquacrop.cli.aquacrop:cli
