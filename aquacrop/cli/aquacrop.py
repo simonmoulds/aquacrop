@@ -83,7 +83,9 @@ def cli(debug, outputdir, montecarlo, kalmanfilter, config):
     }
 
     # set model domain
+    # settings_dir = os.path.split(os.path.abspath(config))[0]
     domain = set_domain(
+        # os.path.join(workdir, configuration.MODEL_GRID['mask']),
         configuration.MODEL_GRID['mask'],
         modeltime,
         configuration.MODEL_GRID['mask_varname'],

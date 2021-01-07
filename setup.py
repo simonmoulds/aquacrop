@@ -99,12 +99,33 @@ ext1 = numpy.distutils.core.Extension(
 # 3. Get dependencies
 # =================================== #
 
-lib_dir = os.path.dirname(os.path.realpath(__file__))
-requirements_fn = lib_dir + '/requirements.txt'
-install_requires = [] 
-if os.path.isfile(requirements_fn):
-    with open(requirements_fn) as f:
-        install_requires = f.read().splitlines()
+def get_requirements():
+    return [
+        'affine==2.3.0',
+        'attrs==20.3.0',
+        'cftime==1.3.0',
+        'click==7.1.2',
+        'click-plugins==1.1.1',
+        'cligj==0.7.1',
+        'dask==2020.12.0',
+        'hm @ git+https://github.com/simonmoulds/hm@master#egg=hm',
+        'importlib-resources==4.1.1',
+        'netCDF4==1.5.5.1',
+        'numpy==1.19.5',
+        'pandas==1.2.0',
+        'pyparsing==2.4.7',
+        'python-box==5.2.0',
+        'python-dateutil==2.8.1',
+        'pytz==2020.5',
+        'PyYAML==5.3.1',
+        'rasterio==1.1.8',
+        'scipy==1.6.0',
+        'six==1.15.0',
+        'snuggs==1.4.7',
+        'toml==0.10.2',
+        'toolz==0.11.1',
+        'xarray==0.16.2'
+    ]
 
 # =================================== #
 # 3. run setup                        #
@@ -119,10 +140,7 @@ numpy.distutils.core.setup(
     author_email='sim.moulds@gmail.com',
     license='GPL',
     packages=['aquacrop'],
-    # install_requires=[
-    #     'click'
-    # ],
-    install_requires = install_requires,
+    install_requires = get_requirements(),
     entry_points='''
         [console_scripts]
         aquacrop=aquacrop.cli.aquacrop:cli

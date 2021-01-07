@@ -1,0 +1,40 @@
+2021-01-06 15:06:21,379 hm.disclaimer INFO 
+ hm: classes and methods for environmental modelling                                        
+
+ Copyright (C) 2020, Simon Moulds, Wouter Buytaert,                                         
+ Dept. of Civil and Environmental Engineering, Imperial College London, United Kingdom      
+
+ This program comes with ABSOLUTELY NO WARRANTY                                             
+ This is free software, and you are welcome to redistribute it under certain conditions     
+ See the LICENSE file for more details                                                      
+
+
+2021-01-06 15:06:21,379 hm.config INFO Model run started at 2021-01-06 15:06:21.377106
+2021-01-06 15:06:21,379 hm.config INFO Logging output to ./log/aos_ch7_ex1a_tunis_wheat_1979_config.ini_2021-01-06T15.06.21.377106.log
+2021-01-06 15:06:21,379 hm.config INFO Debugging output to ./log/aos_ch7_ex1a_tunis_wheat_1979_config.ini_2021-01-06T15.06.21.377106.dbg
+2021-01-06 15:06:21,498 rasterio.session DEBUG Could not import boto3, continuing with reduced functionality.
+2021-01-06 15:06:21,499 rasterio.env DEBUG GDAL data files are available at built-in paths
+2021-01-06 15:06:21,499 rasterio.env DEBUG PROJ data files are available at built-in paths
+2021-01-06 15:06:21,514 rasterio.env DEBUG Entering env context: <rasterio.env.Env object at 0x7f9d4e999a30>
+2021-01-06 15:06:21,514 rasterio.env DEBUG Starting outermost env
+2021-01-06 15:06:21,514 rasterio.env DEBUG No GDAL environment exists
+2021-01-06 15:06:21,514 rasterio.env DEBUG New GDAL environment <rasterio._env.GDALEnv object at 0x7f9d3cc9c3d0> created
+2021-01-06 15:06:21,517 rasterio._env DEBUG GDAL data files are available at built-in paths
+2021-01-06 15:06:21,517 rasterio._env DEBUG PROJ data files are available at built-in paths
+2021-01-06 15:06:21,517 rasterio._env DEBUG Started GDALEnv <rasterio._env.GDALEnv object at 0x7f9d3cc9c3d0>.
+2021-01-06 15:06:21,517 rasterio.env DEBUG Entered env context: <rasterio.env.Env object at 0x7f9d4e999a30>
+2021-01-06 15:06:21,517 rasterio._base DEBUG Sharing flag: 0
+2021-01-06 15:06:21,518 rasterio._base DEBUG Nodata success: 0, Nodata value: -10000000000.000000
+2021-01-06 15:06:21,518 rasterio._base DEBUG Dataset <open DatasetReader name='Input/test.landmask.tif' mode='r'> is started.
+2021-01-06 15:06:21,518 rasterio.env DEBUG Exiting env context: <rasterio.env.Env object at 0x7f9d4e999a30>
+2021-01-06 15:06:21,518 rasterio.env DEBUG Cleared existing <rasterio._env.GDALEnv object at 0x7f9d3cc9c3d0> options
+2021-01-06 15:06:21,518 rasterio._env DEBUG Stopped GDALEnv <rasterio._env.GDALEnv object at 0x7f9d3cc9c3d0>.
+2021-01-06 15:06:21,518 rasterio.env DEBUG Exiting outermost env
+2021-01-06 15:06:21,518 rasterio.env DEBUG Exited env context: <rasterio.env.Env object at 0x7f9d4e999a30>
+2021-01-06 15:06:21,524 rasterio._io DEBUG Output nodata value read from file: None
+2021-01-06 15:06:21,524 rasterio._io DEBUG Output nodata values: [None]
+2021-01-06 15:06:21,524 rasterio._io DEBUG all_valid: True
+2021-01-06 15:06:21,524 rasterio._io DEBUG mask_flags: ([<MaskFlags.all_valid: 1>],)
+2021-01-06 15:06:21,524 rasterio._io DEBUG Jump straight to _read()
+2021-01-06 15:06:21,524 rasterio._io DEBUG Window: Window(col_off=0, row_off=0, width=2, height=2)
+2021-01-06 15:06:21,524 rasterio._io DEBUG IO window xoff=0.0 yoff=0.0 width=2.0 height=2.0

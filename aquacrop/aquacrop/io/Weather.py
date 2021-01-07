@@ -18,10 +18,8 @@ from hm.input import HmInputData
 class MaxTemperature(HmInputData):
     def __init__(self, model):
         self.model = model
-        self.filename = \
-            model.config.TMAX['filename']
-        self.nc_varname = \
-            model.config.TMAX['varname']
+        self.filename = model.config.TMAX['filename']
+        self.nc_varname = model.config.TMAX['varname']
         self.is_1d = model.config.TMAX['is_1d']
         self.xy_dimname = model.config.TMAX['xy_dimname']
         self.model_varname = 'tmax'
@@ -30,10 +28,8 @@ class MaxTemperature(HmInputData):
 class MinTemperature(HmInputData):
     def __init__(self, model):
         self.model = model
-        self.filename = \
-            model.config.TMIN['filename']
-        self.nc_varname = \
-            model.config.TMIN['varname']
+        self.filename = model.config.TMIN['filename']
+        self.nc_varname = model.config.TMIN['varname']
         self.is_1d = model.config.TMIN['is_1d']
         self.xy_dimname = model.config.TMIN['xy_dimname']
         self.model_varname = 'tmin'
@@ -42,8 +38,7 @@ class MinTemperature(HmInputData):
 class MeanTemperature(HmInputData):
     def __init__(self, model):
         self.model = model
-        self.filename = \
-            model.config.TAVG['filename']
+        self.filename = model.config.TAVG['filename']
         self.nc_varname = \
             model.config.TAVG['varname']
         self.is_1d = model.config.TAVG['is_1d']
@@ -70,10 +65,8 @@ class MeanTemperature(HmInputData):
 class Precipitation(HmInputData):
     def __init__(self, model):
         self.model = model
-        self.filename = \
-            model.config.PRECIPITATION['filename']
-        self.nc_varname = \
-            model.config.PRECIPITATION['varname']
+        self.filename = model.config.PRECIPITATION['filename']
+        self.nc_varname = model.config.PRECIPITATION['varname']
         self.is_1d = model.config.PRECIPITATION['is_1d']
         self.xy_dimname = model.config.PRECIPITATION['xy_dimname']
         self.model_varname = 'prec'
@@ -82,10 +75,8 @@ class Precipitation(HmInputData):
 class ETref(HmInputData):
     def __init__(self, model):
         self.model = model
-        self.filename = \
-            model.config.ETREF['filename']
-        self.nc_varname = \
-            model.config.ETREF['varname']
+        self.filename = model.config.ETREF['filename']
+        self.nc_varname = model.config.ETREF['varname']
         self.is_1d = model.config.ETREF['is_1d']
         self.xy_dimname = model.config.ETREF['xy_dimname']
         self.model_varname = 'etref'

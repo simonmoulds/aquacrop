@@ -1,0 +1,31 @@
+2021-01-07 08:41:51,357 hm.disclaimer INFO 
+ hm: classes and methods for environmental modelling                                        
+
+ Copyright (C) 2020, Simon Moulds, Wouter Buytaert,                                         
+ Dept. of Civil and Environmental Engineering, Imperial College London, United Kingdom      
+
+ This program comes with ABSOLUTELY NO WARRANTY                                             
+ This is free software, and you are welcome to redistribute it under certain conditions     
+ See the LICENSE file for more details                                                      
+
+
+2021-01-07 08:41:51,358 hm.config INFO Model run started at 2021-01-07 08:41:51.355647
+2021-01-07 08:41:51,358 hm.config INFO Logging output to ./log/aos_ch7_ex1a_tunis_wheat_1979_config.ini_2021-01-07T08.41.51.355647.log
+2021-01-07 08:41:51,358 hm.config INFO Debugging output to ./log/aos_ch7_ex1a_tunis_wheat_1979_config.ini_2021-01-07T08.41.51.355647.dbg
+2021-01-07 08:41:51,393 rasterio.session DEBUG Could not import boto3, continuing with reduced functionality.
+2021-01-07 08:41:51,394 rasterio.env DEBUG GDAL data found in package, GDAL_DATA set to '/opt/conda/lib/python3.8/site-packages/rasterio/gdal_data'.
+2021-01-07 08:41:51,395 rasterio.env DEBUG PROJ data files are available at built-in paths
+2021-01-07 08:41:51,405 rasterio.env DEBUG Entering env context: <rasterio.env.Env object at 0x7f33eaf100a0>
+2021-01-07 08:41:51,406 rasterio.env DEBUG Starting outermost env
+2021-01-07 08:41:51,406 rasterio.env DEBUG No GDAL environment exists
+2021-01-07 08:41:51,406 rasterio.env DEBUG New GDAL environment <rasterio._env.GDALEnv object at 0x7f33e5651c40> created
+2021-01-07 08:41:51,408 rasterio._env DEBUG GDAL_DATA found in environment: '/opt/conda/lib/python3.8/site-packages/rasterio/gdal_data'.
+2021-01-07 08:41:51,408 rasterio._env DEBUG PROJ data files are available at built-in paths
+2021-01-07 08:41:51,408 rasterio._env DEBUG Started GDALEnv <rasterio._env.GDALEnv object at 0x7f33e5651c40>.
+2021-01-07 08:41:51,408 rasterio.env DEBUG Entered env context: <rasterio.env.Env object at 0x7f33eaf100a0>
+2021-01-07 08:41:51,408 rasterio._base DEBUG Sharing flag: 0
+2021-01-07 08:41:51,408 rasterio.env DEBUG Exiting env context: <rasterio.env.Env object at 0x7f33eaf100a0>
+2021-01-07 08:41:51,409 rasterio.env DEBUG Cleared existing <rasterio._env.GDALEnv object at 0x7f33e5651c40> options
+2021-01-07 08:41:51,409 rasterio._env DEBUG Stopped GDALEnv <rasterio._env.GDALEnv object at 0x7f33e5651c40>.
+2021-01-07 08:41:51,409 rasterio.env DEBUG Exiting outermost env
+2021-01-07 08:41:51,409 rasterio.env DEBUG Exited env context: <rasterio.env.Env object at 0x7f33eaf100a0>

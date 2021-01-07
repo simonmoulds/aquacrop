@@ -1,15 +1,17 @@
-FROM ubuntu:20.04
+FROM continuumio/anaconda3
 MAINTAINER Simon Moulds "simon.moulds@imperial.ac.uk"
 
-RUN apt-get update -y && \
-    apt-get install -y python3-pip python3-dev
+RUN apt-get update && apt-get install -y gfortran
 
-COPY . /app
+RUN /opt/conda/bin/conda update -n base -c defaults conda && \
+    /opt/conda/bin/conda install python=3 && \
+    /opt/conda/bin/conda install pip
+
+WORKDIR /
+COPY . /
+
+RUN python -m pip install -e .
+
+
 WORKDIR /app
-
-RUN pip3 install --upgrade pip && \
-    pip3 install -r requirements.txt
-
-RUN pip3 install -e .
-
-CMD [ "aquacrop" ]
+ENTRYPOINT ["aquacrop"]
