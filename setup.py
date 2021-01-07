@@ -144,6 +144,7 @@ numpy.distutils.core.setup(
     entry_points='''
         [console_scripts]
         aquacrop=aquacrop.cli.aquacrop:cli
+        aquacrop-config-template=aquacrop.cli.aquacrop-config-template:cli
     ''',
     ext_modules = [ext1],
     python_requires = '>=3.7.*',
