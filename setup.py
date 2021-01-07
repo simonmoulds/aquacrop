@@ -141,11 +141,17 @@ numpy.distutils.core.setup(
     license='GPL',
     packages=['aquacrop'],
     install_requires = get_requirements(),
-    entry_points='''
-        [console_scripts]
-        aquacrop=aquacrop.cli.aquacrop:cli
-        aquacrop-config-template=aquacrop.cli.aquacrop-config-template:cli
-    ''',
+    entry_points={
+        'console_scripts':[
+            'aquacrop=aquacrop.cli.aquacrop:cli',
+            'aquacrop-config-template=aquacrop.cli.aquacrop_config_template:cli'
+        ]
+    },    
+    # entry_points='''
+    #     [console_scripts]
+    #     aquacrop=aquacrop.cli.aquacrop:cli
+    #     aquacrop-config-template=aquacrop.cli.aquacrop-config-template:cli
+    # ''',
     ext_modules = [ext1],
     python_requires = '>=3.7.*',
     zip_safe=False)

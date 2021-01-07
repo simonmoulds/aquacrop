@@ -13,8 +13,7 @@ import toml
 # @click.option('--enkf', 'kalmanfilter', default=False)
 @click.argument('config', default='config-template.toml', type=click.Path())
 def cli(config):
-
-    config = {
+    config_dict = {
         'MODEL_GRID' : {
             'mask'          : 'landmask.nc',
             'is_1d'         : True,
@@ -186,7 +185,7 @@ def cli(config):
         '[REPORTING]' : {
             'report'        : True,
             'daily_total'   : [ 'CC', 'B',],
-            year_max        : [ 'Y',]
+            'year_max'      : [ 'Y',]
         },
         '[NETCDF_ATTRIBUTES]' : {
             'institution'   : '',
@@ -195,5 +194,5 @@ def cli(config):
         }
     }    
     with open(config, 'w') as configfile:
-        toml.dump(config, configfile)
+        toml.dump(config_dict, configfile)
     
