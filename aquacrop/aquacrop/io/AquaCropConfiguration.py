@@ -26,6 +26,9 @@ class AquaCropConfiguration(Configuration):
             system_arguments=None,
             **kwargs
     ):        
+        self.deterministic = kwargs.get('deterministic', False)
+        self.montecarlo = kwargs.get('montecarlo', False)
+        self.kalmanfilter = kwargs.get('kalmanfilter', False)
         super().__init__(
             config_filename,
             output_directory,
@@ -33,9 +36,6 @@ class AquaCropConfiguration(Configuration):
             system_arguments,
             **kwargs
         )
-        self.deterministic = kwargs.get('deterministic', False)
-        self.montecarlo = kwargs.get('montecarlo', False)
-        self.kalmanfilter = kwargs.get('kalmanfilter', False)
     
     def set_config(self, system_arguments=None):
         super().set_config(

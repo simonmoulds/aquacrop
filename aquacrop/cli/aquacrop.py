@@ -48,9 +48,9 @@ def run_etref(method, config, modeltime, domain, init):
 @click.command()
 @click.option('--debug/--no-debug', 'debug', default=False)
 @click.option('-o', '--outputdir', 'outputdir', default='.', type=click.Path())
-@click.option('--deterministic', 'deterministic', default=False)
-@click.option('--monte-carlo', 'montecarlo', default=False)
-@click.option('--enkf', 'kalmanfilter', default=False)
+@click.option('--deterministic/--no-deterministic', 'deterministic', default=False)
+@click.option('--montecarlo/--no-montecarlo', 'montecarlo', default=False)
+@click.option('--kalmanfilter/--no-kalmanfilter', 'kalmanfilter', default=False)
 @click.argument('config', type=click.Path(exists=True))
 def cli(debug, outputdir, deterministic, montecarlo, kalmanfilter, config):
     """Example script"""

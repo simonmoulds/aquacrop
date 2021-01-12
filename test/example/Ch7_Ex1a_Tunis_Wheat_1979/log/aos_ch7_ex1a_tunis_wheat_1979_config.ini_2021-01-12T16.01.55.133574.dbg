@@ -1,0 +1,14 @@
+2021-01-12 16:01:55,135 hm.disclaimer INFO 
+ hm: classes and methods for environmental modelling                                        
+
+ Copyright (C) 2020, Simon Moulds, Wouter Buytaert,                                         
+ Dept. of Civil and Environmental Engineering, Imperial College London, United Kingdom      
+
+ This program comes with ABSOLUTELY NO WARRANTY                                             
+ This is free software, and you are welcome to redistribute it under certain conditions     
+ See the LICENSE file for more details                                                      
+
+
+2021-01-12 16:01:55,136 hm.config INFO Model run started at 2021-01-12 16:01:55.133574
+2021-01-12 16:01:55,136 hm.config INFO Logging output to ./log/aos_ch7_ex1a_tunis_wheat_1979_config.ini_2021-01-12T16.01.55.133574.log
+2021-01-12 16:01:55,136 hm.config INFO Debugging output to ./log/aos_ch7_ex1a_tunis_wheat_1979_config.ini_2021-01-12T16.01.55.133574.dbg

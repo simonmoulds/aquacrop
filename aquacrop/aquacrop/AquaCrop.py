@@ -30,20 +30,27 @@ class AqEnKfModel(HmEnKfModel):
     #
     # Input we need:
     # Observed canopy cover (as textfile)
+    
     def setState(self):
+        # print("\nsetState")
         modelled_canopy_cover = np.array((self.model.CC[0,0,0],))
+        # print('Modelled canopy cover:', modelled_canopy_cover)
         return modelled_canopy_cover
-    def setObservations(self):
+    
+    def setObservations(self):        
+        # print("setObservations")
         timestep = self.currentTimeStep()
         # The time points for which observed data is available is defined by setFilterTimesteps method (currently hard-coded in the cli script)
         fn = 'obs' + str(timestep) + '.txt'
         with open(fn) as f:
             obs_canopy_cover = [float(val) for val in f.read().split()]
         obs_canopy_cover = np.array([obs_canopy_cover,] * self.nrSamples()).transpose()
+        # print('Observed canopy cover:', obs_canopy_cover)
         # TODO: work out appropriate way to estimate covariance
-        covariance = np.random.random((1,1))
+        # covariance = np.random.random((1,1))
+        covariance = np.zeros((1,1))
         self.setObservedMatrices(obs_canopy_cover, covariance)
-
+        
     def postmcloop(self):
         # used to calculate statistics of the ensemble (e.g. mean, variance, percentiles)
         # TODO:
@@ -51,9 +58,10 @@ class AqEnKfModel(HmEnKfModel):
         # * Calculate average, variance 
         # * Calculate percentiles
         pass
-    
+        
     def resume(self):
-        pass
+        updated_canopy_cover = self.getStateVector(self.currentSampleNumber())
+        self.model.CC[0,0,0] = updated_canopy_cover
     
 class AquaCrop(Model):
     def __init__(self, config, time, domain, init=None):        
