@@ -48,20 +48,28 @@ def run_etref(method, config, modeltime, domain, init):
 @click.command()
 @click.option('--debug/--no-debug', 'debug', default=False)
 @click.option('-o', '--outputdir', 'outputdir', default='.', type=click.Path())
+@click.option('--deterministic', 'deterministic', default=False)
 @click.option('--monte-carlo', 'montecarlo', default=False)
 @click.option('--enkf', 'kalmanfilter', default=False)
 @click.argument('config', type=click.Path(exists=True))
-def cli(debug, outputdir, montecarlo, kalmanfilter, config):
+def cli(debug, outputdir, deterministic, montecarlo, kalmanfilter, config):
     """Example script"""
-
-    # load configuration
+    
+    if sum([deterministic, montecarlo, kalmanfilter]) != 1:
+        raise click.UsageError(
+            "Exactly one of 'deterministic', 'monte-carlo', and 'enkf'"
+            " must be specified."
+        )    
+    
     configuration = AquaCropConfiguration(
         config,
         outputdir,
-        debug
+        debug,
+        deterministic=deterministic,
+        montecarlo=montecarlo,
+        kalmanfilter=kalmanfilter
     )
 
-    # create modeltime object
     modeltime = set_modeltime(
         pd.Timestamp(configuration.CLOCK['start_time']),
         pd.Timestamp(configuration.CLOCK['end_time']),
@@ -116,51 +124,9 @@ def cli(debug, outputdir, montecarlo, kalmanfilter, config):
         clear_cache()
 
     # run model using user-specified model framework
-    if kalmanfilter:
-        initial_state = None
-        modeltime.reset()
-        dynamic_model = AqEnKfModel(
-            AquaCrop,
-            configuration,
-            modeltime,
-            domain,
-            variable_list_crop,
-            initial_state
-        )
-        dynamic_framework = HmDynamicFramework(
-            dynamic_model,
-            lastTimeStep=len(modeltime) + 1,
-            firstTimestep=1
-        )
-        dynamic_framework.setQuiet(True)        
-        mc_framework = HmMonteCarloFramework(dynamic_framework, nrSamples=5)
-        enkf_framework = HmEnsKalmanFilterFramework(mc_framework)
-        enkf_framework.setFilterTimesteps([240, 250, 260, 270])
-        enkf_framework.run()
-        
-    elif montecarlo:
-        initial_state = None
-        modeltime.reset()
-        dynamic_model = HmMonteCarloModel(
-            AquaCrop,
-            configuration,
-            modeltime,
-            domain,
-            variable_list_crop,
-            initial_state
-        )
-        dynamic_framework = HmDynamicFramework(
-            dynamic_model,
-            lastTimeStep=len(modeltime) + 1,
-            firstTimestep=1
-        )
-        dynamic_framework.setQuiet(True)
-        mc_framework = HmMonteCarloFramework(dynamic_framework, nrSamples=5)
-        mc_framework.run()
-        
-    else:
-        initial_state = None
-        modeltime.reset()
+    initial_state = None
+    modeltime.reset()
+    if deterministic:
         dynamic_model = HmDynamicModel(
             AquaCrop,
             configuration,
@@ -176,6 +142,51 @@ def cli(debug, outputdir, montecarlo, kalmanfilter, config):
         )
         dynamic_framework.setQuiet(True)
         dynamic_framework.run()
-
+                
+    elif montecarlo:
+        dynamic_model = HmMonteCarloModel(
+            AquaCrop,
+            configuration,
+            modeltime,
+            domain,
+            variable_list_crop,
+            initial_state
+        )
+        dynamic_framework = HmDynamicFramework(
+            dynamic_model,
+            lastTimeStep=len(modeltime) + 1,
+            firstTimestep=1
+        )
+        dynamic_framework.setQuiet(True)
+        mc_framework = HmMonteCarloFramework(
+            dynamic_framework,
+            nrSamples=int(configuration.MONTE_CARLO['num_samples'])
+        )
+        mc_framework.run()
+        
+    elif kalmanfilter:        
+        dynamic_model = AqEnKfModel(
+            AquaCrop,
+            configuration,
+            modeltime,
+            domain,
+            variable_list_crop,
+            initial_state
+        )
+        dynamic_framework = HmDynamicFramework(
+            dynamic_model,
+            lastTimeStep=len(modeltime) + 1,
+            firstTimestep=1
+        )
+        dynamic_framework.setQuiet(True)        
+        mc_framework = HmMonteCarloFramework(
+            dynamic_framework,
+            nrSamples=int(configuration.MONTE_CARLO['num_samples'])
+        )
+        enkf_framework = HmEnsKalmanFilterFramework(mc_framework)
+        enkf_framework.setFilterTimesteps(
+            configuration.KALMAN_FILTER['filter_timesteps']
+        )
+        enkf_framework.run()
     
     

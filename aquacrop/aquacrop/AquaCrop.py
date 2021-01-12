@@ -27,27 +27,33 @@ logger = logging.getLogger(__name__)
 
 class AqEnKfModel(HmEnKfModel):
     # To begin with we consider the simplest case, where the model is running for one point in space
+    #
+    # Input we need:
+    # Observed canopy cover (as textfile)
     def setState(self):
         modelled_canopy_cover = np.array((self.model.CC[0,0,0],))
         return modelled_canopy_cover
-
     def setObservations(self):
         timestep = self.currentTimeStep()
+        # The time points for which observed data is available is defined by setFilterTimesteps method (currently hard-coded in the cli script)
         fn = 'obs' + str(timestep) + '.txt'
-        print(fn)
         with open(fn) as f:
             obs_canopy_cover = [float(val) for val in f.read().split()]
-
         obs_canopy_cover = np.array([obs_canopy_cover,] * self.nrSamples()).transpose()
+        # TODO: work out appropriate way to estimate covariance
         covariance = np.random.random((1,1))
-        # print(fn)
-        # print(obs_canopy_cover)
-        # print(covariance)
-        self.setObservedMatrices(obs_canopy_cover, covariance)        
-            
+        self.setObservedMatrices(obs_canopy_cover, covariance)
+
+    def postmcloop(self):
+        # used to calculate statistics of the ensemble (e.g. mean, variance, percentiles)
+        # TODO:
+        # * Define variables of interest
+        # * Calculate average, variance 
+        # * Calculate percentiles
+        pass
+    
     def resume(self):
         pass
-
     
 class AquaCrop(Model):
     def __init__(self, config, time, domain, init=None):        

@@ -18,11 +18,37 @@ DEFAULT_INPUT_FILE_OPTS = {
 
 class AquaCropConfiguration(Configuration):
     """Class for AquaCrop configuration options."""
-
+    def __init__(
+            self,
+            config_filename,
+            output_directory,
+            debug_mode=False,
+            system_arguments=None,
+            **kwargs
+    ):        
+        super().__init__(
+            config_filename,
+            output_directory,
+            debug_mode,
+            system_arguments,
+            **kwargs
+        )
+        self.deterministic = kwargs.get('deterministic', False)
+        self.montecarlo = kwargs.get('montecarlo', False)
+        self.kalmanfilter = kwargs.get('kalmanfilter', False)
+    
     def set_config(self, system_arguments=None):
         super().set_config(
             system_arguments=system_arguments
         )
+        if self.deterministic:
+            self.set_deterministic_run_options()
+        else:
+            if self.montecarlo | self.kalmanfilter:                
+                self.set_montecarlo_run_options()                
+            if self.kalmanfilter:
+                self.set_kalmanfilter_run_options()
+            
         self.set_model_grid_options()
         self.set_weather_options()
         self.set_etref_preprocess_options()
@@ -38,6 +64,15 @@ class AquaCropConfiguration(Configuration):
         self.set_field_management_options()
         self.set_reporting_options()
 
+    def set_deterministic_run_options(self):
+        pass
+
+    def set_montecarlo_run_options(self):
+        pass
+
+    def set_kalmanfilter_run_options(self):
+        pass
+    
     def set_pseudo_coord_options(self):
         # make sure that pseudo-coordinates are lists
         if 'PSEUDO_COORDS' not in self.config_sections:
