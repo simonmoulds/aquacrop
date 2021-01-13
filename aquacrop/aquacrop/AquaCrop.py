@@ -29,12 +29,12 @@ class AqEnKfModel(HmEnKfModel):
     # To begin with we consider the simplest case, where the model is running for one point in space
     #
     # Input we need:
-    # Observed canopy cover (as textfile)
-    
+    # Observed canopy cover (as textfile)    
     def setState(self):
         # print("\nsetState")
         modelled_canopy_cover = np.array((self.model.CC[0,0,0],))
-        # print('Modelled canopy cover:', modelled_canopy_cover)
+        # print('Modelled canopy cover:', self.model.CC)
+        # print('Modelled biomass     :', self.model.B)
         return modelled_canopy_cover
     
     def setObservations(self):        
@@ -61,8 +61,11 @@ class AqEnKfModel(HmEnKfModel):
         
     def resume(self):
         updated_canopy_cover = self.getStateVector(self.currentSampleNumber())
+        # print('Updated canopy cover:',updated_canopy_cover)
         self.model.CC[0,0,0] = updated_canopy_cover
-    
+        # print('Canopy cover        :',self.model.CC)
+        # print('Biomass             :',self.model.B)
+        
 class AquaCrop(Model):
     def __init__(self, config, time, domain, init=None):        
         super(AquaCrop, self).__init__(
@@ -77,6 +80,7 @@ class AquaCrop(Model):
         self.carbon_dioxide_module = CarbonDioxide(self)
         self.lc_parameters_module = AquaCropParameters(self)        
         self.initial_condition_module = InitialCondition(self)
+        self.stateVar_module = stateVar(self)
         
     def initial(self):
         self.weather_module.initial()
@@ -87,7 +91,8 @@ class AquaCrop(Model):
         
         # TODO: take these out and put in 'constants.py' or similar
         state_vars = [
-            'GDDcum', 'FluxOut', 'IrrCum', 'IrrNetCum'
+            'GDDcum', 'FluxOut', 'IrrCum', 'IrrNetCum',
+            'B', 'CC', 'CropDead', 'CropMature', 'th'
         ]        
         int_surf_vars = [
             'WTinSoil', 'GrowthStage', 'DelayedCDs', 'Germination',
@@ -140,6 +145,7 @@ class AquaCrop(Model):
             )                
         
     def dynamic(self):
+        print(self.B)
         self.weather_module.dynamic()
         self.groundwater_module.dynamic()
         self.carbon_dioxide_module.dynamic(method='pad')
