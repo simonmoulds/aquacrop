@@ -479,7 +479,8 @@ contains
     real(real64) :: ksw_exp, ksw_sto, ksw_sen, ksw_pol, ksw_stolin
     real(real64) :: kst_bio, kst_polh, kst_polc
     integer(int32) :: beta
-    
+
+    ! state vars: gdd, gdd_cum
     call update_gdd( &
          gdd, &
          gdd_cum, &
@@ -490,7 +491,7 @@ contains
          t_upp, &
          growing_season &
          )
-
+    ! state vars: [growth_stage]
     call update_growth_stage( &
          growth_stage, &
          canopy_10pct, &
@@ -504,6 +505,7 @@ contains
          growing_season &
          )
 
+    ! state vars: th, [th_fc_adj, wt_in_soil]
     call update_check_gw_table( &
          th, &
          th_fc_adj, &
@@ -517,6 +519,7 @@ contains
          layer_ix &
          )
 
+    ! state vars: th, [pre_irr]
     call update_pre_irr( &
          pre_irr, &
          th, &
@@ -532,6 +535,7 @@ contains
          layer_ix &
          )
 
+    ! state vars: th, [deep_perc, flux_out]
     call update_drainage( &
          th, &
          deep_perc, &
@@ -545,7 +549,8 @@ contains
          dz_sum, &
          layer_ix &
          )
-         
+
+    ! state vars: days_submerged, [runoff, infl]
     call update_rain_part( &
          runoff, &
          infl, &
@@ -566,6 +571,7 @@ contains
          layer_ix &
          )
 
+    ! state vars: [thrz_act, thrz_sat, thrz_fc, thrz_wilt, thrz_dry, thrz_aer, taw, dr]
     call update_root_zone_water( &
          thrz_act, &
          thrz_sat, &
@@ -587,7 +593,7 @@ contains
          dz_sum, &
          layer_ix &
          )
-
+    ! state vars: irr_cum, irr_net_cum, [irr]
     call update_irrigation( &
          irr_method, &
          irr, &
@@ -614,8 +620,9 @@ contains
          growth_stage, &
          growing_season_day1, &
          growing_season &
-         )    
-
+         )
+    
+    ! state vars: surf_stor, [infl, flux_out, deep_perc, runoff]
     call update_infl( &
          infl, &
          surf_stor, &
@@ -636,6 +643,7 @@ contains
          layer_ix &
          )
 
+    ! state vars: th, [cr_tot]
     call update_cap_rise( &
          cr_tot, &
          th, &
@@ -654,6 +662,7 @@ contains
          layer_ix &
          )
 
+    ! state vars: germ, delayed_cds, delayed_gdds
     call update_germ( &
          germ, &
          delayed_cds, &
@@ -670,6 +679,7 @@ contains
          growing_season &
          )
 
+    ! state vars: z_root, [r_cor]
     call update_root_dev( &
          z_root, &
          r_cor, &
@@ -697,6 +707,7 @@ contains
          growing_season &
          )
 
+    ! state vars: as above
     call update_root_zone_water( &
          thrz_act, &
          thrz_sat, &
@@ -719,6 +730,8 @@ contains
          layer_ix &
          )
 
+    ! state vars: cc, cc_ns, cc_prev, ccx_w_ns, ccx_act_n, ccx_w, ccx_act, cc0_adj, t_early_sen, ccx_early_sen, premat_senes, crop_dead, cc_adj, cc_adj_ns
+    ! N.B. test these - currently erring on the side of caution
     call update_canopy_cover( &
          cc, &
          cc_prev, &
@@ -768,6 +781,7 @@ contains
          delayed_gdds &
          )
 
+    ! state vars: surf_stor, w_surf, evap_z, [es_act, e_pot, w_stage_two]
     call update_soil_evap( &
          prec, &
          et_ref, &
@@ -816,6 +830,7 @@ contains
          layer_ix &         
          )
 
+    ! state vars: as above
     call update_root_zone_water( &
          thrz_act, &
          thrz_sat, &
@@ -838,6 +853,7 @@ contains
          layer_ix &
          )
 
+    ! state vars: [ksw_exp, ksw_sto, ksw_sen, ksw_pol, ksw_stolin]
     beta = 1
     call update_water_stress( &
          ksw_exp, &
@@ -865,6 +881,7 @@ contains
          beta &
          )
 
+    ! state vars: aer_days, aer_days_comp, age_days, age_days_ns, day_submrgd, surface_storage, irr_net_cum, cc [th, thrz_act, thrz_sat, thrz_fc, thrz_wilt, thrz_dry, thrz_aer, taw, dr, irr_net, tr_ratio, t_pot, tr_act, tr_act0, tr_pot0, tr_pot_ns]
     call update_transpiration( &
          tr_pot0, &
          tr_pot_ns, &
@@ -932,6 +949,7 @@ contains
     ! add this to transpiration routine?
     et_pot = e_pot + et_pot
 
+    ! state vars: th, [gw_in]
     call update_inflow( &
          gw_in, &
          th, &
@@ -942,6 +960,7 @@ contains
          layer_ix &
          )
 
+    ! state vars: hi_ref, pct_lag_phase, [yield_form]
     call update_harvest_index( &
          hi_ref, &
          pct_lag_phase, &
@@ -965,6 +984,7 @@ contains
          growing_season &
          )
 
+    ! state vars: [kst_bio, kst_polh, kst_polc]
     call update_temp_stress( &
          bio_temp_stress, &
          kst_bio, &
@@ -984,6 +1004,7 @@ contains
          t_min_lo &
          )
 
+    ! state vars: b, b_ns
     call update_biomass_accum( &
          et_ref, &
          tr_act, &
@@ -1017,6 +1038,7 @@ contains
          growing_season &
          )
 
+    ! state vars: as above
     call update_root_zone_water( &
          thrz_act, &
          thrz_sat, &
@@ -1039,6 +1061,7 @@ contains
          layer_ix &
          )
 
+    ! state vars: as above
     beta = 1
     call update_water_stress( &
          ksw_exp, &
@@ -1066,6 +1089,7 @@ contains
          beta &
          )
 
+    ! state vars: hi_adj, pre_adj, f_pre, f_pol, f_post, fpost_dwn, fpost_upp, s_cor1, s_cor2    
     call adjust_harvest_index( &
          hi_adj, &
          pre_adj, &
@@ -1115,6 +1139,7 @@ contains
          growing_season &
          )
 
+    ! state vars: crop_mature, [yield]
     call update_crop_yield( &
          yield, &
          crop_mature, &
@@ -1130,6 +1155,7 @@ contains
          delayed_gdds &
          )
 
+    ! state vars: as above
     call update_root_zone_water( &
          thrz_act, &
          thrz_sat, &

@@ -31,21 +31,16 @@ class AqEnKfModel(HmEnKfModel):
     # Input we need:
     # Observed canopy cover (as textfile)    
     def setState(self):
-        # print("\nsetState")
         modelled_canopy_cover = np.array((self.model.CC[0,0,0],))
-        # print('Modelled canopy cover:', self.model.CC)
-        # print('Modelled biomass     :', self.model.B)
         return modelled_canopy_cover
     
     def setObservations(self):        
-        # print("setObservations")
         timestep = self.currentTimeStep()
         # The time points for which observed data is available is defined by setFilterTimesteps method (currently hard-coded in the cli script)
         fn = 'obs' + str(timestep) + '.txt'
         with open(fn) as f:
             obs_canopy_cover = [float(val) for val in f.read().split()]
         obs_canopy_cover = np.array([obs_canopy_cover,] * self.nrSamples()).transpose()
-        # print('Observed canopy cover:', obs_canopy_cover)
         # TODO: work out appropriate way to estimate covariance
         # covariance = np.random.random((1,1))
         covariance = np.zeros((1,1))
@@ -60,11 +55,9 @@ class AqEnKfModel(HmEnKfModel):
         pass
         
     def resume(self):
+        HmEnKfModel.resume(self)
         updated_canopy_cover = self.getStateVector(self.currentSampleNumber())
-        # print('Updated canopy cover:',updated_canopy_cover)
-        self.model.CC[0,0,0] = updated_canopy_cover
-        # print('Canopy cover        :',self.model.CC)
-        # print('Biomass             :',self.model.B)
+        self.model.CC[0,0,0] = updated_canopy_cover        
         
 class AquaCrop(Model):
     def __init__(self, config, time, domain, init=None):        
@@ -80,7 +73,6 @@ class AquaCrop(Model):
         self.carbon_dioxide_module = CarbonDioxide(self)
         self.lc_parameters_module = AquaCropParameters(self)        
         self.initial_condition_module = InitialCondition(self)
-        self.stateVar_module = stateVar(self)
         
     def initial(self):
         self.weather_module.initial()
@@ -90,10 +82,16 @@ class AquaCrop(Model):
         self.initial_condition_module.initial()
         
         # TODO: take these out and put in 'constants.py' or similar
-        state_vars = [
-            'GDDcum', 'FluxOut', 'IrrCum', 'IrrNetCum',
-            'B', 'CC', 'CropDead', 'CropMature', 'th'
-        ]        
+        self.state_varnames = [
+            'GDDcum', 'th', 'DaySubmerged', 'IrrCum', 'IrrNetCum',
+            'SurfaceStorage', 'Germination', 'DelayedCDs', 'DelayedGDDs',
+            'Zroot', 'CC', 'CC_NS', 'CCxAct', 'CCxAct_NS', 'CCxW', 'CCxW_NS',
+            'CCxEarlySen', 'CCprev', 'CC0adj', 'tEarlySen', 'PrematSenes',
+            'CropDead', 'CCadj', 'CCadj_NS', 'Wsurf', 'EvapZ', 'AerDays',
+            'AerDaysComp', 'AgeDays', 'AgeDays_NS', 'HI', 'PctLagPhase',
+            'B', 'B_NS', 'HIadj', 'PreAdj', 'Fpre', 'Fpost', 'fpost_dwn',
+            'fpost_upp', 'Fpol', 'sCor1', 'sCor2', 'CropMature'
+        ]
         int_surf_vars = [
             'WTinSoil', 'GrowthStage', 'DelayedCDs', 'Germination',
             'PrematSenes', 'CropDead', 'YieldForm', 'PreAdj',
@@ -145,7 +143,6 @@ class AquaCrop(Model):
             )                
         
     def dynamic(self):
-        print(self.B)
         self.weather_module.dynamic()
         self.groundwater_module.dynamic()
         self.carbon_dioxide_module.dynamic(method='pad')
