@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soil Parameters &#8212; aquacrop 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reporting" href="reporting.html" />
+    <link rel="prev" title="Soil Hydraulic Parameters" href="soil_hydraulic_parameters.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="soil-parameters">
+<h1>Soil Parameters<a class="headerlink" href="#soil-parameters" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">SOIL_PARAMETERS</span><span class="p">]</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="n">soil_params</span><span class="o">.</span><span class="n">nc</span>
+<span class="n">adjust_raw</span> <span class="o">=</span> <span class="n">false</span>
+<span class="n">adjust_cn</span> <span class="o">=</span> <span class="n">true</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="options">
+<h3>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">filename</span></code></dt><dd><p>NetCDF file containing soil parameters.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">adjust_raw</span></code></dt><dd><p>TODO</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">adjust_cn</span></code></dt><dd><p>TODO</p>
+</dd>
+</dl>
+<p>In addition to these options, users may supply any parameter values, or none, in
+the configuration file directly.</p>
+</div>
+</div>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 39%" />
+<col style="width: 12%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>z_soil</p></td>
+<td><p>Total thickness of the
+soil profile</p></td>
+<td><p>m</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-odd"><td><p>evap_z_surf</p></td>
+<td><p>Thickness of the evaporating
+soil surface layer in direct
+contact with the atmosphere</p></td>
+<td><p>m</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-even"><td><p>evap_z_min</p></td>
+<td><p>Minimum thickness of soil
+surface evaporation layer</p></td>
+<td><p>m</p></td>
+<td><p>0.15</p></td>
+</tr>
+<tr class="row-odd"><td><p>evap_z_max</p></td>
+<td><p>Maximum thickness of soil
+surface evaporation layer</p></td>
+<td><p>m</p></td>
+<td><p>0.30</p></td>
+</tr>
+<tr class="row-even"><td><p>kex</p></td>
+<td><p>Maximum soil evaporation
+coefficient</p></td>
+<td><p>-</p></td>
+<td><p>1.10</p></td>
+</tr>
+<tr class="row-odd"><td><p>fevap</p></td>
+<td><p>Shape factor which controls
+the reduction in
+evaporation
+with decreasing water
+content in the soil surface
+layer</p></td>
+<td><p>-</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>f_wrel_exp</p></td>
+<td><p>Water content of the soil
+soil surface layer at
+which the evaporation depth
+expands</p></td>
+<td><p>-</p></td>
+<td><p>0.40</p></td>
+</tr>
+<tr class="row-odd"><td><p>fwcc</p></td>
+<td><p>Coefficient for the
+reduction in soil
+evaporation due to
+sheltering from withered
+canopy cover</p></td>
+<td><p>-</p></td>
+<td><p>0.5</p></td>
+</tr>
+<tr class="row-even"><td><p>adj_rew</p></td>
+<td><p>Switch to use
+a user-defined
+value of readily evaporable
+water in place of the
+in place of the calculated
+value</p></td>
+<td><p>-</p></td>
+<td><p>false</p></td>
+</tr>
+<tr class="row-odd"><td><p>rew</p></td>
+<td><p>User-defined readily
+evaporable water</p></td>
+<td><p>m</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-even"><td><p>adj_cn</p></td>
+<td><p>Switch to adjust the curve
+number based on the daily
+variation of soil moisture</p></td>
+<td><p>-</p></td>
+<td><p>false</p></td>
+</tr>
+<tr class="row-odd"><td><p>cn</p></td>
+<td><p>Curve number</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-even"><td><p>z_cn</p></td>
+<td><p>Thickness of surface
+soil layer
+over which to compute the
+soil moisture content used
+to adjust the curve number,
+if <code class="docutils literal notranslate"><span class="pre">adj_cn</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>m</p></td>
+<td><p>0.30</p></td>
+</tr>
+<tr class="row-odd"><td><p>z_germ</p></td>
+<td><p>Thickness of surface
+soil layer over which to
+compute the soil moisture
+content used to determine
+whether germination can
+occur</p></td>
+<td><p>m</p></td>
+<td><p>0.30</p></td>
+</tr>
+<tr class="row-even"><td><p>z_res</p></td>
+<td><p>Depth to soil layer
+which restricts root growth</p></td>
+<td><p>m</p></td>
+<td><p>Use negative value
+if no restrictive
+layer is present</p></td>
+</tr>
+<tr class="row-odd"><td><p>fshape_cr</p></td>
+<td><p>Shape factor controlling
+the effect of shallow
+groundwater on soil water
+content</p></td>
+<td><p>-</p></td>
+<td><p>16</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">aquacrop</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="configuration.html">Configure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="model_grid.html">Model Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clock.html">Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pseudo_coords.html">Non-spatial coordinates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="meteorological_inputs.html">Meteorological Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groundwater.html">Groundwater</a></li>
+<li class="toctree-l2"><a class="reference internal" href="crop_parameters.html">Crop Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="irrigation_parameters.html">Irrigation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="irrigation_schedule.html">Irrigation Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="field_parameters.html">Field Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="soil_profile.html">Soil Profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="soil_hydraulic_parameters.html">Soil Hydraulic Parameters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Soil Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reporting.html">Reporting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="run.html">Run</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="configuration.html">Configure</a><ul>
+      <li>Previous: <a href="soil_hydraulic_parameters.html" title="previous chapter">Soil Hydraulic Parameters</a></li>
+      <li>Next: <a href="reporting.html" title="next chapter">Reporting</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Simon Moulds.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/soil_parameters.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Soil Hydraulic Parameters &#8212; aquacrop 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Soil Parameters" href="soil_parameters.html" />
+    <link rel="prev" title="Soil Profile" href="soil_profile.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="soil-hydraulic-parameters">
+<h1>Soil Hydraulic Parameters<a class="headerlink" href="#soil-hydraulic-parameters" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">SOIL_HYDRAULIC_PARAMETERS</span><span class="p">]</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;aquacrop_soil_parms_pt.nc&quot;</span>
+<span class="n">k_sat_varname</span> <span class="o">=</span> <span class="s2">&quot;k_sat&quot;</span>
+<span class="n">th_sat_varname</span> <span class="o">=</span> <span class="s2">&quot;th_sat&quot;</span>
+<span class="n">th_fc_varname</span> <span class="o">=</span> <span class="s2">&quot;th_fc&quot;</span>
+<span class="n">th_wilt_varname</span> <span class="o">=</span> <span class="s2">&quot;th_wilt&quot;</span>
+<span class="n">is_1d</span> <span class="o">=</span> <span class="n">true</span>
+<span class="n">xy_dimname</span> <span class="o">=</span> <span class="s2">&quot;space&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="options">
+<h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>SOIL_HYDRAULIC_PARAMETERS<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">filename</span></code></dt><dd><p>Path to netCDF file containing soil hydraulic parameters</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">k_sat_varname</span></code></dt><dd><p>Name of saturated hydraulic_conductivity variable in file.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">th_sat_varname</span></code></dt><dd><p>Name of saturated water content variable in file.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">th_fc_varname</span></code></dt><dd><p>Name of field_capacity variable in file.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">th_wilt_varname</span></code></dt><dd><p>Name of wilting point variable in file.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">is_1d</span></code></dt><dd><p>Is the file one-dimensional?</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">xy_dimname</span></code></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">is_1d</span> <span class="pre">=</span> <span class="pre">true</span></code>, then this option defines the name of the space dimension in the file.</p>
+</dd>
+</dl>
+<p>In addition to these options, users may supply any parameter values, or none, in the configuration file directly. When reading these parameter values, the program initially checks the configuration file, then the supplied netCDF file. If a single value is provided then this is broadcast to each soil layer defined by <code class="docutils literal notranslate"><span class="pre">dzLayer</span></code>. Otherwise an array may be supplied, which must be the same size as <code class="docutils literal notranslate"><span class="pre">dzLayer</span></code>.</p>
+</div>
+</div>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 39%" />
+<col style="width: 12%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>th_fc</p></td>
+<td><p>Field capacity.</p></td>
+<td><p>m3/m3</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-odd"><td><p>th_sat</p></td>
+<td><p>Saturated water content.</p></td>
+<td><p>m3/m3</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-even"><td><p>th_wilt</p></td>
+<td><p>Wilting point.</p></td>
+<td><p>m3/m3</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-odd"><td><p>k_sat</p></td>
+<td><p>Saturated hydraulic
+conductivity.</p></td>
+<td><p>mm/day</p></td>
+<td><p>-</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">aquacrop</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Install</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="configuration.html">Configure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="model_grid.html">Model Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clock.html">Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pseudo_coords.html">Non-spatial coordinates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="meteorological_inputs.html">Meteorological Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groundwater.html">Groundwater</a></li>
+<li class="toctree-l2"><a class="reference internal" href="crop_parameters.html">Crop Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="irrigation_parameters.html">Irrigation Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="irrigation_schedule.html">Irrigation Schedule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="field_parameters.html">Field Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="soil_profile.html">Soil Profile</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Soil Hydraulic Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="soil_parameters.html">Soil Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reporting.html">Reporting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="run.html">Run</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="configuration.html">Configure</a><ul>
+      <li>Previous: <a href="soil_profile.html" title="previous chapter">Soil Profile</a></li>
+      <li>Next: <a href="soil_parameters.html" title="next chapter">Soil Parameters</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Simon Moulds.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/soil_hydraulic_parameters.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

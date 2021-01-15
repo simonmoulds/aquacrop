@@ -83,6 +83,7 @@ class AquaCrop(Model):
         
         # TODO: take these out and put in 'constants.py' or similar
         self.state_varnames = [
+            'DAP',
             'GDDcum', 'th', 'DaySubmerged', 'IrrCum', 'IrrNetCum',
             'SurfaceStorage', 'Germination', 'DelayedCDs', 'DelayedGDDs',
             'Zroot', 'CC', 'CC_NS', 'CCxAct', 'CCxAct_NS', 'CCxW', 'CCxW_NS',
@@ -147,7 +148,7 @@ class AquaCrop(Model):
         self.groundwater_module.dynamic()
         self.carbon_dioxide_module.dynamic(method='pad')
         self.lc_parameters_module.dynamic()
-        # TODO:
+        # TODO:        
         # self.initial_condition_module.dynamic()
         layer_ix = self.layerIndex + 1
         EvapTimeSteps = 20
