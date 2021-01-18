@@ -329,6 +329,8 @@ class CropParameters(object):
     def compute_crop_calendar_type_2(self, update=False):
 
         time_slc = self.compute_time_slice()
+        print(time_slc)
+        print(self.model.tmin)
         self.model.tmin.select(time_slc)
         self.model.tmax.select(time_slc)
                 
