@@ -40,8 +40,7 @@ class CropParameters(object):
                 pass
             self.model.CropParameterDatabase = sqlite3.connect(str(db_path))
 
-    def initial(self):
-        
+    def initial(self):        
         # Read parameters from file or config file
         self.read()
 

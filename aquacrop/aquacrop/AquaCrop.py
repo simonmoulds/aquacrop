@@ -43,7 +43,8 @@ class AqEnKfModel(HmEnKfModel):
         obs_canopy_cover = np.array([obs_canopy_cover,] * self.nrSamples()).transpose()
         # TODO: work out appropriate way to estimate covariance
         # covariance = np.random.random((1,1))
-        covariance = np.zeros((1,1))
+        # covariance = np.zeros((1,1))
+        covariance = np.ones((1,1)) * 0.1
         self.setObservedMatrices(obs_canopy_cover, covariance)
         
     def postmcloop(self):
