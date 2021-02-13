@@ -172,6 +172,7 @@ class CropParameters(object):
                             self.model.domain,
                             self.model.config.CROP_PARAMETERS['is_1d'],
                             self.model.config.CROP_PARAMETERS['xy_dimname'],
+                            sample=self.model.currentSampleNumber
                         )
                         vars(self.model)[param] = np.require(
                             np.broadcast_to(
@@ -329,8 +330,6 @@ class CropParameters(object):
     def compute_crop_calendar_type_2(self, update=False):
 
         time_slc = self.compute_time_slice()
-        print(time_slc)
-        print(self.model.tmin)
         self.model.tmin.select(time_slc)
         self.model.tmax.select(time_slc)
                 

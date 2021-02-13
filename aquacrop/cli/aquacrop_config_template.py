@@ -28,7 +28,7 @@ def cli(config):
             'start_time'    : '2019-01-01T00:00:00',
             'end_time'      : '2019-12-31T00:00:00'
         },
-        '[INITIAL_WATER_CONTENT]' : {
+        'INITIAL_WATER_CONTENT' : {
             'type'          : 'percent',
             'property'      : '',
             'percent'       : 50.0,
@@ -37,79 +37,79 @@ def cli(config):
             'xy_dimname'    : '',
             'interp_method' : '',
         },
-        '[PRECIPITATION]' : {
+        'PRECIPITATION' : {
             'filename'      : 'prate.nc',
             'varname'       : 'prate',
             'is_1d'         : True,
             'xy_dimname'    : 'space',
         },
-        '[TAVG]' : {
+        'TAVG' : {
             'filename'      : 'tavg.nc',
             'varname'       : 'tavg',
             'is_1d'         : True,
             'xy_dimname'    : 'space',
         },
-        '[TMIN]' : {
+        'TMIN' : {
             'filename'      : 'tmin.nc',
             'varname'       : 'tmin',
             'is_1d'         : True,
             'xy_dimname'    : 'space',
         },
-        '[TMAX]' : {
+        'TMAX' : {
             'filename'      : 'tmax.nc',
             'varname'       : 'tmax',
             'is_1d'         : True,
             'xy_dimname'    : 'space',
         },
-        '[LWDOWN]' : {
+        'LWDOWN' : {
             'filename'      : '',
             'varname'       : '',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[SP]' : {
+        'SP' : {
             'filename'      : '',
             'varname'       : '',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[SH]' : {
+        'SH' : {
             'filename'      : '',
             'varname'       : '',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[RHMAX]' : {
+        'RHMAX' : {
             'filename'      : 'rhstmax.nc',
             'varname'       : 'rhstmax',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[RHMIN]' : {
+        'RHMIN' : {
             'filename'      : '',
             'varname'       : '',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[RHMEAN]' : {
+        'RHMEAN' : {
             'filename'      : '',
             'varname'       : '',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[SWDOWN]' : {
+        'SWDOWN' : {
             'filename'      : 'srad.nc',
             'varname'       : 'srad',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[WIND]' : {
+        'WIND' : {
             'filename'      : 'wndspd.nc',
             'varname'       : 'wndspd',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[ETREF]' : {
+        'ETREF' : {
             'preprocess'    : False,
             'method'        : 'Hargreaves',
             'daily_total'   : 'ETref',
@@ -118,13 +118,13 @@ def cli(config):
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[CARBON_DIOXIDE]' : {
+        'CARBON_DIOXIDE' : {
             'filename'      : 'conc.nc',
             'varname'       : 'conc',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[WATER_TABLE]' : {
+        'WATER_TABLE' : {
             'water_table'   : False,
             'dynamic'       : False,
             'filename'      : '',
@@ -137,7 +137,7 @@ def cli(config):
             'max_wait_time' : 0,
             'wait_interval' : 0
         },
-        '[CROP_PARAMETERS]' : {
+        'CROP_PARAMETERS' : {
             'filename'      : '',
             'varname'       : '',
             'is_1d'         : True,
@@ -149,23 +149,23 @@ def cli(config):
             'planting_day'  : [ 121,],
             'harvest_day'   : [ 304,]
         },
-        '[IRRIGATION_MANAGEMENT]' : {
+        'IRRIGATION_MANAGEMENT' : {
             'filename'      : '',
             'varname'       : '',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },        
-        '[FIELD_MANAGEMENT]' : {
+        'FIELD_MANAGEMENT' : {
             'filename'      : '',
             'varname'       : '',
             'is_1d'         : True,
             'xy_dimname'    : '',
         },
-        '[SOIL_PROFILE]' : {
+        'SOIL_PROFILE' : {
             'dzLayer'       : [ 0.0, 0.05, 0.15, 0.3, 0.6, 1.0, 2.0,],
             'dzComp'        : [ 0.1, 0.35, 1.0, 3.0,]
         },            
-        '[SOIL_HYDRAULIC_PARAMETERS]' : {
+        'SOIL_HYDRAULIC_PARAMETERS' : {
             'filename'      : 'soilparms.nc',
             'k_sat_varname' : 'k_sat',
             'th_sat_varname': 'th_sat',
@@ -174,7 +174,7 @@ def cli(config):
             'is_1d'         : True,
             'xy_dimname'    : 'space'
         },
-        '[SOIL_PARAMETERS]' : {
+        'SOIL_PARAMETERS' : {
             'filename'      : '',
             'varname'       : '',
             'is_1d'         : True,
@@ -182,12 +182,12 @@ def cli(config):
             'adjust_raw'    : True,
             'adjust_cn'     : True
         },
-        '[REPORTING]' : {
+        'REPORTING' : {
             'report'        : True,
             'daily_total'   : [ 'CC', 'B',],
             'year_max'      : [ 'Y',]
         },
-        '[NETCDF_ATTRIBUTES]' : {
+        'NETCDF_ATTRIBUTES' : {
             'institution'   : '',
             'title'         : '',
             'description'   : ''
