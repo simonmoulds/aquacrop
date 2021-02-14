@@ -102,7 +102,9 @@ contains
     end if
     
     ! clean up
-    deallocate(w_rel)
+    if ( allocated(w_rel)) then
+       deallocate(w_rel)
+    end if    
     
   end subroutine update_rain_part
   

@@ -1,0 +1,177 @@
+[MODEL_GRID]
+mask = "landmask.nc"
+is_1d = true
+mask_varname = "mask"
+xy_dimname = "space"
+
+[PSEUDO_COORDS]
+crop = [ 1,]
+farm = [ 1,]
+
+[CLOCK]
+start_time = "2019-01-01T00:00:00"
+end_time = "2019-12-31T00:00:00"
+
+[INITIAL_WATER_CONTENT]
+type = "percent"
+property = ""
+percent = 50.0
+filename = ""
+is_1d = false
+xy_dimname = ""
+interp_method = ""
+
+[PRECIPITATION]
+filename = "prate.nc"
+varname = "prate"
+is_1d = true
+xy_dimname = "space"
+
+[TAVG]
+filename = "tavg.nc"
+varname = "tavg"
+is_1d = true
+xy_dimname = "space"
+
+[TMIN]
+filename = "tmin.nc"
+varname = "tmin"
+is_1d = true
+xy_dimname = "space"
+
+[TMAX]
+filename = "tmax.nc"
+varname = "tmax"
+is_1d = true
+xy_dimname = "space"
+
+[LWDOWN]
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = ""
+
+[SP]
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = ""
+
+[SH]
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = ""
+
+[RHMAX]
+filename = "rhstmax.nc"
+varname = "rhstmax"
+is_1d = true
+xy_dimname = ""
+
+[RHMIN]
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = ""
+
+[RHMEAN]
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = ""
+
+[SWDOWN]
+filename = "srad.nc"
+varname = "srad"
+is_1d = true
+xy_dimname = ""
+
+[WIND]
+filename = "wndspd.nc"
+varname = "wndspd"
+is_1d = true
+xy_dimname = ""
+
+[ETREF]
+preprocess = false
+method = "Hargreaves"
+daily_total = "ETref"
+filename = "etref.nc"
+varname = "etref"
+is_1d = true
+xy_dimname = ""
+
+[CARBON_DIOXIDE]
+filename = "conc.nc"
+varname = "conc"
+is_1d = true
+xy_dimname = ""
+
+[WATER_TABLE]
+water_table = false
+dynamic = false
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = ""
+directory = ""
+coupled = false
+time_lag = 0
+max_wait_time = 0
+wait_interval = 0
+
+[CROP_PARAMETERS]
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = "space"
+crop_id = [ 2,]
+calendar_type = 2
+switch_gdd = true
+gdd_method = 3
+planting_day = [ 121,]
+harvest_day = [ 304,]
+
+[IRRIGATION_MANAGEMENT]
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = ""
+
+[FIELD_MANAGEMENT]
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = ""
+
+[SOIL_PROFILE]
+dzLayer = [ 0.0, 0.05, 0.15, 0.3, 0.6, 1.0, 2.0,]
+dzComp = [ 0.1, 0.35, 1.0, 3.0,]
+
+[SOIL_HYDRAULIC_PARAMETERS]
+filename = "soilparms.nc"
+k_sat_varname = "k_sat"
+th_sat_varname = "th_sat"
+th_fc_varname = "th_fc"
+th_wilt_varname = "th_wilt"
+is_1d = true
+xy_dimname = "space"
+
+[SOIL_PARAMETERS]
+filename = ""
+varname = ""
+is_1d = true
+xy_dimname = ""
+adjust_raw = true
+adjust_cn = true
+
+[REPORTING]
+report = true
+daily_total = [ "CC", "B",]
+year_max = [ "Y",]
+
+[NETCDF_ATTRIBUTES]
+institution = ""
+title = ""
+description = ""
