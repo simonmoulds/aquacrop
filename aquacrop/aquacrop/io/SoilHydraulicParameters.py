@@ -53,7 +53,7 @@ class SoilHydraulicParameters(object):
 
             if param in self.model.config.SOIL_HYDRAULIC_PARAMETERS.keys():
                 # 1 - Try to read from config file
-                parameter_values = np.array(self.model.config.SOIL_HYDRAULIC_PARAMETERS[param]) 
+                parameter_values = np.array(self.model.config.SOIL_HYDRAULIC_PARAMETERS[param])
                 if (len(parameter_values) == self.model.nLayer):
                     vars(self.model)[param] = np.require(
                         np.broadcast_to(
@@ -87,7 +87,7 @@ class SoilHydraulicParameters(object):
                     )
                 except:
                     raise ValueError()  # TODO
-                    
+                
     def compute_additional_soil_hydraulic_parameters(self):
         zBot = np.cumsum(self.model.dz)
         zTop = zBot - self.model.dz

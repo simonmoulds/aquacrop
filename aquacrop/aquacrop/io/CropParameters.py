@@ -25,8 +25,8 @@ class CropParameters(object):
         self.model = model
         self.config = self.model.config.CROP_PARAMETERS
         self.model.nCrop = len(self.model.domain._coords['crop'])
-        self.model.CropID = self.model.domain._coords['crop']
-        # self.model.CropID = self.config['crop_id']
+        # self.model.CropID = self.model.domain._coords['crop']
+        self.model.CropID = self.config['crop_id']
         self.model.CalendarType = self.config['calendar_type']
         self.model.SwitchGDD = self.config['switch_gdd']
         self.model.GDDmethod = self.config['gdd_method']
@@ -40,7 +40,7 @@ class CropParameters(object):
                 pass
             self.model.CropParameterDatabase = sqlite3.connect(str(db_path))
 
-    def initial(self):        
+    def initial(self):
         # Read parameters from file or config file
         self.read()
 
@@ -57,14 +57,14 @@ class CropParameters(object):
                 (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
                 dtype=np.int32
             ),
-            requirements=['A','O','W','F']        
+            requirements=['A', 'O', 'W', 'F']
         )
         self.model.GrowingSeasonDayOne = np.require(
             np.zeros(
                 (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
                 dtype=np.int32
             ),
-            requirements=['A','O','W','F']
+            requirements=['A', 'O', 'W', 'F']
         )
         # Preallocate days after planting counter
         self.model.DAP = np.require(
@@ -72,9 +72,9 @@ class CropParameters(object):
                 (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
                 dtype=np.int32
             ),
-            requirements=['A','O','W','F']
-        )            
-        # Preallocate integer and float parameters        
+            requirements=['A', 'O', 'W', 'F']
+        )
+        # Preallocate integer and float parameters
         int_params_to_compute = [
             'tLinSwitch', 'CanopyDevEndCD', 'CanopyDevEndCD',
             'Canopy10PctCD', 'MaxCanopyCD', 'HIstartCD', 'HIendCD',
@@ -91,21 +91,21 @@ class CropParameters(object):
                     (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
                     dtype=np.int32
                 ),
-                requirements=['A','O','W','F']
-            )            
+                requirements=['A', 'O', 'W', 'F']
+            )
         for param in flt_params_to_compute:
             vars(self.model)[param] = np.require(
                 np.zeros(
                     (self.model.nFarm, self.model.nCrop, self.model.domain.nxy),
                     dtype=np.float64
                 ),
-                requirements=['A','O','W','F']                
+                requirements=['A', 'O', 'W', 'F']
             )
 
         # Compute derived crop parameters and crop calendar
         self.compute_crop_parameters()
         self.compute_crop_calendar()
-        
+
     def read(self):
         # PlantPop currently real in Fortran
         # ETadj should be an option provided in config
@@ -113,24 +113,24 @@ class CropParameters(object):
             'CropType', 'PlantingDate', 'HarvestDate', 'PolHeatStress',
             'PolColdStress', 'BioTempStress', 'PlantPop',
             'Determinant', 'ETadj', 'LagAer'
-        ]        
+        ]
         flt_crop_params = [
             'Emergence', 'MaxRooting', 'Senescence', 'Maturity',
             'HIstart', 'Flowering', 'YldForm', 'Tbase', 'Tupp',
             'Tmax_up', 'Tmax_lo', 'Tmin_up', 'Tmin_lo', 'GDD_up',
             'GDD_lo', 'fshape_b', 'PctZmin', 'Zmin', 'Zmax',
             'fshape_r', 'fshape_ex', 'SxTopQ', 'SxBotQ', 'a_Tr',
-            'SeedSize', 'CCmin', 'CCx','CDC','CGC', 'Kcb', 'fage',
-            'WP', 'WPy', 'fsink', 'bsted', 'bface', 'HI0','HIini',
+            'SeedSize', 'CCmin', 'CCx', 'CDC', 'CGC', 'Kcb', 'fage',
+            'WP', 'WPy', 'fsink', 'bsted', 'bface', 'HI0', 'HIini',
             'dHI_pre', 'a_HI', 'b_HI', 'dHI0', 'exc', 'MaxFlowPct',
             'p_up1', 'p_up2', 'p_up3', 'p_up4', 'p_lo1', 'p_lo2',
-            'p_lo3','p_lo4', 'fshape_w1', 'fshape_w2', 'fshape_w3',
-            'fshape_w4','Aer', 'beta', 'GermThr'
-        ]        
+            'p_lo3', 'p_lo4', 'fshape_w1', 'fshape_w2', 'fshape_w3',
+            'fshape_w4', 'Aer', 'beta', 'GermThr'
+        ]
         crop_params_to_read = int_crop_params + flt_crop_params
         if len(crop_params_to_read) > 0:
             for param in crop_params_to_read:
-                
+
                 if param in int_crop_params:
                     datatype = np.int32
                 else:
@@ -144,18 +144,20 @@ class CropParameters(object):
                     # ensure the parameter has a farm dimension
                     if len(parameter_values.shape) == 1:
                         if len(parameter_values) == self.model.nCrop:
-                            parameter_values = np.broadcast_to(parameter_values, (self.model.nFarm, self.model.nCrop))
-                            
-                    if (parameter_values.shape[0] == self.model.nFarm) & (parameter_values.shape[1] == self.model.nCrop):                        
+                            parameter_values = np.broadcast_to(
+                                parameter_values, (self.model.nFarm, self.model.nCrop))
+
+                    if (parameter_values.shape[0] == self.model.nFarm) & (parameter_values.shape[1] == self.model.nCrop):
                         vars(self.model)[param] = np.require(
                             np.broadcast_to(
                                 parameter_values[:, None],
-                                (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
+                                (self.model.nFarm, self.model.nCrop,
+                                 self.model.domain.nxy)
                             ),
                             dtype=datatype,
-                            requirements=['A','O','W','F']
+                            requirements=['A', 'O', 'W', 'F']
                         )
-                        
+
                     else:
                         raise ValueError(
                             "Error reading parameter " + param
@@ -163,7 +165,7 @@ class CropParameters(object):
                             + " of parameter list must equal number"
                             + " of crops in simulation"
                         )
-                else:        
+                else:
                     # 2 Try to read from netCDF file
                     try:
                         arr = open_hmdataarray(
@@ -177,14 +179,15 @@ class CropParameters(object):
                         vars(self.model)[param] = np.require(
                             np.broadcast_to(
                                 arr.values,
-                                (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
+                                (self.model.nFarm, self.model.nCrop,
+                                 self.model.domain.nxy)
                             ),
                             dtype=datatype,
-                            requirements=['A','O','W','F']
+                            requirements=['A', 'O', 'W', 'F']
                         )
-                        
+
                     # 3 - Read from default parameter database
-                    except:                        
+                    except:
                         try:
                             parameter_values = np.zeros((self.model.nCrop))
                             for index, crop_id in enumerate(self.model.CropID):
@@ -193,17 +196,18 @@ class CropParameters(object):
                                     crop_id,
                                     param
                                 )[0]
-                                
+
                             vars(self.model)[param] = np.require(
                                 np.broadcast_to(
                                     parameter_values[None, :, None],
-                                    (self.model.nFarm, self.model.nCrop, self.model.domain.nxy)
+                                    (self.model.nFarm, self.model.nCrop,
+                                     self.model.domain.nxy)
                                 ),
                                 dtype=datatype,
-                                requirements=['A','O','W','F']
+                                requirements=['A', 'O', 'W', 'F']
                             )
 
-                        except:                            
+                        except:
                             raise KeyError(
                                 "Error reading parameter "
                                 + param + " from crop parameter database"
@@ -224,7 +228,7 @@ class CropParameters(object):
             self.model.FloweringCD,
             self.model.HIGC,
             self.model.tLinSwitch,
-            self.model.dHILinear,            
+            self.model.dHILinear,
             self.model.PlantPop,
             self.model.SeedSize,
             self.model.SxTopQ,
@@ -249,10 +253,10 @@ class CropParameters(object):
             self.model.nFarm,
             self.model.nCrop,
             self.model.domain.nxy
-        )        
-        
+        )
+
     def compute_time_slice(self):
-        sd = self.model.time.curr_time.timetuple().tm_yday            
+        sd = self.model.time.curr_time.timetuple().tm_yday
         hd = np.copy(self.model.HarvestDateAdj)
         hd[hd < self.model.PlantingDateAdj] += 365
         hd[sd > self.model.PlantingDateAdj] = 0
@@ -260,10 +264,11 @@ class CropParameters(object):
         time_slc = slice(
             self.model.time.curr_time,
             self.model.time.curr_time +
-            datetime.timedelta(int(max_harvest_date - sd + 1))  # TODO: '+1' is new addition to match Fortran code
+            # TODO: '+1' is new addition to match Fortran code
+            datetime.timedelta(int(max_harvest_date - sd + 1))
         )
         return time_slc
-    
+
     def compute_crop_calendar_type_1(self):
         self.model.MaxCanopyCD = np.copy(self.model.MaxCanopy)
         self.model.CanopyDevEndCD = np.copy(self.model.CanopyDevEnd)
@@ -275,11 +280,11 @@ class CropParameters(object):
         if self.model.SwitchGDD:
 
             # !!!!!!!!
-            # 
+            #
             # UNTESTED
             #
             # !!!!!!!!
-            
+
             # objective here is to define a time slice over which
             # to compute the parameters, since we need tmin/tmax
             # values to calculate growing degree days
@@ -296,7 +301,7 @@ class CropParameters(object):
                 self.model.Canopy10Pct,
                 self.model.MaxRooting,
                 self.model.Senescence,
-                self.model.Maturity,       
+                self.model.Maturity,
                 self.model.MaxCanopy,
                 self.model.CanopyDevEnd,
                 self.model.HIstart,
@@ -306,7 +311,7 @@ class CropParameters(object):
                 self.model.CanopyDevEndCD,
                 self.model.HIstartCD,
                 self.model.HIendCD,
-                self.model.YldFormCD,       
+                self.model.YldFormCD,
                 self.model.FloweringEnd,
                 self.model.Flowering,
                 self.model.CC0,
@@ -322,17 +327,17 @@ class CropParameters(object):
                 self.model.nCrop,
                 self.model.domain.nxy
             )
-            
+
             # return tmin/tmax to current time
             self.model.tmin.select(time=self.model.time.curr_time)
             self.model.tmax.select(time=self.model.time.curr_time)
-            
+
     def compute_crop_calendar_type_2(self, update=False):
 
         time_slc = self.compute_time_slice()
         self.model.tmin.select(time_slc)
         self.model.tmax.select(time_slc)
-                
+
         aquacrop_fc.crop_parameters_w.compute_crop_calendar_type2_w(
             self.model.tmin.values,
             self.model.tmax.values,
@@ -362,10 +367,14 @@ class CropParameters(object):
             self.model.nCrop,
             self.model.domain.nxy
         )
-        
+
         # return tmin/tmax to current time
-        self.model.tmin.select(time=self.model.time.curr_time, method='nearest')  # TODO: method='nearest' is new addition - CHECK
-        self.model.tmax.select(time=self.model.time.curr_time, method='nearest')  # TODO: method='nearest' is new addition - CHECK
+        # TODO: method='nearest' is new addition - CHECK
+        self.model.tmin.select(
+            time=self.model.time.curr_time, method='nearest')
+        # TODO: method='nearest' is new addition - CHECK
+        self.model.tmax.select(
+            time=self.model.time.curr_time, method='nearest')
 
     def compute_crop_calendar(self):
         if self.model.CalendarType == 1:
@@ -402,8 +411,9 @@ class CropParameters(object):
             self.model.GrowingSeasonDayOne,
             self.model.nFarm,
             self.model.nCrop,
-            self.model.domain.nxy            
-        )        
+            self.model.domain.nxy
+        )
+
     def dynamic(self):
         self.adjust_planting_and_harvesting_date()
         self.update_growing_season()
@@ -441,7 +451,7 @@ class CropParameters(object):
             self.model.nCrop,
             self.model.domain.nxy
         )
-        
+
     def adjust_planting_and_harvesting_date(self):
         aquacrop_fc.crop_parameters_w.adjust_pd_hd_w(
             self.model.PlantingDateAdj,

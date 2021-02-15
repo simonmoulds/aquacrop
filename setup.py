@@ -111,7 +111,7 @@ def get_requirements():
         'hm @ git+https://github.com/simonmoulds/hm@master#egg=hm',
         'importlib-resources==4.1.1',
         'netCDF4==1.5.5.1',
-        'numpy==1.19.5',
+        'numpy==1.20.1',
         'pandas==1.2.0',
         'pyparsing==2.4.7',
         'python-box==5.2.0',
