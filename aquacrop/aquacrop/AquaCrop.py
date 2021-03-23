@@ -43,18 +43,18 @@ class AqEnKfModel(HmEnKfModel):
         obs_canopy_cover = np.array(
             [obs_canopy_cover, ] * self.nrSamples()).transpose()
         # TODO: work out appropriate way to estimate covariance
-        # covariance = np.random.random((1,1))
-        # covariance = np.zeros((1,1))
-        covariance = np.ones((1, 1)) * 0.1
+        # covariance = np.random.random((1, 1))
+        # covariance = np.zeros((1, 1))
+        covariance = np.ones((1, 1)) * 0.005
         self.setObservedMatrices(obs_canopy_cover, covariance)
 
     def postmcloop(self):
         # used to calculate statistics of the ensemble (e.g. mean, variance, percentiles)
         # TODO:
         # * Define variables of interest
-        # * Calculate average, variance
+        # * Calculate average, variance - DONE
         # * Calculate percentiles
-        pass
+        self.reporting.create_mc_summary_variable()
 
     def resume(self):
         HmEnKfModel.resume(self)
@@ -83,8 +83,6 @@ class AquaCrop(Model):
         self.carbon_dioxide_module.initial()
         self.lc_parameters_module.initial()
         self.initial_condition_module.initial()
-
-        # TODO: take these out and put in 'constants.py' or similar
         self.state_varnames = [
             'DAP',
             'GDDcum', 'th', 'DaySubmerged', 'IrrCum', 'IrrNetCum',
@@ -158,6 +156,7 @@ class AquaCrop(Model):
         # print(self.HI0[0, 0, 0])
         # print(self.HI[0, 0, 0])
         # print(self.HIadj[0, 0, 0])
+        # print(self.CC[0, 0, 0])
         aquacrop_fc.aquacrop_w.update_aquacrop_w(
             self.GDD,
             self.GDDcum,
