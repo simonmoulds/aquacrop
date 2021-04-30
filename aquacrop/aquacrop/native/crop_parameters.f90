@@ -386,30 +386,42 @@ contains
          )
 
     if ( calendar_type == 1 ) then
-       
-       i = pd + emergence_cd
+
+       ! NB the pd + ... is incorrect
+       ! i = pd + emergence_cd
+       i = emergence_cd       
        emergence = gddcum(i)
-       i = pd + canopy_10pct_cd
+       ! i = pd + canopy_10pct_cd
+       i = canopy_10pct_cd
        canopy_10pct = gddcum(i)
-       i = pd + max_rooting_cd
+       ! i = pd + max_rooting_cd
+       i = max_rooting_cd
        max_rooting = gddcum(i)
-       i = pd + senescence_cd
+       ! i = pd + senescence_cd
+       i = senescence_cd
        senescence = gddcum(i)
-       i = pd + maturity_cd
+       ! i = pd + maturity_cd
+       i = maturity_cd
        maturity = gddcum(i)       
-       i = pd + max_canopy_cd
+       ! i = pd + max_canopy_cd
+       i = max_canopy_cd
        max_canopy = gddcum(i)
-       i = pd + canopy_dev_end_cd
-       canopy_dev_end = gddcum(i)
-       i = pd + hi_start_cd
-       hi_start = gddcum(i)
-       i = pd + hi_end_cd
+       ! i = pd + canopy_dev_end_cd
+       i = canopy_dev_end_cd
+       canopy_dev_end = gddcum(i)       
+       ! i = pd + hi_start_cd
+       i = hi_start_cd
+       hi_start = gddcum(i)       
+       ! i = pd + hi_end_cd
+       i = hi_end_cd
        hi_end = gddcum(i)
-       i = pd + yld_form_cd
+       ! i = pd + yld_form_cd
+       i = yld_form_cd
        yld_form = gddcum(i)       
 
        if ( crop_type == 3 ) then
-          i = pd + flowering_end
+          ! i = pd + flowering_end
+          i = flowering_end
           flowering_end = gddcum(i)
           flowering = flowering_end - hi_start
        end if

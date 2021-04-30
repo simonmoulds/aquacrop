@@ -42,10 +42,11 @@ class AqEnKfModel(HmEnKfModel):
             obs_canopy_cover = [float(val) for val in f.read().split()]
         obs_canopy_cover = np.array(
             [obs_canopy_cover, ] * self.nrSamples()).transpose()
+
         # TODO: work out appropriate way to estimate covariance
-        # covariance = np.random.random((1, 1))
+        covariance = np.random.random((1, 1))
         # covariance = np.zeros((1, 1))
-        covariance = np.ones((1, 1)) * 0.005
+        # covariance = np.ones((1, 1)) * 0.005
         self.setObservedMatrices(obs_canopy_cover, covariance)
 
     def postmcloop(self):
@@ -144,25 +145,36 @@ class AquaCrop(Model):
                 requirements=['A', 'O', 'W', 'F']
             )
 
+        # # TEMPORARY FIX
+        # self.P = self.prec.values
+
     def dynamic(self):
         self.weather_module.dynamic()
         self.groundwater_module.dynamic()
         self.carbon_dioxide_module.dynamic(method='pad')
         self.lc_parameters_module.dynamic()
+
+        # # TEMPORARY FIX
+        # self.P = self.prec.values
+
         # TODO:
         # self.initial_condition_module.dynamic()
         layer_ix = self.layerIndex + 1
         EvapTimeSteps = 20
-        # print(self.HI0[0, 0, 0])
-        # print(self.HI[0, 0, 0])
-        # print(self.HIadj[0, 0, 0])
-        # print(self.CC[0, 0, 0])
+        # print('B    : ', self.B)
+        # print('HIadj: ', self.HIadj)
+        # print('GrowingSeason: ', self.GrowingSeasonIndex)
+        # print('YieldForm: ', self.YieldForm)
+        # print('HIt:', self.HIt)
+
         aquacrop_fc.aquacrop_w.update_aquacrop_w(
             self.GDD,
             self.GDDcum,
             self.GDDmethod,
-            self.tmax.values,
-            self.tmin.values,
+            self.Tmax,
+            self.Tmin,
+            # self.tmax.values,
+            # self.tmin.values,
             self.Tbase,
             self.Tupp,
             self.GrowthStage,
@@ -195,7 +207,8 @@ class AquaCrop(Model):
             self.tau,
             self.Runoff,
             self.Infl,
-            self.prec.values,
+            # self.prec.values,
+            self.P,
             self.DaySubmerged,
             self.Bunds,
             self.zBund,
@@ -223,7 +236,8 @@ class AquaCrop(Model):
             self.SMT4,
             self.IrrScheduled,  # TODO
             self.AppEff,
-            self.etref.values,
+            # self.etref.values,
+            self.ETref,
             self.MaxIrr,
             self.IrrInterval,
             self.SurfaceStorage,

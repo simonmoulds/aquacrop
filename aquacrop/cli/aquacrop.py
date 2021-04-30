@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 np.warnings.filterwarnings('error', category=np.VisibleDeprecationWarning)
 
+
 def run_etref(method, config, modeltime, domain, init):
     dynamic_model = HmDynamicModel(
         method,
@@ -42,8 +43,10 @@ def run_etref(method, config, modeltime, domain, init):
     dynamic_framework = HmDynamicFramework(dynamic_model, len(modeltime))
     dynamic_framework.setQuiet(True)
     dynamic_framework.run()
-    output_fn = dynamic_model.model.reporting_module.output_variables['ETref_daily_total'].filename
+    output_fn = dynamic_model.model.reporting_module.output_variables[
+        1]['ETref_daily_total'].filename
     return output_fn
+
 
 @click.command()
 @click.option('--debug/--no-debug', 'debug', default=False)
@@ -54,13 +57,13 @@ def run_etref(method, config, modeltime, domain, init):
 @click.argument('config', type=click.Path(exists=True))
 def cli(debug, outputdir, deterministic, montecarlo, kalmanfilter, config):
     """Example script"""
-    
+
     if sum([deterministic, montecarlo, kalmanfilter]) != 1:
         raise click.UsageError(
             "Exactly one of 'deterministic', 'monte-carlo', and 'enkf'"
             " must be specified."
-        )    
-    
+        )
+
     configuration = AquaCropConfiguration(
         config,
         outputdir,
@@ -109,18 +112,21 @@ def cli(debug, outputdir, deterministic, montecarlo, kalmanfilter, config):
         initial_state = None
         etref_method = configuration.ETREF['method']
         if 'PenmanMonteith' in etref_method:
-            etref_fn = run_etref(PenmanMonteith, configuration, modeltime, domain, initial_state)
+            etref_fn = run_etref(PenmanMonteith, configuration,
+                                 modeltime, domain, initial_state)
         if 'Hargreaves' in etref_method:
-            etref_fn = run_etref(Hargreaves, configuration, modeltime, domain, initial_state)
+            etref_fn = run_etref(Hargreaves, configuration,
+                                 modeltime, domain, initial_state)
         if 'PriestleyTaylor' in etref_method:
-            etref_fn = run_etref(PriestleyTaylor, configuration, modeltime, domain, initial_state)
-            
+            etref_fn = run_etref(PriestleyTaylor, configuration,
+                                 modeltime, domain, initial_state)
+
         # Update configuration
         configuration.ETREF['filename'] = etref_fn
         configuration.ETREF['varname'] = 'etref'
         if domain.is_1d:
             configuration.ETREF['is_1d'] = True
-            configuration.ETREF['xy_dimname'] = 'space'            
+            configuration.ETREF['xy_dimname'] = 'space'
         clear_cache()
 
     # run model using user-specified model framework
@@ -142,7 +148,7 @@ def cli(debug, outputdir, deterministic, montecarlo, kalmanfilter, config):
         )
         dynamic_framework.setQuiet(True)
         dynamic_framework.run()
-                
+
     elif montecarlo:
         dynamic_model = HmMonteCarloModel(
             AquaCrop,
@@ -163,8 +169,8 @@ def cli(debug, outputdir, deterministic, montecarlo, kalmanfilter, config):
             nrSamples=int(configuration.MONTE_CARLO['num_samples'])
         )
         mc_framework.run()
-        
-    elif kalmanfilter:        
+
+    elif kalmanfilter:
         dynamic_model = AqEnKfModel(
             AquaCrop,
             configuration,
@@ -178,7 +184,7 @@ def cli(debug, outputdir, deterministic, montecarlo, kalmanfilter, config):
             lastTimeStep=len(modeltime) + 1,
             firstTimestep=1
         )
-        dynamic_framework.setQuiet(True)        
+        dynamic_framework.setQuiet(True)
         mc_framework = HmMonteCarloFramework(
             dynamic_framework,
             nrSamples=int(configuration.MONTE_CARLO['num_samples'])
@@ -188,5 +194,3 @@ def cli(debug, outputdir, deterministic, montecarlo, kalmanfilter, config):
             configuration.KALMAN_FILTER['filter_timesteps']
         )
         enkf_framework.run()
-    
-    

@@ -78,7 +78,7 @@ netcdf_description[aquacrop_dimension_name] = None
 comment[aquacrop_dimension_name] = None
 latex_symbol[aquacrop_dimension_name] = None
 
-aquacrop_variable_name = 'precipitation'
+aquacrop_variable_name = 'P'
 netcdf_shortname[aquacrop_variable_name] = 'precipitation'
 netcdf_standard_name[aquacrop_variable_name] = 'precipitation'
 netcdf_dimensions[aquacrop_variable_name] = ('time',)
@@ -213,6 +213,16 @@ netcdf_shortname[aquacrop_variable_name] = 'groundwater_inflow'
 netcdf_standard_name[aquacrop_variable_name] = 'groundwater_inflow'
 netcdf_dimensions[aquacrop_variable_name] = ('farm', 'crop', 'time')
 netcdf_units[aquacrop_variable_name] = '1e-3 m'
+netcdf_long_name[aquacrop_variable_name] = None
+netcdf_description[aquacrop_variable_name] = None
+comment[aquacrop_variable_name] = None
+latex_symbol[aquacrop_variable_name] = None
+
+aquacrop_variable_name = 'ETact'
+netcdf_shortname[aquacrop_variable_name] = 'actual_evapotranspiration'
+netcdf_standard_name[aquacrop_variable_name] = 'actual_evapotranspiration'
+netcdf_dimensions[aquacrop_variable_name] = ('time',)
+netcdf_units[aquacrop_variable_name] = 'm3'
 netcdf_long_name[aquacrop_variable_name] = None
 netcdf_description[aquacrop_variable_name] = None
 comment[aquacrop_variable_name] = None

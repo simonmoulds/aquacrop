@@ -62,7 +62,6 @@ contains
        else if ( calendar_type == 2 ) then
           t_adj = gdd_cum - delayed_gdds
        end if
-
        if ( t_adj > hi_start ) then
           yield_form = 1
        else
@@ -461,6 +460,7 @@ contains
             )
        
        hi_i = hi_ref
+
        hi_t = dap - delayed_cds - hi_start_cd - 1
        if ( yield_form == 1 .and. hi_t >= 0 ) then
           ! root/tuber or fruit/grain crops
@@ -532,7 +532,6 @@ contains
              else
                 hi_adj = hi_mult * hi_max
              end if
-             
           else if ( crop_type == 1 ) then
              hi_adj = hi_i
           end if

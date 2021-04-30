@@ -291,10 +291,33 @@ class CropParameters(object):
             time_slc = self.compute_time_slice()
             self.model.tmin.select(time_slc)
             self.model.tmax.select(time_slc)
-            aquacrop_w.crop_parameters_w.switch_gdd_w(
+
+            # print("BEFORE:")
+            # print(self.model.Emergence)
+            # print(self.model.Emergence)
+            # print(self.model.Canopy10Pct)
+            # print(self.model.MaxRooting)
+            # print(self.model.Senescence)
+            # print(self.model.Maturity)
+            # print(self.model.MaxCanopy)
+            # print(self.model.CanopyDevEnd)
+            # print(self.model.HIstart)
+            # print(self.model.HIend)
+            # print(self.model.YldForm)
+            # print(self.model.MaxCanopyCD)
+            # print(self.model.CanopyDevEndCD)
+            # print(self.model.HIstartCD)
+            # print(self.model.HIendCD)
+            # print(self.model.YldFormCD)
+            # print(self.model.FloweringEnd)
+            # print(self.model.Flowering)
+            # print(self.model.CGC)
+            # print(self.model.CDC)
+
+            aquacrop_fc.crop_parameters_w.switch_gdd_w(
                 self.model.tmin.values,
                 self.model.tmax.values,
-                self.model.PlantingDayAdj,
+                self.model.PlantingDateAdj,
                 self.model.HarvestDateAdj,
                 int(self.model.time.doy),
                 self.model.Emergence,
@@ -327,10 +350,42 @@ class CropParameters(object):
                 self.model.nCrop,
                 self.model.domain.nxy
             )
+            self.model.CalendarType = 2
 
+            # print(self.model.Emergence)
+            # print(self.model.Emergence)
+            # print(self.model.Canopy10Pct)
+            # print(self.model.MaxRooting)
+            # print(self.model.Senescence)
+            # print(self.model.Maturity)
+            # print(self.model.MaxCanopy)
+            # print(self.model.CanopyDevEnd)
+            # print(self.model.HIstart)
+            # print(self.model.HIend)
+            # print(self.model.YldForm)
+            # print(self.model.MaxCanopyCD)
+            # print(self.model.CanopyDevEndCD)
+            # print(self.model.HIstartCD)
+            # print(self.model.HIendCD)
+            # print(self.model.YldFormCD)
+            # print(self.model.FloweringEnd)
+            # print(self.model.Flowering)
+            # print(self.model.CGC)
+            # print(self.model.CDC)
+
+            # print("AFTER:")
             # return tmin/tmax to current time
-            self.model.tmin.select(time=self.model.time.curr_time)
-            self.model.tmax.select(time=self.model.time.curr_time)
+            # TODO: method='nearest' is new addition - CHECK
+            self.model.tmin.select(
+                time=self.model.time.curr_time, method='nearest'
+            )
+            # TODO: method='nearest' is new addition - CHECK
+            self.model.tmax.select(
+                time=self.model.time.curr_time, method='nearest'
+            )
+            # # return tmin/tmax to current time
+            # self.model.tmin.select(time=self.model.time.curr_time)
+            # self.model.tmax.select(time=self.model.time.curr_time)
 
     def compute_crop_calendar_type_2(self, update=False):
 
@@ -348,12 +403,12 @@ class CropParameters(object):
             self.model.CanopyDevEnd,
             self.model.HIstart,
             self.model.HIend,
-            self.model.MaxCanopyCD,
-            self.model.CanopyDevEndCD,
-            self.model.HIstartCD,
-            self.model.HIendCD,
-            self.model.YldFormCD,
-            self.model.FloweringCD,
+            self.model.MaxCanopyCD.astype(np.int32),
+            self.model.CanopyDevEndCD.astype(np.int32),
+            self.model.HIstartCD.astype(np.int32),
+            self.model.HIendCD.astype(np.int32),
+            self.model.YldFormCD.astype(np.int32),
+            self.model.FloweringCD.astype(np.int32),
             self.model.FloweringEnd,
             self.model.Tupp,
             self.model.Tbase,
